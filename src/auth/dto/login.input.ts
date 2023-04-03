@@ -1,14 +1,27 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
 @InputType()
-export class LoginInput {
-  @Field()
+export class AuthInput {
+  @ApiProperty()
+  @Field(() => String)
   @IsEmail()
   email: string;
+}
 
-  @Field()
+@InputType()
+export class AuthGoogleLoginInput {
+  @ApiProperty()
+  @Field(() => String)
   @IsNotEmpty()
-  @MinLength(8)
-  password: string;
+  code: string;
+}
+
+@InputType()
+export class AuthValidationInput extends AuthInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  code: string;
 }

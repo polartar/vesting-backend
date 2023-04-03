@@ -3,73 +3,67 @@ import { Prisma, User } from '@prisma/client';
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
-  ConflictException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { PasswordService } from './password.service';
+
+import { SecurityConfig } from 'src/common/configs/config.interface';
 import { SignupInput } from './dto/signup.input';
 import { Token } from './models/token.model';
-import { SecurityConfig } from 'src/common/configs/config.interface';
+import { generateRandomCode } from 'src/common/utils/helpers';
+import { AUTHORIZATION_CODE_EXPIRE_TIME } from 'src/common/utils/constants';
+
+const getExpiredTime = () =>
+  new Date().getTime() + AUTHORIZATION_CODE_EXPIRE_TIME;
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly passwordService: PasswordService,
     private readonly configService: ConfigService
   ) {}
 
-  async createUser(payload: SignupInput): Promise<Token> {
-    const hashedPassword = await this.passwordService.hashPassword(
-      payload.password
-    );
+  private generateAccessToken(payload: { userId: string }): string {
+    return this.jwtService.sign(payload);
+  }
 
+  private generateRefreshToken(payload: { userId: string }): string {
+    const securityConfig = this.configService.get<SecurityConfig>('security');
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: securityConfig.refreshIn,
+    });
+  }
+
+  async createUser(payload: SignupInput): Promise<Token> {
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          ...payload,
-          password: hashedPassword,
-          role: 'USER',
+      const user = await this.prisma.user.upsert({
+        where: {
+          email: payload.email,
         },
+        create: payload,
+        update: {},
       });
 
       return this.generateTokens({
         userId: user.id,
       });
     } catch (e) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === 'P2002'
-      ) {
-        throw new ConflictException(`Email ${payload.email} already used.`);
-      }
       throw new Error(e);
     }
   }
 
-  async login(email: string, password: string): Promise<Token> {
+  async login(email: string): Promise<string> {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
     }
 
-    const passwordValid = await this.passwordService.validatePassword(
-      password,
-      user.password
-    );
-
-    if (!passwordValid) {
-      throw new BadRequestException('Invalid password');
-    }
-
-    return this.generateTokens({
-      userId: user.id,
-    });
+    const code = await this.createAuthCode(user.email);
+    return code;
   }
 
   validateUser(userId: string): Promise<User> {
@@ -88,18 +82,6 @@ export class AuthService {
     };
   }
 
-  private generateAccessToken(payload: { userId: string }): string {
-    return this.jwtService.sign(payload);
-  }
-
-  private generateRefreshToken(payload: { userId: string }): string {
-    const securityConfig = this.configService.get<SecurityConfig>('security');
-    return this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_REFRESH_SECRET'),
-      expiresIn: securityConfig.refreshIn,
-    });
-  }
-
   refreshToken(token: string) {
     try {
       const { userId } = this.jwtService.verify(token, {
@@ -111,6 +93,51 @@ export class AuthService {
       });
     } catch (e) {
       throw new UnauthorizedException();
+    }
+  }
+
+  async createAuthCode(email: string): Promise<string> {
+    const auth = await this.prisma.auth.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (auth) {
+      await this.prisma.auth.update({
+        where: {
+          id: auth.id,
+        },
+        data: {
+          expiredAt: getExpiredTime(),
+        },
+      });
+
+      return auth.code;
+    }
+
+    const code = generateRandomCode();
+    await this.prisma.auth.create({
+      data: {
+        email,
+        code,
+        expiredAt: getExpiredTime(),
+      },
+    });
+    return code;
+  }
+
+  async validateCode(email: string, code: string): Promise<boolean> {
+    try {
+      const auth = await this.prisma.auth.findFirst({
+        where: {
+          email,
+          code,
+        },
+      });
+      return Boolean(auth);
+    } catch (error) {
+      return false;
     }
   }
 }

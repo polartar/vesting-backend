@@ -13,29 +13,102 @@ generator dbml {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  password  String
-  firstname String?
-  lastname  String?
-  posts     Post[]
-  role      Role
+  id              String          @id @default(uuid())
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  email           String          @unique
+  name            String?
+  isActive        Boolean         @default(true) @map("is_active")
+  isAdmin         Boolean         @default(false) @map("is_admin")
+  WalletAddresses WalletAddress[]
+  Organizations   Organization[]
+  Roles           UserRole[]
+
+  @@map("user")
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  published Boolean
-  title     String
-  content   String?
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
+model Auth {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  email     String   @unique
+  code      String   @unique
+  expiredAt BigInt      @map("expired_at")
+
+  @@map("auth")
+}
+
+model WalletAddress {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  address   String   @unique
+  userId    String   @map("user_id")
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@map("wallet_address")
+}
+
+model Organization {
+  id        String              @id @default(uuid())
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+  userId    String              @map("user_id")
+  User      User                @relation(fields: [userId], references: [id])
+  name      String
+  email     String
+  Users     UserRole[]
+  Tokens    OrganizationToken[]
+
+  @@map("organization")
+}
+
+model UserRole {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  role           Role         @default(EMPLOYEE)
+  userId         String       @map("user_id")
+  User           User         @relation(fields: [userId], references: [id])
+  organizationId String       @map("organization_id")
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("user_role")
+}
+
+model Token {
+  id            String              @id @default(uuid())
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  name          String
+  symbol        String
+  description   String?
+  maxSupply     String?             @map("max_supply")
+  chainId       Int?                @map("chain_id")
+  address       String?
+  logo          String?
+  isDeployed    Boolean             @default(false) @map("is_deployed")
+  isActive      Boolean             @default(true) @map("is_active")
+  Organizations OrganizationToken[]
+
+  @@map("token")
+}
+
+model OrganizationToken {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organizationId String       @map("organization_id")
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+  tokenId        String       @map("token_id")
+  Token          Token        @relation(fields: [tokenId], references: [id])
+
+  @@map("organization_token")
 }
 
 enum Role {
-  ADMIN
-  USER
+  FOUNDER
+  INVESTOR
+  ADVISOR
+  EMPLOYEE
 }

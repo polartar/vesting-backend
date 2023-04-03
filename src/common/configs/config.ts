@@ -2,16 +2,16 @@ import type { Config } from './config.interface';
 
 const config: Config = {
   nest: {
-    port: 3000,
+    port: 4000,
   },
   cors: {
     enabled: true,
   },
   swagger: {
     enabled: true,
-    title: 'Nestjs FTW',
-    description: 'The nestjs API description',
-    version: '1.5',
+    title: 'VTVL API',
+    description: 'The VTVL API description',
+    version: '1.0',
     path: 'api',
   },
   graphql: {
@@ -21,7 +21,7 @@ const config: Config = {
     sortSchema: true,
   },
   security: {
-    expiresIn: '2m',
+    expiresIn: '1d',
     refreshIn: '7d',
     bcryptSaltOrRound: 10,
   },

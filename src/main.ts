@@ -3,12 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaClientExceptionFilter, PrismaService } from 'nestjs-prisma';
-import { AppModule } from './app.module';
+
 import type {
   CorsConfig,
   NestConfig,
   SwaggerConfig,
 } from 'src/common/configs/config.interface';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,8 +33,8 @@ async function bootstrap() {
   // Swagger Api
   if (swaggerConfig.enabled) {
     const options = new DocumentBuilder()
-      .setTitle(swaggerConfig.title || 'Nestjs')
-      .setDescription(swaggerConfig.description || 'The nestjs API description')
+      .setTitle(swaggerConfig.title || 'VTVL Api')
+      .setDescription(swaggerConfig.description || 'The VTVL API description')
       .setVersion(swaggerConfig.version || '1.0')
       .build();
     const document = SwaggerModule.createDocument(app, options);
@@ -46,6 +47,7 @@ async function bootstrap() {
     app.enableCors();
   }
 
-  await app.listen(process.env.PORT || nestConfig.port || 3000);
+  await app.listen(process.env.PORT || nestConfig.port || 4000);
 }
+
 bootstrap();

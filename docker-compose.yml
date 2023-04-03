@@ -1,12 +1,12 @@
 version: '3.8'
 services:
-  nest-api:
-    container_name: nest-api
+  vtvl-api:
+    container_name: vtvl-api
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000'
+      - '4000:4000'
     depends_on:
       - postgres
     env_file:
@@ -25,4 +25,4 @@ services:
 
 volumes:
   postgres:
-    name: nest-db
+    name: vtvl-db
