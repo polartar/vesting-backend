@@ -1,5 +1,5 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Prisma, User } from '@prisma/client';
+import { User, Wallet } from '@prisma/client';
 import {
   Injectable,
   NotFoundException,
@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 
 import { SecurityConfig } from 'src/common/configs/config.interface';
 import { SignupInput } from './dto/signup.input';
+import { TokenPayload } from './dto/jwt.dto';
 import { Token } from './models/token.model';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { AUTHORIZATION_CODE_EXPIRE_TIME } from 'src/common/utils/constants';
@@ -25,11 +26,17 @@ export class AuthService {
     private readonly configService: ConfigService
   ) {}
 
-  private generateAccessToken(payload: { userId: string }): string {
+  private generateAccessToken(payload: {
+    userId: string;
+    walletAddressId?: string;
+  }): string {
     return this.jwtService.sign(payload);
   }
 
-  private generateRefreshToken(payload: { userId: string }): string {
+  private generateRefreshToken(payload: {
+    userId: string;
+    walletAddressId?: string;
+  }): string {
     const securityConfig = this.configService.get<SecurityConfig>('security');
     return this.jwtService.sign(payload, {
       secret: this.configService.get('JWT_REFRESH_SECRET'),
@@ -75,7 +82,12 @@ export class AuthService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  generateTokens(payload: { userId: string }): Token {
+  getWalletFromToken(token: string): Promise<Wallet> {
+    const id = this.jwtService.decode(token)['walletId'];
+    return this.prisma.wallet.findUnique({ where: { id } });
+  }
+
+  generateTokens(payload: { userId: string; walletId?: string }): Token {
     return {
       accessToken: this.generateAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),
@@ -94,6 +106,10 @@ export class AuthService {
     } catch (e) {
       throw new UnauthorizedException();
     }
+  }
+
+  decodeToken(token: string): TokenPayload {
+    return this.jwtService.decode(token) as TokenPayload;
   }
 
   async createAuthCode(email: string): Promise<string> {

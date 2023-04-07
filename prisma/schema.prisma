@@ -20,7 +20,7 @@ model User {
   name            String?
   isActive        Boolean         @default(true) @map("is_active")
   isAdmin         Boolean         @default(false) @map("is_admin")
-  WalletAddresses WalletAddress[]
+  Wallets Wallet[]
   Organizations   Organization[]
   Roles           UserRole[]
 
@@ -38,7 +38,7 @@ model Auth {
   @@map("auth")
 }
 
-model WalletAddress {
+model Wallet {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -46,7 +46,7 @@ model WalletAddress {
   userId    String   @map("user_id")
   User      User     @relation(fields: [userId], references: [id])
 
-  @@map("wallet_address")
+  @@map("wallet")
 }
 
 model Organization {

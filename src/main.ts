@@ -36,6 +36,7 @@ async function bootstrap() {
       .setTitle(swaggerConfig.title || 'VTVL Api')
       .setDescription(swaggerConfig.description || 'The VTVL API description')
       .setVersion(swaggerConfig.version || '1.0')
+      .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, options);
 

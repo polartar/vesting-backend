@@ -4,14 +4,14 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 
 import { SecurityConfig } from 'src/common/configs/config.interface';
-import { GqlAuthGuard } from './gql-auth.guard';
-import { JwtStrategy } from './jwt.strategy';
+import { AuthController } from './auth.controller';
 
+import { JwtStrategy } from './jwt.strategy';
 import { AuthService } from './auth.service';
 import { GoogleService } from './google.service';
 import { EmailService } from './email.service';
-
-import { AuthController } from './auth.controller';
+import { UsersService } from 'src/users/users.service';
+import { WalletsService } from 'src/wallets/wallets.service';
 
 @Module({
   imports: [
@@ -33,10 +33,11 @@ import { AuthController } from './auth.controller';
   providers: [
     AuthService,
     JwtStrategy,
-    GqlAuthGuard,
     GoogleService,
     EmailService,
+    UsersService,
+    WalletsService,
   ],
-  exports: [GqlAuthGuard],
+  exports: [AuthService],
 })
 export class AuthModule {}

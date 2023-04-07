@@ -16,11 +16,11 @@ export default function Paginated<TItem>(TItemClass: Type<TItem>) {
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @ObjectType({ isAbstract: true })
   abstract class PaginatedType {
-    @Field(() => [EdgeType], { nullable: true })
-    edges: Array<EdgeType>;
+    // @Field(() => [EdgeType], { nullable: true })
+    // edges: Array<EdgeType>;
 
-    // @Field((type) => [TItemClass], { nullable: true })
-    // nodes: Array<TItem>;
+    @Field((type) => [TItemClass], { nullable: true })
+    nodes: Array<TItem>;
 
     @Field(() => PageInfo)
     pageInfo: PageInfo;

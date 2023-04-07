@@ -1,14 +1,10 @@
 import 'reflect-metadata';
-import { ObjectType, registerEnumType, Field } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import { IsEmail } from 'class-validator';
-import { Role } from '@prisma/client';
 
 import { BaseModel } from 'src/common/models/base.model';
-
-registerEnumType(Role, {
-  name: 'Role',
-  description: 'User role',
-});
+import { Wallet } from 'src/wallets/models/wallets.model';
+import { UserRole } from './user-role.model';
 
 @ObjectType()
 export class User extends BaseModel {
@@ -24,4 +20,10 @@ export class User extends BaseModel {
 
   @Field(() => Boolean, { defaultValue: false })
   isAdmin: boolean;
+
+  @Field(() => Array<Wallet>)
+  wallets: Wallet[];
+
+  @Field(() => Array<UserRole>)
+  roles: UserRole[];
 }

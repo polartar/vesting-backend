@@ -22,3 +22,11 @@ export enum EmailSubjects {
   Login = 'Login to VTVL',
   Signup = 'Signup to VTVL',
 }
+
+export const SIGN_MESSAGE_TEMPLATE = (
+  address: string,
+  utcTimeString: UTCString
+) =>
+  `VTVL uses cryptographic signatures instead of passwords to verify that you are the owner of this address. The wallet address is ${
+    address /* wallet: 0xab12 */
+  } and the time is ${utcTimeString /* 2022-06-01 16:47:55 UTC */}.`;

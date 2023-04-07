@@ -7,6 +7,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import config from 'src/common/configs/config';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
+import { WalletsModule } from 'src/wallets/wallets.module';
+import { OrganizationsModule } from 'src/organizations/organizations.module';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
 
 import { GqlConfigService } from './gql-config.service';
@@ -34,6 +36,8 @@ import { AppResolver } from './app.resolver';
 
     AuthModule,
     UsersModule,
+    WalletsModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

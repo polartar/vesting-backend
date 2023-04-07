@@ -10,3 +10,7 @@ export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
   }
   return code;
 };
+
+export const compareStrings = (str1: string, str2: string) => {
+  return str1.toLowerCase() === str2.toLowerCase();
+};

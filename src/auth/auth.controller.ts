@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
@@ -16,20 +17,31 @@ import {
   AuthValidationInput,
 } from './dto/login.input';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
+import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
+import { NormalAuth, PublicAuth } from 'src/common/utils/auth';
+import { WalletsService } from 'src/wallets/wallets.service';
+import { ConnectWalletInput } from './dto/wallet.input';
+import { User } from 'src/users/users.decorator';
+import { UserEntity } from 'src/users/users.entity';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly google: GoogleService,
     private readonly auth: AuthService,
-    private readonly email: EmailService
+    private readonly email: EmailService,
+    private readonly wallet: WalletsService
   ) {}
 
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Get('/google-callback')
   async googleAuthUrl() {
     return this.google.getAuthUrl();
   }
 
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Post('/google-login')
   async googleAuthLogin(@Body() body: AuthGoogleLoginInput) {
     try {
@@ -47,12 +59,14 @@ export class AuthController {
     }
   }
 
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Post('/login')
   async login(@Body() body: AuthInput) {
     try {
       const code = await this.auth.login(body.email);
       if (!code) {
-        return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+        return new BadRequestException(ERROR_MESSAGES.AUTH_USER_NOT_FOUND);
       }
 
       const sent = await this.email.sendLoginEmail(body.email, code);
@@ -62,10 +76,13 @@ export class AuthController {
 
       return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
+      console.error('Error: /login', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
 
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Post('/signup')
   async signup(@Body() body: AuthInput) {
     try {
@@ -81,11 +98,13 @@ export class AuthController {
 
       return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
-      console.error(error);
+      console.error('Error: /signup', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
 
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Post('/validate')
   async validate(@Body() body: AuthValidationInput) {
     try {
@@ -98,7 +117,38 @@ export class AuthController {
         email: body.email,
       });
     } catch (error) {
+      console.error('Error: /validate', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
+    }
+  }
+
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Post('/wallet')
+  async connectWallet(
+    @Body() body: ConnectWalletInput,
+    @User() user: UserEntity
+  ) {
+    try {
+      const isValidated = this.wallet.validateSignature(
+        body.signature,
+        body.address,
+        body.utcTime
+      );
+
+      if (!isValidated) {
+        return new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
+      }
+
+      const wallet = await this.wallet.findOrCreate(user.id, body.address);
+
+      return this.auth.generateTokens({
+        userId: user.id,
+        walletId: wallet.id,
+      });
+    } catch (error) {
+      console.error('Error: /wallet/connect', error);
+      throw new BadRequestException(ERROR_MESSAGES.WALLET_CONNECT_FAILTURE);
     }
   }
 }

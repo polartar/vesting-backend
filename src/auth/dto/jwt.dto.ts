@@ -9,3 +9,8 @@ export interface JwtDto {
    */
   exp: number;
 }
+
+export interface TokenPayload {
+  userId: string;
+  walletId?: string;
+}
