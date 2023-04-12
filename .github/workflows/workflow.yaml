@@ -1,0 +1,26 @@
+name: Workflow
+
+on:
+  pull_request:
+    branches: [develop]
+  
+jobs:
+  vtvl-api:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Use Node.js 16.14.0
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.14.0
+      - name: cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: 'backend/node_modules'
+          key: node_modules-${{ hashFiles('yarn.lock') }}
+      - name: Install dependencies
+        run: yarn
+      - name: Run Linting
+        run: yarn lint
