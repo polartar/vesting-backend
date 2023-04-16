@@ -12,6 +12,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { OrganizationsService } from './organizations.service';
 import {
+  AddOrganizationMembersInput,
   CreateOrganizationInput,
   UpdateOrganizationInput,
 } from './dto/organization.input';
@@ -59,6 +60,14 @@ export class OrganizationsController {
   @Get('/:organizationId')
   async getOrganization(@Param('organizationId') organizationId: string) {
     return this.organization.get(organizationId);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Post('/:organizationId/members')
+  async addOrganizationMembers(@Body() body: AddOrganizationMembersInput) {
+    return this.organization.addOrganizationMembers(body);
   }
 
   @ApiBearerAuth()

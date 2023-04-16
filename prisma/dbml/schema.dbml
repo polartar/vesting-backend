@@ -13,6 +13,7 @@ Table user {
   Wallets wallet [not null]
   Organizations organization [not null]
   Roles user_role [not null]
+  Recipes recipe [not null]
 }
 
 Table auth {
@@ -43,6 +44,9 @@ Table organization {
   email String [not null]
   Users user_role [not null]
   Tokens organization_token [not null]
+  VestingContracts vesting_contract [not null]
+  Vestings vesting [not null]
+  Recipes recipe [not null]
 }
 
 Table user_role {
@@ -70,6 +74,8 @@ Table token {
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
   Organizations organization_token [not null]
+  VestingContracts vesting_contract [not null]
+  Vestings vesting [not null]
 }
 
 Table organization_token {
@@ -82,11 +88,86 @@ Table organization_token {
   Token token [not null]
 }
 
+Table vesting_contract {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  organizationId String [not null]
+  Organization organization [not null]
+  tokenId String [not null]
+  Token token [not null]
+  name String [not null]
+  address String
+  transaction String
+  chainId Int
+  isDeployed Boolean [not null, default: false]
+  isActive Boolean [not null, default: true]
+  Vestings vesting [not null]
+}
+
+Table vesting {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  organizationId String [not null]
+  Organization organization [not null]
+  tokenId String [not null]
+  Token token [not null]
+  vestingContractId String [not null]
+  VestingContract vesting_contract [not null]
+  name String [not null]
+  startedAt DateTime [not null]
+  endedAt DateTime [not null]
+  releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
+  releaseFrequency Int [not null]
+  cliffDurationType CliffDurationType [not null, default: 'NO_CLIFF']
+  cliffDuration Int [not null, default: 0]
+  cliffAmount Int [not null, default: 0]
+  amount String [not null]
+  Recipies recipe [not null]
+}
+
+Table recipe {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  vestingId String [not null]
+  Vesting vesting [not null]
+  recipientId String [not null]
+  Recipient user [not null]
+  organizationId String [not null]
+  Organization organization [not null]
+  allocations String [not null]
+  status RecipeStatus [not null, default: 'PENDING']
+}
+
 Enum Role {
   FOUNDER
   INVESTOR
   ADVISOR
   EMPLOYEE
+}
+
+Enum ReleaseFrequencyType {
+  CONTINUOUS
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  CUSTOM
+}
+
+Enum CliffDurationType {
+  NO_CLIFF
+  WEEKS
+  MONTHS
+  YEARS
+}
+
+Enum RecipeStatus {
+  ACCEPTED
+  PENDING
+  REVOKED
 }
 
 Ref: wallet.userId > user.id
@@ -100,3 +181,19 @@ Ref: user_role.organizationId > organization.id
 Ref: organization_token.organizationId > organization.id
 
 Ref: organization_token.tokenId > token.id
+
+Ref: vesting_contract.organizationId > organization.id
+
+Ref: vesting_contract.tokenId > token.id
+
+Ref: vesting.organizationId > organization.id
+
+Ref: vesting.tokenId > token.id
+
+Ref: vesting.vestingContractId > vesting_contract.id
+
+Ref: recipe.vestingId > vesting.id
+
+Ref: recipe.recipientId > user.id
+
+Ref: recipe.organizationId > organization.id

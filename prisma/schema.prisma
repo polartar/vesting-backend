@@ -12,17 +12,47 @@ generator dbml {
   provider = "prisma-dbml-generator"
 }
 
+enum Role {
+  FOUNDER
+  INVESTOR
+  ADVISOR
+  EMPLOYEE
+}
+
+enum ReleaseFrequencyType {
+  CONTINUOUS
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  CUSTOM
+}
+
+enum CliffDurationType {
+  NO_CLIFF
+  WEEKS
+  MONTHS
+  YEARS
+}
+
+enum RecipeStatus {
+  ACCEPTED
+  PENDING
+  REVOKED
+}
+
 model User {
-  id              String          @id @default(uuid())
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
-  email           String          @unique
-  name            String?
-  isActive        Boolean         @default(true) @map("is_active")
-  isAdmin         Boolean         @default(false) @map("is_admin")
-  Wallets Wallet[]
-  Organizations   Organization[]
-  Roles           UserRole[]
+  id            String         @id @default(uuid())
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  email         String         @unique
+  name          String?
+  isActive      Boolean        @default(true) @map("is_active")
+  isAdmin       Boolean        @default(false) @map("is_admin")
+  Wallets       Wallet[]
+  Organizations Organization[]
+  Roles         UserRole[]
+  Recipes       Recipe[]
 
   @@map("user")
 }
@@ -33,7 +63,7 @@ model Auth {
   updatedAt DateTime @updatedAt @map("updated_at")
   email     String   @unique
   code      String   @unique
-  expiredAt BigInt      @map("expired_at")
+  expiredAt BigInt   @map("expired_at")
 
   @@map("auth")
 }
@@ -50,15 +80,18 @@ model Wallet {
 }
 
 model Organization {
-  id        String              @id @default(uuid())
-  createdAt DateTime            @default(now()) @map("created_at")
-  updatedAt DateTime            @updatedAt @map("updated_at")
-  userId    String              @map("user_id")
-  User      User                @relation(fields: [userId], references: [id])
-  name      String
-  email     String
-  Users     UserRole[]
-  Tokens    OrganizationToken[]
+  id               String              @id @default(uuid())
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+  userId           String              @map("user_id")
+  User             User                @relation(fields: [userId], references: [id])
+  name             String
+  email            String
+  Users            UserRole[]
+  Tokens           OrganizationToken[]
+  VestingContracts VestingContract[]
+  Vestings         Vesting[]
+  Recipes          Recipe[]
 
   @@map("organization")
 }
@@ -77,19 +110,21 @@ model UserRole {
 }
 
 model Token {
-  id            String              @id @default(uuid())
-  createdAt     DateTime            @default(now()) @map("created_at")
-  updatedAt     DateTime            @updatedAt @map("updated_at")
-  name          String
-  symbol        String
-  description   String?
-  maxSupply     String?             @map("max_supply")
-  chainId       Int?                @map("chain_id")
-  address       String?
-  logo          String?
-  isDeployed    Boolean             @default(false) @map("is_deployed")
-  isActive      Boolean             @default(true) @map("is_active")
-  Organizations OrganizationToken[]
+  id               String              @id @default(uuid())
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+  name             String
+  symbol           String
+  description      String?
+  maxSupply        String?             @map("max_supply")
+  chainId          Int?                @map("chain_id")
+  address          String?
+  logo             String?
+  isDeployed       Boolean             @default(false) @map("is_deployed")
+  isActive         Boolean             @default(true) @map("is_active")
+  Organizations    OrganizationToken[]
+  VestingContracts VestingContract[]
+  Vestings         Vesting[]
 
   @@map("token")
 }
@@ -106,9 +141,61 @@ model OrganizationToken {
   @@map("organization_token")
 }
 
-enum Role {
-  FOUNDER
-  INVESTOR
-  ADVISOR
-  EMPLOYEE
+model VestingContract {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organizationId String       @map("organization_id")
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+  tokenId        String       @map("token_id")
+  Token          Token        @relation(fields: [tokenId], references: [id])
+  name           String
+  address        String?
+  transaction    String?
+  chainId        Int?         @map("chain_id")
+  isDeployed     Boolean      @default(false) @map("is_deployed")
+  isActive       Boolean      @default(true) @map("is_active")
+  Vestings       Vesting[]
+
+  @@map("vesting_contract")
+}
+
+model Vesting {
+  id                   String               @id @default(uuid())
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  organizationId       String               @map("organization_id")
+  Organization         Organization         @relation(fields: [organizationId], references: [id])
+  tokenId              String               @map("token_id")
+  Token                Token                @relation(fields: [tokenId], references: [id])
+  vestingContractId    String               @map("vesting_contract_id")
+  VestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
+  name                 String
+  startedAt            DateTime             @map("started_at")
+  endedAt              DateTime             @map("ended_at")
+  releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
+  releaseFrequency     Int                  @map("release_frequency")
+  cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
+  cliffDuration        Int                  @default(0) @map("cliff_duration")
+  cliffAmount          Int                  @default(0) @map("cliff_amount")
+  amount               String
+  Recipies             Recipe[]
+
+  @@map("vesting")
+}
+
+model Recipe {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  vestingId      String       @map("vesting_id")
+  Vesting        Vesting      @relation(fields: [vestingId], references: [id])
+  recipientId    String       @map("recipient_id")
+  Recipient      User         @relation(fields: [recipientId], references: [id])
+  organizationId String       @map("organization_id")
+  Organization   Organization @relation(fields: [organizationId], references: [id])
+  allocations    String
+  status         RecipeStatus @default(PENDING)
+
+  @@map("recipe")
 }

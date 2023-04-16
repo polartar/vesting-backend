@@ -1,14 +1,11 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { AddOrganizationMembersInput } from './dto/organization.input';
 
 @Injectable()
 export class OrganizationsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly user: UsersService
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(email: string, name: string, userId: string) {
     const organization = await this.prisma.organization.create({
@@ -63,6 +60,20 @@ export class OrganizationsService {
         role,
         userId,
       },
+    });
+  }
+
+  async addOrganizationMembers(payload: AddOrganizationMembersInput) {
+    const { organizationId, members } = payload;
+    const data = members.filter(
+      (member) => member.organizationId === organizationId
+    );
+    if (data.length !== members.length) {
+      throw new BadRequestException('Wrong organizationId is provided');
+    }
+
+    return this.prisma.userRole.createMany({
+      data,
     });
   }
 

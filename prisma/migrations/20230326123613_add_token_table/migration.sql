@@ -6,7 +6,7 @@ CREATE TABLE "token" (
     "name" TEXT NOT NULL DEFAULT E'VTVL Certified Token',
     "symbol" TEXT NOT NULL DEFAULT E'VTVLTOKEN',
     "description" TEXT,
-    "max_supply" DECIMAL,
+    "max_supply" TEXT,
     "chain_id" INTEGER,
     "address" TEXT,
     "logo" TEXT,

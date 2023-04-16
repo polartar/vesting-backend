@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "VTVL API",
   "author": "VTVL Labs",
+  "license": "MIT",
   "keywords": [
     "nestjs",
     "prisma",

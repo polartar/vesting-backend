@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional } from 'class-validator';
+import { Role } from '@prisma/client';
 
 @InputType()
 export class CreateOrganizationInput {
@@ -26,4 +27,30 @@ export class UpdateOrganizationInput {
   @IsEmail()
   @IsOptional()
   email?: string;
+}
+
+@InputType()
+export class AddOrganizationMemberInput {
+  @ApiProperty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  userId: string;
+
+  @ApiProperty()
+  @Field(() => Role)
+  role: Role;
+}
+
+@InputType()
+export class AddOrganizationMembersInput {
+  @ApiProperty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => AddOrganizationMemberInput)
+  members: Array<AddOrganizationMemberInput>;
 }

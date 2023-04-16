@@ -15,6 +15,10 @@ import { GqlConfigService } from './gql-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
+import { VestingContractsModule } from './vesting-contracts/vesting-contracts.module';
+import { VestingsModule } from './vestings/vestings.module';
+import { TokensModule } from './tokens/tokens.module';
+import { RecipesModule } from './recipe/recipes.module';
 
 @Module({
   imports: [
@@ -37,7 +41,11 @@ import { AppResolver } from './app.resolver';
     AuthModule,
     UsersModule,
     WalletsModule,
+    TokensModule,
     OrganizationsModule,
+    VestingContractsModule,
+    VestingsModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -43,17 +43,30 @@ export class GlobalAuthGuard implements CanActivate {
       }
     }
 
+    // TODO add super admin permission
+
     if (this.isPublicRequest(context)) return true;
 
     if (this.isNormalRequest(context, request.user)) return true;
 
     if (this.isWalletRequest(context, request.wallet)) return true;
 
+    if (
+      request.body?.organizationId &&
+      request.params.organizationId &&
+      request.body.organizationId !== request.params.organizationId
+    ) {
+      throw new BadRequestException('Wrong organizationId');
+    }
+
+    const organizationId =
+      request.params?.organizationId ?? request.body?.organizationId;
     const isOrganizationFounder = await this.isOrganizationFounderRequest(
       context,
       request.user,
-      request.params?.organizationId
+      organizationId
     );
+
     if (isOrganizationFounder) return true;
 
     if (this.isAdminRequest(context, request.user)) return true;
