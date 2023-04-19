@@ -113,14 +113,14 @@ export class AuthService {
   }
 
   async createAuthCode(email: string): Promise<string> {
-    const auth = await this.prisma.auth.findUnique({
+    const auth = await this.prisma.emailVerification.findUnique({
       where: {
         email,
       },
     });
 
     if (auth) {
-      await this.prisma.auth.update({
+      await this.prisma.emailVerification.update({
         where: {
           id: auth.id,
         },
@@ -133,7 +133,7 @@ export class AuthService {
     }
 
     const code = generateRandomCode();
-    await this.prisma.auth.create({
+    await this.prisma.emailVerification.create({
       data: {
         email,
         code,
@@ -145,7 +145,7 @@ export class AuthService {
 
   async validateCode(email: string, code: string): Promise<boolean> {
     try {
-      const auth = await this.prisma.auth.findFirst({
+      const auth = await this.prisma.emailVerification.findFirst({
         where: {
           email,
           code,

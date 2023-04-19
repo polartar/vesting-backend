@@ -37,7 +37,12 @@ export class AuthController {
   @UseGuards(GlobalAuthGuard)
   @Get('/google-callback')
   async googleAuthUrl() {
-    return this.google.getAuthUrl();
+    try {
+      return this.google.getAuthUrl();
+    } catch (error) {
+      console.error('Error: /auth/google-callback', error);
+      return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
+    }
   }
 
   @PublicAuth()
@@ -55,6 +60,7 @@ export class AuthController {
         email: userProfile.email,
       });
     } catch (error) {
+      console.error('Error: /auth/google-login', error);
       return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
     }
   }
@@ -76,7 +82,7 @@ export class AuthController {
 
       return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
-      console.error('Error: /login', error);
+      console.error('Error: /auth/login', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
@@ -98,7 +104,7 @@ export class AuthController {
 
       return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
-      console.error('Error: /signup', error);
+      console.error('Error: /auth/signup', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
@@ -117,7 +123,7 @@ export class AuthController {
         email: body.email,
       });
     } catch (error) {
-      console.error('Error: /validate', error);
+      console.error('Error: /auth/validate', error);
       return new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
     }
   }
@@ -147,7 +153,7 @@ export class AuthController {
         walletId: wallet.id,
       });
     } catch (error) {
-      console.error('Error: /wallet/connect', error);
+      console.error('Error: /auth/wallet', error);
       throw new BadRequestException(ERROR_MESSAGES.WALLET_CONNECT_FAILTURE);
     }
   }

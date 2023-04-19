@@ -57,7 +57,7 @@ model User {
   @@map("user")
 }
 
-model Auth {
+model EmailVerification {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -65,7 +65,7 @@ model Auth {
   code      String   @unique
   expiredAt BigInt   @map("expired_at")
 
-  @@map("auth")
+  @@map("email_verification")
 }
 
 model Wallet {

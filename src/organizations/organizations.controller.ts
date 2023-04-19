@@ -7,6 +7,7 @@ import {
   Get,
   Put,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -19,6 +20,7 @@ import {
 import { User } from 'src/users/models/user.model';
 import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
 
 @Controller('organization')
 export class OrganizationsController {
@@ -32,7 +34,19 @@ export class OrganizationsController {
     @Body() body: CreateOrganizationInput,
     @Request() req: { user: User }
   ) {
-    return this.organization.create(body.email, body.name, req.user.id);
+    try {
+      const organization = await this.organization.create(
+        body.email,
+        body.name,
+        req.user.id
+      );
+      return organization;
+    } catch (error) {
+      console.error('Error: POST /organization', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_CREATION_FAILURE
+      );
+    }
   }
 
   @ApiBearerAuth()
@@ -43,7 +57,15 @@ export class OrganizationsController {
     @Body() body: UpdateOrganizationInput,
     @Param('organizationId') organizationId: string
   ) {
-    return this.organization.update(organizationId, body);
+    try {
+      const organization = await this.organization.update(organizationId, body);
+      return organization;
+    } catch (error) {
+      console.error('Error: PUT /organization', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_UPDATE_FAILURE
+      );
+    }
   }
 
   @ApiBearerAuth()
@@ -51,7 +73,17 @@ export class OrganizationsController {
   @UseGuards(GlobalAuthGuard)
   @Get('/')
   async getOrganizations(@Request() req: { user: User }) {
-    return this.organization.getUserOrganizations(req.user.id);
+    try {
+      const organizations = await this.organization.getUserOrganizations(
+        req.user.id
+      );
+      return organizations;
+    } catch (error) {
+      console.error('Error: GET /organization', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_FAILURE
+      );
+    }
   }
 
   @ApiBearerAuth()
@@ -59,7 +91,15 @@ export class OrganizationsController {
   @UseGuards(GlobalAuthGuard)
   @Get('/:organizationId')
   async getOrganization(@Param('organizationId') organizationId: string) {
-    return this.organization.get(organizationId);
+    try {
+      const organization = await this.organization.get(organizationId);
+      return organization;
+    } catch (error) {
+      console.error('Error: GET /organization/:organizationId', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ONE_FAILURE
+      );
+    }
   }
 
   @ApiBearerAuth()
@@ -67,7 +107,15 @@ export class OrganizationsController {
   @UseGuards(GlobalAuthGuard)
   @Post('/:organizationId/members')
   async addOrganizationMembers(@Body() body: AddOrganizationMembersInput) {
-    return this.organization.addOrganizationMembers(body);
+    try {
+      await this.organization.addOrganizationMembers(body);
+      return SUCCESS_MESSAGES.ORGANIZATION_ADD_MEMBERS;
+    } catch (error) {
+      console.error('Error: POST /organization/:organizationId/members', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_ADD_MEMBERS_FAILURE
+      );
+    }
   }
 
   @ApiBearerAuth()
@@ -77,6 +125,16 @@ export class OrganizationsController {
   async getOrganizationMembers(
     @Param('organizationId') organizationId: string
   ) {
-    return this.organization.getOrganizationMembers(organizationId);
+    try {
+      const members = await this.organization.getOrganizationMembers(
+        organizationId
+      );
+      return members;
+    } catch (error) {
+      console.error('Error: GET /organization/:organizationId/members', error);
+      return new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_MEMBERS_FAILURE
+      );
+    }
   }
 }
