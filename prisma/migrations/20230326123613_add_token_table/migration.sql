@@ -10,6 +10,7 @@ CREATE TABLE "token" (
     "chain_id" INTEGER,
     "address" TEXT,
     "logo" TEXT,
+    "transaction_id" TEXT,
     "is_deployed" BOOLEAN NOT NULL DEFAULT false,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
 
@@ -30,3 +31,6 @@ ALTER TABLE "organization_token" ADD CONSTRAINT "organization_token_organization
 
 -- Add Foreign Key
 ALTER TABLE "organization_token" ADD CONSTRAINT "organization_token_token_id_fkey" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add Foreign Key
+ALTER TABLE "token" ADD CONSTRAINT "token_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

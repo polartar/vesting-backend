@@ -5,6 +5,7 @@ import { IsEmail } from 'class-validator';
 import { BaseModel } from 'src/common/models/base.model';
 import { Wallet } from 'src/wallets/models/wallets.model';
 import { UserRole } from './user-role.model';
+import { Recipe } from 'src/recipe/model/recipe.model';
 
 @ObjectType()
 export class User extends BaseModel {
@@ -22,8 +23,11 @@ export class User extends BaseModel {
   isAdmin: boolean;
 
   @Field(() => Array<Wallet>)
-  wallets: Wallet[];
+  Wallets: Wallet[];
 
   @Field(() => Array<UserRole>)
-  roles: UserRole[];
+  Roles: UserRole[];
+
+  @Field(() => Array<Recipe>)
+  Recipes: Recipe[];
 }

@@ -22,6 +22,12 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_GET_ONE_FAILURE: 'Fetching an organization details is failed',
   ORGANIZATION_ADD_MEMBERS_FAILURE: 'Adding members is failed',
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
+
+  /** Safe Wallet */
+  SAFE_CREATE_WALLET: 'Creating new safe wallet is failed',
+  SAFE_NOT_FOUND_WALLET: 'Finding safe wallet is failed',
+  SAFE_CREATE_OWNER_WALLETS: 'Creating owner wallets is failed',
+  SAFE_CREATE_CONFIRMATION: 'Creating safe confirmation is failed',
 };
 
 export const SUCCESS_MESSAGES = {

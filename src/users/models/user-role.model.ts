@@ -16,13 +16,13 @@ export class UserRole extends BaseModel {
   userId: string;
 
   @Field(() => User)
-  user: User;
+  User: User;
 
   @Field(() => String)
   organizationId: string;
 
   @Field(() => Organization)
-  organization: Organization;
+  Organization: Organization;
 
   @Field(() => Role)
   role: Role;

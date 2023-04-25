@@ -5,7 +5,7 @@ CREATE TABLE "vesting_contract" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "address" TEXT,
-    "transaction" TEXT,
+    "transaction_id" TEXT,
     "chain_id" INTEGER,
     "organization_id" TEXT NOT NULL,
     "token_id" TEXT NOT NULL,
@@ -17,3 +17,6 @@ CREATE TABLE "vesting_contract" (
 
 -- Add Foreign Key
 ALTER TABLE "vesting_contract" ADD CONSTRAINT "vesting_contract_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add Foreign Key
+ALTER TABLE "vesting_contract" ADD CONSTRAINT "vesting_contract_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

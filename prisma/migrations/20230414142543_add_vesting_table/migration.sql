@@ -21,6 +21,8 @@ CREATE TABLE "vesting" (
     "cliff_duration" INTEGER NOT NULL DEFAULT 0,
     "cliff_amount" INTEGER NOT NULL DEFAULT 0,
     "amount" TEXT NOT NULL,
+    "transaction_id" TEXT,
+    "is_deployed" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "vesting_pkey" PRIMARY KEY ("id")
 );
@@ -33,3 +35,6 @@ ALTER TABLE "vesting" ADD CONSTRAINT "vesting_vesting_contract_id_fkey" FOREIGN 
 
 -- Add Foreign Key
 ALTER TABLE "vesting" ADD CONSTRAINT "vesting_token_id_fkey" FOREIGN KEY ("token_id") REFERENCES "token"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- Add Foreign Key
+ALTER TABLE "vesting" ADD CONSTRAINT "vesting_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

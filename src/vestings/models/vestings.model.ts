@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
-
+import { Optional } from '@nestjs/common';
 import { BaseModel } from 'src/common/models/base.model';
 import { Organization } from 'src/organizations/models/organizations.model';
 import { Token } from 'src/tokens/models/tokens.model';
 import { ReleaseFrequencyType, CliffDurationType } from '@prisma/client';
+import { Transaction } from 'src/transactions/models/transactions.model';
 
 registerEnumType(ReleaseFrequencyType, {
   name: 'ReleaseFrequencyType',
@@ -56,4 +57,12 @@ export class Vesting extends BaseModel {
 
   @Field(() => String)
   amount: string;
+
+  @Field(() => String)
+  @Optional()
+  transactionId?: string;
+
+  @Field(() => String)
+  @Optional()
+  Transaction?: Transaction;
 }

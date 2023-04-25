@@ -41,6 +41,17 @@ enum RecipeStatus {
   REVOKED
 }
 
+enum TransactionStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+}
+
+enum ConfirmationStatus {
+  APPROVED
+  REJECTED
+}
+
 model User {
   id            String         @id @default(uuid())
   createdAt     DateTime       @default(now()) @map("created_at")
@@ -109,6 +120,22 @@ model UserRole {
   @@map("user_role")
 }
 
+model Transaction {
+  id                String             @id @default(uuid())
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  chainId           Int                @map("chain_id")
+  hash              String
+  status            TransactionStatus  @default(DRAFT)
+  Tokens            Token[]
+  VestingContracts  VestingContract[]
+  Vestings          Vesting[]
+  SafeWallets       SafeWallet[]
+  SafeConfirmations SafeConfirmation[]
+
+  @@map("transaction")
+}
+
 model Token {
   id               String              @id @default(uuid())
   createdAt        DateTime            @default(now()) @map("created_at")
@@ -120,6 +147,8 @@ model Token {
   chainId          Int?                @map("chain_id")
   address          String?
   logo             String?
+  transactionId    String?             @map("transaction_id")
+  Transaction      Transaction?        @relation(fields: [transactionId], references: [id])
   isDeployed       Boolean             @default(false) @map("is_deployed")
   isActive         Boolean             @default(true) @map("is_active")
   Organizations    OrganizationToken[]
@@ -153,6 +182,8 @@ model VestingContract {
   address        String?
   transaction    String?
   chainId        Int?         @map("chain_id")
+  transactionId  String?      @map("transaction_id")
+  Transaction    Transaction? @relation(fields: [transactionId], references: [id])
   isDeployed     Boolean      @default(false) @map("is_deployed")
   isActive       Boolean      @default(true) @map("is_active")
   Vestings       Vesting[]
@@ -179,6 +210,8 @@ model Vesting {
   cliffDuration        Int                  @default(0) @map("cliff_duration")
   cliffAmount          Int                  @default(0) @map("cliff_amount")
   amount               String
+  transactionId        String?              @map("transaction_id")
+  Transaction          Transaction?         @relation(fields: [transactionId], references: [id])
   Recipies             Recipe[]
 
   @@map("vesting")
@@ -198,4 +231,47 @@ model Recipe {
   status         RecipeStatus @default(PENDING)
 
   @@map("recipe")
+}
+
+model SafeWallet {
+  id                    String             @id @default(uuid())
+  createdAt             DateTime           @default(now()) @map("created_at")
+  updatedAt             DateTime           @updatedAt @map("updated_at")
+  chainId               Int                @map("chain_id")
+  address               String
+  organizationId        String             @map("organization_id")
+  requiredConfirmations Int                @map("required_confirmations")
+  transactionId         String?            @map("transaction_id")
+  Transaction           Transaction?       @relation(fields: [transactionId], references: [id])
+  SafeOwners            SafeOwner[]
+  SafeConfirmations     SafeConfirmation[]
+
+  @@map("safe_wallet")
+}
+
+model SafeOwner {
+  id                String             @id @default(uuid())
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  safeWalletId      String             @map("safe_wallet_id")
+  SafeWallet        SafeWallet         @relation(fields: [safeWalletId], references: [id])
+  address           String
+  SafeConfirmations SafeConfirmation[]
+
+  @@map("safe_owner")
+}
+
+model SafeConfirmation {
+  id            String             @id @default(uuid())
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  safeWalletId  String             @map("safe_wallet_id")
+  SafeWallet    SafeWallet         @relation(fields: [safeWalletId], references: [id])
+  safeOwnerId   String             @map("safe_owner_id")
+  SafeOwner     SafeOwner          @relation(fields: [safeOwnerId], references: [id])
+  transactionId String             @map("transaction_id")
+  Transaction   Transaction        @relation(fields: [transactionId], references: [id])
+  status        ConfirmationStatus
+
+  @@map("safe_confirmation")
 }

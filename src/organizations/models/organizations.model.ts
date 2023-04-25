@@ -11,7 +11,7 @@ export class Organization extends BaseModel {
   userId: string;
 
   @Field(() => User)
-  user: User;
+  User: User;
 
   @Field(() => String)
   name: string;

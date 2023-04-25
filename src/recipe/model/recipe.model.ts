@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 
 import { BaseModel } from 'src/common/models/base.model';
-import { Optional } from '@nestjs/common';
 import { Vesting } from 'src/vestings/models/vestings.model';
 import { User } from 'src/users/models/user.model';
 
