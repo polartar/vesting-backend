@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -12,6 +11,7 @@ import { GoogleService } from './google.service';
 import { EmailService } from './email.service';
 
 import {
+  AuthGoogleCallbackInput,
   AuthGoogleLoginInput,
   AuthInput,
   AuthValidationInput,
@@ -35,10 +35,10 @@ export class AuthController {
 
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
-  @Get('/google-callback')
-  async googleAuthUrl() {
+  @Post('/google-callback')
+  async googleAuthUrl(@Body() body: AuthGoogleCallbackInput) {
     try {
-      return this.google.getAuthUrl();
+      return this.google.getAuthUrl(body.redirectUri);
     } catch (error) {
       console.error('Error: /auth/google-callback', error);
       return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
