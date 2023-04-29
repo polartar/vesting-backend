@@ -1,4 +1,4 @@
-FROM node:16 AS builder
+FROM public.ecr.aws/docker/library/node:16 AS builder
 
 # Create app directory
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY . .
 
 RUN npm run prisma:generate && npm run build
 
-FROM node:16
+FROM public.ecr.aws/docker/library/node:16
 
 WORKDIR /app
 
