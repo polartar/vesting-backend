@@ -7,6 +7,9 @@ phases:
       - AWS_DEFAULT_REGION=ap-southeast-1
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      - aws s3 cp s3://vtvl-environments/$ENVIRONMENT_FILE .env
+      - npm i
+      - npm run migrate:deploy
   build:
     commands:
       - echo Build started on `date`
