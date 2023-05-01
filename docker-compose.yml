@@ -20,7 +20,8 @@ services:
       - vtvl
     command:
       - |
-        npm run migrate:dev
+        npm run migrate:deploy
+        npm run prisma:generate
         npm run start:dev
 
   postgres:
