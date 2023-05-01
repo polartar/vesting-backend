@@ -21,6 +21,7 @@ import { User } from 'src/users/models/user.model';
 import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
+import { Role } from '@prisma/client';
 
 @Controller('organization')
 export class OrganizationsController {
@@ -38,7 +39,8 @@ export class OrganizationsController {
       const organization = await this.organization.create(
         body.email,
         body.name,
-        req.user.id
+        req.user.id,
+        Role.MEMBER_FOUNDER
       );
       return organization;
     } catch (error) {

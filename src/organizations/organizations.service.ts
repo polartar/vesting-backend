@@ -7,7 +7,7 @@ import { AddOrganizationMembersInput } from './dto/organization.input';
 export class OrganizationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(email: string, name: string, userId: string) {
+  async create(email: string, name: string, userId: string, role: Role) {
     const organization = await this.prisma.organization.create({
       data: {
         email,
@@ -16,7 +16,7 @@ export class OrganizationsService {
       },
     });
 
-    await this.addOrganizationMember(organization.id, userId, Role.FOUNDER);
+    await this.addOrganizationMember(organization.id, userId, role);
 
     return organization;
   }

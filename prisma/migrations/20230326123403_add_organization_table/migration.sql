@@ -1,5 +1,13 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('FOUNDER', 'INVESTOR', 'ADVISOR', 'EMPLOYEE');
+CREATE TYPE "Role" AS ENUM (
+  'RECIPIENT_FOUNDER',
+  'RECIPIENT_ADVISOR',
+  'RECIPIENT_EMPLOYEE',
+  'RECIPIENT_INVESTOR',
+  'MEMBER_FOUNDER',
+  'MEMBER_MANAGER',
+  'MEMBER_EMPLOYEE'
+);
 
 -- CreateTable
 CREATE TABLE "organization" (
@@ -20,7 +28,7 @@ CREATE TABLE "user_role" (
     "updated_at" TIMESTAMP(3) NOT NULL,
     "user_id" TEXT NOT NULL,
     "organization_id" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT E'EMPLOYEE'
+    "role" "Role" NOT NULL DEFAULT E'MEMBER_FOUNDER'
 );
 
 -- Add Foreign Key

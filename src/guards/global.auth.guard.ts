@@ -43,7 +43,7 @@ export class GlobalAuthGuard implements CanActivate {
       }
     }
 
-    // TODO add super admin permission
+    if (this.isAdminRequest(context, request.user)) return true;
 
     if (this.isPublicRequest(context)) return true;
 
@@ -69,7 +69,13 @@ export class GlobalAuthGuard implements CanActivate {
 
     if (isOrganizationFounder) return true;
 
-    if (this.isAdminRequest(context, request.user)) return true;
+    const isOrganizationMember = await this.isOrganizationMemberRequest(
+      context,
+      request.user,
+      organizationId
+    );
+
+    if (isOrganizationMember) return true;
 
     throw new UnauthorizedException();
   }
@@ -117,8 +123,33 @@ export class GlobalAuthGuard implements CanActivate {
       if (!organizationId)
         throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
 
-      const userRole = await this.user.getUserRole(user.id, organizationId);
-      if (userRole.role !== Role.FOUNDER) throw new UnauthorizedException();
+      await this.validateOrganizationRequest(user.id, organizationId, [
+        Role.MEMBER_FOUNDER,
+      ]);
+    }
+
+    return true;
+  }
+
+  async isOrganizationMemberRequest(
+    context: ExecutionContext,
+    user: User,
+    organizationId: string
+  ): Promise<boolean> {
+    const isOrganizationMember = this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.ORGANIZATION_MEMBER,
+      [context.getHandler(), context.getClass()]
+    );
+
+    if (isOrganizationMember) {
+      if (!organizationId)
+        throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
+
+      await this.validateOrganizationRequest(user.id, organizationId, [
+        Role.MEMBER_FOUNDER,
+        Role.MEMBER_MANAGER,
+        Role.MEMBER_EMPLOYEE,
+      ]);
     }
 
     return true;
@@ -132,5 +163,16 @@ export class GlobalAuthGuard implements CanActivate {
     if (isAdmin && !user.isAdmin) throw new UnauthorizedException();
 
     return true;
+  }
+
+  async validateOrganizationRequest(
+    userId: string,
+    organizationId: string,
+    roles: Role[]
+  ) {
+    const userRole = await this.user.getUserRole(userId, organizationId);
+    if (!roles.includes(userRole.role)) {
+      throw new UnauthorizedException();
+    }
   }
 }
