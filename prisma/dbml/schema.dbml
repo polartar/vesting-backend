@@ -114,7 +114,6 @@ Table vesting_contract {
   Token token [not null]
   name String [not null]
   address String
-  transaction String
   chainId Int
   transactionId String
   Transaction transaction

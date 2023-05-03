@@ -183,7 +183,6 @@ model VestingContract {
   Token          Token        @relation(fields: [tokenId], references: [id])
   name           String
   address        String?
-  transaction    String?
   chainId        Int?         @map("chain_id")
   transactionId  String?      @map("transaction_id")
   Transaction    Transaction? @relation(fields: [transactionId], references: [id])
