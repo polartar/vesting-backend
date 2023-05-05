@@ -40,7 +40,7 @@ export class OrganizationsController {
         body.email,
         body.name,
         req.user.id,
-        Role.MEMBER_FOUNDER
+        Role.FOUNDER
       );
       return organization;
     } catch (error) {

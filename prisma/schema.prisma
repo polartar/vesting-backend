@@ -14,12 +14,11 @@ generator dbml {
 
 enum Role {
   FOUNDER
+  MANAGER
+  OPERATOR
   ADVISOR
   EMPLOYEE
   INVESTOR
-  MEMBER_FOUNDER
-  MEMBER_MANAGER
-  MEMBER_EMPLOYEE
 }
 
 enum ReleaseFrequencyType {
@@ -114,7 +113,7 @@ model UserRole {
   id             String       @id @default(uuid())
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
-  role           Role         @default(MEMBER_FOUNDER)
+  role           Role         @default(FOUNDER)
   userId         String       @map("user_id")
   User           User         @relation(fields: [userId], references: [id])
   organizationId String       @map("organization_id")

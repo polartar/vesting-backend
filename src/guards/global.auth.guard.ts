@@ -124,7 +124,7 @@ export class GlobalAuthGuard implements CanActivate {
         throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
 
       await this.validateOrganizationRequest(user.id, organizationId, [
-        Role.MEMBER_FOUNDER,
+        Role.FOUNDER,
       ]);
     }
 
@@ -146,9 +146,9 @@ export class GlobalAuthGuard implements CanActivate {
         throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
 
       await this.validateOrganizationRequest(user.id, organizationId, [
-        Role.MEMBER_FOUNDER,
-        Role.MEMBER_MANAGER,
-        Role.MEMBER_EMPLOYEE,
+        Role.FOUNDER,
+        Role.MANAGER,
+        Role.OPERATOR,
       ]);
     }
 
