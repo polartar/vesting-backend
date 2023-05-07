@@ -21,7 +21,7 @@ export class CreateVestingContractInput {
 
   @ApiProperty()
   @Field(() => String)
-  transaction?: string;
+  transactionId?: string;
 
   @ApiProperty()
   @Field(() => Number)

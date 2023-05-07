@@ -6,6 +6,7 @@ export enum GlobalAuthGuardKeys {
   WALLET = 'wallett',
   ADMIN = 'admin',
   ORGANIZATION_FOUNDER = 'organization-founder',
+  ORGANIZATION_MEMBER = 'organization-member',
 }
 
 export const PublicAuth = () => SetMetadata(GlobalAuthGuardKeys.PUBLIC, true);
@@ -18,3 +19,6 @@ export const NormalAuth = () => SetMetadata(GlobalAuthGuardKeys.NORMAL, true);
 
 export const OrganizationFounderAuth = () =>
   SetMetadata(GlobalAuthGuardKeys.ORGANIZATION_FOUNDER, true);
+
+export const OrganizationMemberAuth = () =>
+  SetMetadata(GlobalAuthGuardKeys.ORGANIZATION_MEMBER, true);

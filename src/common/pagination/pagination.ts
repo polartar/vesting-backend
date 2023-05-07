@@ -4,14 +4,14 @@ import { Type } from '@nestjs/common';
 import { PageInfo } from './page-info.model';
 
 export default function Paginated<TItem>(TItemClass: Type<TItem>) {
-  @ObjectType(`${TItemClass.name}Edge`)
-  abstract class EdgeType {
-    @Field(() => String)
-    cursor: string;
+  // @ObjectType(`${TItemClass.name}Edge`)
+  // abstract class EdgeType {
+  //   @Field(() => String)
+  //   cursor: string;
 
-    @Field(() => TItemClass)
-    node: TItem;
-  }
+  //   @Field(() => TItemClass)
+  //   node: TItem;
+  // }
 
   // `isAbstract` decorator option is mandatory to prevent registering in schema
   @ObjectType({ isAbstract: true })
@@ -19,7 +19,8 @@ export default function Paginated<TItem>(TItemClass: Type<TItem>) {
     // @Field(() => [EdgeType], { nullable: true })
     // edges: Array<EdgeType>;
 
-    @Field((type) => [TItemClass], { nullable: true })
+    // @Field((type) => [TItemClass], { nullable: true })
+    @Field(() => [TItemClass], { nullable: true })
     nodes: Array<TItem>;
 
     @Field(() => PageInfo)

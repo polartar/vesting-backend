@@ -12,7 +12,7 @@ CREATE TABLE "user" (
 );
 
 -- CreateTable
-CREATE TABLE "auth" (
+CREATE TABLE "email_verification" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -20,14 +20,14 @@ CREATE TABLE "auth" (
     "code" TEXT NOT NULL,
     "expired_at" BIGINT NOT NULL,
 
-    CONSTRAINT "auth_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "email_verification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "auth_email_key" ON "auth"("email");
+CREATE UNIQUE INDEX "email_verification_email_key" ON "email_verification"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "auth_code_key" ON "auth"("code");
+CREATE UNIQUE INDEX "email_verification_code_key" ON "email_verification"("code");

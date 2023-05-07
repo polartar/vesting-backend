@@ -2,15 +2,27 @@ version: '3.8'
 services:
   vtvl-api:
     container_name: vtvl-api
+    image: vtvl-api:v1
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-local
     ports:
       - '3000:3000'
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    volumes:
+      - ./:/app
     env_file:
       - .env
+    networks:
+      - vtvl
+    command:
+      - |
+        npm run migrate:deploy
+        npm run prisma:generate
+        npm run start:dev
 
   postgres:
     image: postgres:13
@@ -21,8 +33,20 @@ services:
     env_file:
       - .env
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - $HOME/vtvl/postgres:/var/lib/postgresql/data
+    networks:
+      - vtvl
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres:
     name: vtvl-db
+  vtvl-api:
+    name: vtvl-api
+
+networks:
+  vtvl:

@@ -11,6 +11,14 @@ export class AuthInput {
 }
 
 @InputType()
+export class AuthGoogleCallbackInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  redirectUri: string;
+}
+
+@InputType()
 export class AuthGoogleLoginInput {
   @ApiProperty()
   @Field(() => String)

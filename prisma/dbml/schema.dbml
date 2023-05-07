@@ -16,7 +16,7 @@ Table user {
   Recipes recipe [not null]
 }
 
-Table auth {
+Table email_verification {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
@@ -53,11 +53,25 @@ Table user_role {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  role Role [not null, default: 'EMPLOYEE']
+  role Role [not null, default: 'FOUNDER']
   userId String [not null]
   User user [not null]
   organizationId String [not null]
   Organization organization [not null]
+}
+
+Table transaction {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  chainId Int [not null]
+  hash String [not null]
+  status TransactionStatus [not null, default: 'DRAFT']
+  Tokens token [not null]
+  VestingContracts vesting_contract [not null]
+  Vestings vesting [not null]
+  SafeWallets safe_wallet [not null]
+  SafeConfirmations safe_confirmation [not null]
 }
 
 Table token {
@@ -71,6 +85,8 @@ Table token {
   chainId Int
   address String
   logo String
+  transactionId String
+  Transaction transaction
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
   Organizations organization_token [not null]
@@ -98,8 +114,9 @@ Table vesting_contract {
   Token token [not null]
   name String [not null]
   address String
-  transaction String
   chainId Int
+  transactionId String
+  Transaction transaction
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
   Vestings vesting [not null]
@@ -124,6 +141,8 @@ Table vesting {
   cliffDuration Int [not null, default: 0]
   cliffAmount Int [not null, default: 0]
   amount String [not null]
+  transactionId String
+  Transaction transaction
   Recipies recipe [not null]
 }
 
@@ -141,11 +160,50 @@ Table recipe {
   status RecipeStatus [not null, default: 'PENDING']
 }
 
+Table safe_wallet {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  chainId Int [not null]
+  address String [not null]
+  organizationId String [not null]
+  requiredConfirmations Int [not null]
+  transactionId String
+  Transaction transaction
+  SafeOwners safe_owner [not null]
+  SafeConfirmations safe_confirmation [not null]
+}
+
+Table safe_owner {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  safeWalletId String [not null]
+  SafeWallet safe_wallet [not null]
+  address String [not null]
+  SafeConfirmations safe_confirmation [not null]
+}
+
+Table safe_confirmation {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  safeWalletId String [not null]
+  SafeWallet safe_wallet [not null]
+  safeOwnerId String [not null]
+  SafeOwner safe_owner [not null]
+  transactionId String [not null]
+  Transaction transaction [not null]
+  status ConfirmationStatus [not null]
+}
+
 Enum Role {
   FOUNDER
-  INVESTOR
+  MANAGER
+  OPERATOR
   ADVISOR
   EMPLOYEE
+  INVESTOR
 }
 
 Enum ReleaseFrequencyType {
@@ -170,6 +228,17 @@ Enum RecipeStatus {
   REVOKED
 }
 
+Enum TransactionStatus {
+  DRAFT
+  PENDING
+  CONFIRMED
+}
+
+Enum ConfirmationStatus {
+  APPROVED
+  REJECTED
+}
+
 Ref: wallet.userId > user.id
 
 Ref: organization.userId > user.id
@@ -177,6 +246,8 @@ Ref: organization.userId > user.id
 Ref: user_role.userId > user.id
 
 Ref: user_role.organizationId > organization.id
+
+Ref: token.transactionId > transaction.id
 
 Ref: organization_token.organizationId > organization.id
 
@@ -186,14 +257,28 @@ Ref: vesting_contract.organizationId > organization.id
 
 Ref: vesting_contract.tokenId > token.id
 
+Ref: vesting_contract.transactionId > transaction.id
+
 Ref: vesting.organizationId > organization.id
 
 Ref: vesting.tokenId > token.id
 
 Ref: vesting.vestingContractId > vesting_contract.id
 
+Ref: vesting.transactionId > transaction.id
+
 Ref: recipe.vestingId > vesting.id
 
 Ref: recipe.recipientId > user.id
 
 Ref: recipe.organizationId > organization.id
+
+Ref: safe_wallet.transactionId > transaction.id
+
+Ref: safe_owner.safeWalletId > safe_wallet.id
+
+Ref: safe_confirmation.safeWalletId > safe_wallet.id
+
+Ref: safe_confirmation.safeOwnerId > safe_owner.id
+
+Ref: safe_confirmation.transactionId > transaction.id

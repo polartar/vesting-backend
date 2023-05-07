@@ -10,18 +10,19 @@ export class GoogleService {
   constructor(private readonly configService: ConfigService) {
     this.oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.AUTH_URL}/google`
+      process.env.GOOGLE_CLIENT_SECRET
     );
   }
 
-  getAuthUrl(): string {
+  getAuthUrl(redirectUri: string): string {
     return this.oauth2Client.generateAuthUrl({
       // 'online' (default) or 'offline' (gets refresh_token)
       access_type: 'offline',
 
       // If you only need one scope you can pass it as a string
       scope: GOOGLE_AUTH_SCOPES,
+
+      redirect_uri: redirectUri,
     });
   }
 
