@@ -1,10 +1,6 @@
 import { Network, Alchemy } from 'alchemy-sdk';
-import { ethers } from 'ethers';
-import SafeServiceClient, { SafeApiKitConfig } from '@safe-global/api-kit';
-import { EthersAdapter } from '@safe-global/protocol-kit';
 
 import { ERROR_MESSAGES } from './messages';
-
 declare global {
   type ChainNames = keyof typeof CHAIN_IDS;
   type SupportedChainIds = (typeof SUPPORTED_CHAIN_IDS)[number];
@@ -67,22 +63,4 @@ export const getAlchemyClient = (chainId: SupportedChainIds): Alchemy => {
     apiKey: AlchemyApiKeys[chainId],
     network: AlchemyNetworks[chainId],
   });
-};
-
-// Create safe client instance
-export const getEthersAdapter = () => {
-  // return new EthersAdapter({
-  //   ethers,
-  //   signerOrProvider: undefined,
-  // });
-};
-
-export const getSafeClient = (chainId: SupportedChainIds) => {
-  // if (!SUPPORTED_CHAIN_IDS.includes(chainId)) {
-  //   throw ERROR_MESSAGES.UNSUPPORTED_NETWORK;
-  // }
-  // return new SafeServiceClient({
-  //   txServiceUrl: MultiSigTransactionUrls[chainId],
-  //   ethAdapter: getEthersAdapter(),
-  // } as unknown as SafeApiKitConfig);
 };

@@ -61,8 +61,6 @@
     "@nestjs/platform-express": "9.2.1",
     "@nestjs/swagger": "6.1.4",
     "@prisma/client": "^4.11.0",
-    "@safe-global/api-kit": "^1.1.0",
-    "@safe-global/protocol-kit": "^1.0.0",
     "@sendgrid/mail": "^7.7.0",
     "alchemy-sdk": "^2.8.2",
     "apollo-server-express": "3.11.1",
