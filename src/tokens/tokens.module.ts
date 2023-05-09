@@ -6,6 +6,7 @@ import { TokensService } from './tokens.service';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { WalletsService } from 'src/wallets/wallets.service';
+import { AlchemyService } from 'src/alchemy/alchemy.service';
 
 @Module({
   imports: [],
@@ -16,6 +17,7 @@ import { WalletsService } from 'src/wallets/wallets.service';
     AuthService,
     WalletsService,
     JwtService,
+    AlchemyService,
   ],
 })
 export class TokensModule {}

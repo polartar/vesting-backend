@@ -15,6 +15,7 @@ export const ERROR_MESSAGES = {
   WRONG_WALLET_OWNER: 'Wallet was already registered with different user',
 
   /** Organization */
+  ORGANIZATION_INVALID_ID: 'Organization id is invalid',
   ORGANIZATION_ID_MISSING: 'Organization id is missing',
   ORGANIZATION_CREATION_FAILURE: 'Creating an organization is failed',
   ORGANIZATION_UPDATE_FAILURE: 'Updating an organization is failed',
@@ -28,6 +29,13 @@ export const ERROR_MESSAGES = {
   SAFE_NOT_FOUND_WALLET: 'Finding safe wallet is failed',
   SAFE_CREATE_OWNER_WALLETS: 'Creating owner wallets is failed',
   SAFE_CREATE_CONFIRMATION: 'Creating safe confirmation is failed',
+
+  /* Alchemy */
+  UNSUPPORTED_NETWORK: 'Unsupported Network',
+
+  /* Token */
+  INVALID_ERC20_TOKEN: 'Invalid Token address',
+  IMPORT_TOKEN_FAILURE: 'Importing token is failed',
 };
 
 export const SUCCESS_MESSAGES = {

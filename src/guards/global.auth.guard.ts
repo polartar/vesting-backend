@@ -43,12 +43,16 @@ export class GlobalAuthGuard implements CanActivate {
       }
     }
 
-    if (this.isAdminRequest(context, request.user)) return true;
-
+    // If endpoint is public
     if (this.isPublicRequest(context)) return true;
 
+    // If request is coming from admin
+    if (this.isAdminRequest(context, request.user)) return true;
+
+    // If request is coming from user not connecting wallet
     if (this.isNormalRequest(context, request.user)) return true;
 
+    // If request is coming from user connecting wallet
     if (this.isWalletRequest(context, request.wallet)) return true;
 
     if (
@@ -56,26 +60,22 @@ export class GlobalAuthGuard implements CanActivate {
       request.params.organizationId &&
       request.body.organizationId !== request.params.organizationId
     ) {
-      throw new BadRequestException('Wrong organizationId');
+      throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_INVALID_ID);
     }
 
     const organizationId =
       request.params?.organizationId ?? request.body?.organizationId;
-    const isOrganizationFounder = await this.isOrganizationFounderRequest(
-      context,
-      request.user,
-      organizationId
-    );
 
-    if (isOrganizationFounder) return true;
+    if (organizationId && request.user) {
+      // if request is coming from organization founder
+      const isValidOrganizationRequest = await this.isOrganizationRequest(
+        context,
+        request.user,
+        organizationId
+      );
 
-    const isOrganizationMember = await this.isOrganizationMemberRequest(
-      context,
-      request.user,
-      organizationId
-    );
-
-    if (isOrganizationMember) return true;
+      if (isValidOrganizationRequest) return true;
+    }
 
     throw new UnauthorizedException();
   }
@@ -88,14 +88,20 @@ export class GlobalAuthGuard implements CanActivate {
     return isPublic;
   }
 
+  isAdminRequest(context: ExecutionContext, user: User): boolean {
+    const isAdmin = this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.ADMIN,
+      [context.getHandler(), context.getClass()]
+    );
+    return isAdmin && user.isAdmin;
+  }
+
   isNormalRequest(context: ExecutionContext, user?: User): boolean {
     const isAuthorized = this.reflector.getAllAndOverride<boolean>(
       GlobalAuthGuardKeys.NORMAL,
       [context.getHandler(), context.getClass()]
     );
-    if (isAuthorized && !Boolean(user)) throw new UnauthorizedException();
-
-    return true;
+    return isAuthorized && !Boolean(user);
   }
 
   isWalletRequest(context: ExecutionContext, wallet?: Wallet): boolean {
@@ -103,76 +109,58 @@ export class GlobalAuthGuard implements CanActivate {
       GlobalAuthGuardKeys.WALLET,
       [context.getHandler(), context.getClass()]
     );
-    if (isWalletConnected && !Boolean(wallet))
-      throw new UnauthorizedException();
-
-    return true;
+    return isWalletConnected && !Boolean(wallet);
   }
 
-  async isOrganizationFounderRequest(
-    context: ExecutionContext,
-    user: User,
-    organizationId: string
-  ): Promise<boolean> {
-    const isOrganizationFounder = this.reflector.getAllAndOverride<boolean>(
+  isOrganizationFounderRequest(context: ExecutionContext): boolean {
+    return this.reflector.getAllAndOverride<boolean>(
       GlobalAuthGuardKeys.ORGANIZATION_FOUNDER,
       [context.getHandler(), context.getClass()]
     );
-
-    if (isOrganizationFounder) {
-      if (!organizationId)
-        throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
-
-      await this.validateOrganizationRequest(user.id, organizationId, [
-        Role.FOUNDER,
-      ]);
-    }
-
-    return true;
   }
 
-  async isOrganizationMemberRequest(
+  isOrganizationMemberRequest(context: ExecutionContext): boolean {
+    return this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.ORGANIZATION_MEMBER,
+      [context.getHandler(), context.getClass()]
+    );
+  }
+
+  isOrganizationRecipientRequest(context: ExecutionContext): boolean {
+    return this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.ORGANIZATION_MEMBER,
+      [context.getHandler(), context.getClass()]
+    );
+  }
+
+  async isOrganizationRequest(
     context: ExecutionContext,
     user: User,
     organizationId: string
   ): Promise<boolean> {
-    const isOrganizationMember = this.reflector.getAllAndOverride<boolean>(
-      GlobalAuthGuardKeys.ORGANIZATION_MEMBER,
-      [context.getHandler(), context.getClass()]
-    );
+    const userRole = await this.user.getUserRole(user.id, organizationId);
 
-    if (isOrganizationMember) {
-      if (!organizationId)
-        throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_ID_MISSING);
+    if (this.isOrganizationFounderRequest(context)) {
+      return userRole.role === Role.FOUNDER;
+    }
 
-      await this.validateOrganizationRequest(user.id, organizationId, [
+    if (this.isOrganizationMemberRequest(context)) {
+      const roles: Role[] = [Role.FOUNDER, Role.MANAGER, Role.OPERATOR];
+      return roles.includes(userRole.role);
+    }
+
+    if (this.isOrganizationRecipientRequest(context)) {
+      const roles: Role[] = [
         Role.FOUNDER,
         Role.MANAGER,
         Role.OPERATOR,
-      ]);
+        Role.ADVISOR,
+        Role.INVESTOR,
+        Role.EMPLOYEE,
+      ];
+      return roles.includes(userRole.role);
     }
 
-    return true;
-  }
-
-  isAdminRequest(context: ExecutionContext, user: User): boolean {
-    const isAdmin = this.reflector.getAllAndOverride<boolean>(
-      GlobalAuthGuardKeys.ADMIN,
-      [context.getHandler(), context.getClass()]
-    );
-    if (isAdmin && !user.isAdmin) throw new UnauthorizedException();
-
-    return true;
-  }
-
-  async validateOrganizationRequest(
-    userId: string,
-    organizationId: string,
-    roles: Role[]
-  ) {
-    const userRole = await this.user.getUserRole(userId, organizationId);
-    if (!roles.includes(userRole.role)) {
-      throw new UnauthorizedException();
-    }
+    return false;
   }
 }

@@ -7,6 +7,7 @@ export class AuthInput {
   @ApiProperty()
   @Field(() => String)
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 }
 
@@ -19,7 +20,7 @@ export class AuthGoogleCallbackInput {
 }
 
 @InputType()
-export class AuthGoogleLoginInput {
+export class AuthGoogleLoginInput extends AuthGoogleCallbackInput {
   @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()

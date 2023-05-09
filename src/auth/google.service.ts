@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
+import { OAuth2Client } from 'googleapis-common';
 import { GOOGLE_AUTH_SCOPES } from 'src/common/utils/constants';
 
 @Injectable()
 export class GoogleService {
-  oauth2Client;
+  oauth2Client: OAuth2Client;
 
   constructor(private readonly configService: ConfigService) {
     this.oauth2Client = new google.auth.OAuth2(
@@ -26,8 +27,11 @@ export class GoogleService {
     });
   }
 
-  async getAuthTokens(code: string) {
-    const { tokens } = await this.oauth2Client.getToken(code);
+  async getAuthTokens(code: string, redirectUri: string) {
+    const { tokens } = await this.oauth2Client.getToken({
+      code,
+      redirect_uri: redirectUri,
+    });
     if (tokens.expiry_date <= new Date().getTime()) {
       return false;
     }

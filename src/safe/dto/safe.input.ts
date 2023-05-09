@@ -1,25 +1,29 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { ConfirmationStatus } from '@prisma/client';
-import { IsArray, IsEthereumAddress } from 'class-validator';
+import { IsArray, IsEthereumAddress, IsNotEmpty } from 'class-validator';
 
 @InputType()
 export class CreateSafeWalletInput {
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   organizationId: string;
 
   @ApiProperty()
   @Field(() => Number)
-  chainId: number;
+  @IsNotEmpty()
+  chainId: SupportedChainIds;
 
   @ApiProperty()
   @IsEthereumAddress()
   @Field(() => String)
+  @IsNotEmpty()
   address: string;
 
   @ApiProperty()
   @Field(() => Number)
+  @IsNotEmpty()
   requiredConfirmations: number;
 }
 
@@ -27,16 +31,19 @@ export class CreateSafeWalletInput {
 export class CreateSafeOwnersInput {
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   organizationId: string;
 
   @ApiProperty()
   @IsArray()
   @IsEthereumAddress({ each: true })
   @Field(() => Array)
+  @IsNotEmpty()
   addresses: string[];
 
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   safeWalletId: string;
 }
 
@@ -45,21 +52,26 @@ export class CreateSafeConfirmationInput {
   @ApiProperty()
   @IsEthereumAddress()
   @Field(() => String)
+  @IsNotEmpty()
   address: string;
 
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   safeWalletId: string;
 
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   safeOwnerId: string;
 
   @ApiProperty()
   @Field(() => String)
+  @IsNotEmpty()
   transactionId: string;
 
   @ApiProperty()
   @Field(() => ConfirmationStatus)
+  @IsNotEmpty()
   status: ConfirmationStatus;
 }

@@ -50,7 +50,10 @@ export class AuthController {
   @Post('/google-login')
   async googleAuthLogin(@Body() body: AuthGoogleLoginInput) {
     try {
-      const userProfile = await this.google.getAuthTokens(body.code);
+      const userProfile = await this.google.getAuthTokens(
+        body.code,
+        body.redirectUri
+      );
       if (!userProfile) {
         return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
       }

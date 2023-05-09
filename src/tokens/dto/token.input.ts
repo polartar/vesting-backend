@@ -31,10 +31,39 @@ export class CreateTokenInput {
   @ApiProperty()
   @Field(() => Number)
   @Optional()
-  chainId: number;
+  chainId: SupportedChainIds;
 
   @ApiProperty()
   @Field(() => String)
   @Optional()
   logo: string;
+}
+
+@InputType()
+export class ImportTokenInput {
+  @ApiProperty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => Number)
+  chainId: SupportedChainIds;
+
+  @ApiProperty()
+  @Field(() => String)
+  @Optional()
+  logo?: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  address: string;
+}
+
+@InputType()
+export class CreateDeployedTokenInput extends ImportTokenInput {
+  name: string;
+
+  symbol: string;
+
+  isDeployed: boolean;
 }
