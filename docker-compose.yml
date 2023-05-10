@@ -9,7 +9,7 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      postgres:
+      postgres-vtvl:
         condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     volumes:
@@ -24,9 +24,9 @@ services:
         npm run prisma:generate
         npm run start:dev
 
-  postgres:
+  postgres-vtvl:
     image: postgres:13
-    container_name: postgres
+    container_name: postgres-vtvl
     restart: always
     ports:
       - '5432:5432'
