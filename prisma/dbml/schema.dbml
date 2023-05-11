@@ -47,6 +47,7 @@ Table organization {
   VestingContracts vesting_contract [not null]
   Vestings vesting [not null]
   Recipes recipe [not null]
+  VestingTemplates vesting_template [not null]
 }
 
 Table user_role {
@@ -144,6 +145,20 @@ Table vesting {
   transactionId String
   Transaction transaction
   Recipies recipe [not null]
+}
+
+Table vesting_template {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  organizationId String [not null]
+  Organization organization [not null]
+  name String [not null]
+  releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
+  releaseFrequency Int [not null]
+  cliffDurationType CliffDurationType [not null, default: 'NO_CLIFF']
+  cliffDuration Int [not null, default: 0]
+  cliffAmount Int [not null, default: 0]
 }
 
 Table recipe {
@@ -266,6 +281,8 @@ Ref: vesting.tokenId > token.id
 Ref: vesting.vestingContractId > vesting_contract.id
 
 Ref: vesting.transactionId > transaction.id
+
+Ref: vesting_template.organizationId > organization.id
 
 Ref: recipe.vestingId > vesting.id
 

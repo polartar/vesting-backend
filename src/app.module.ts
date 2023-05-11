@@ -19,6 +19,7 @@ import { VestingContractsModule } from './vesting-contracts/vesting-contracts.mo
 import { VestingsModule } from './vestings/vestings.module';
 import { TokensModule } from './tokens/tokens.module';
 import { RecipesModule } from './recipe/recipes.module';
+import { VestingTemplatesModule } from './vesting-templates/vesting-templates.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { RecipesModule } from './recipe/recipes.module';
     VestingContractsModule,
     VestingsModule,
     RecipesModule,
+    VestingTemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

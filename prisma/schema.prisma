@@ -105,6 +105,7 @@ model Organization {
   VestingContracts VestingContract[]
   Vestings         Vesting[]
   Recipes          Recipe[]
+  VestingTemplates VestingTemplate[]
 
   @@map("organization")
 }
@@ -216,6 +217,22 @@ model Vesting {
   Recipies             Recipe[]
 
   @@map("vesting")
+}
+
+model VestingTemplate {
+  id                   String               @id @default(uuid())
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  organizationId       String               @map("organization_id")
+  Organization         Organization         @relation(fields: [organizationId], references: [id])
+  name                 String
+  releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
+  releaseFrequency     Int                  @map("release_frequency")
+  cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
+  cliffDuration        Int                  @default(0) @map("cliff_duration")
+  cliffAmount          Int                  @default(0) @map("cliff_amount")
+
+  @@map("vesting_template")
 }
 
 model Recipe {

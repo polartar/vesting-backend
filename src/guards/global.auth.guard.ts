@@ -101,7 +101,7 @@ export class GlobalAuthGuard implements CanActivate {
       GlobalAuthGuardKeys.NORMAL,
       [context.getHandler(), context.getClass()]
     );
-    return isAuthorized && !Boolean(user);
+    return isAuthorized && Boolean(user);
   }
 
   isWalletRequest(context: ExecutionContext, wallet?: Wallet): boolean {
@@ -109,7 +109,7 @@ export class GlobalAuthGuard implements CanActivate {
       GlobalAuthGuardKeys.WALLET,
       [context.getHandler(), context.getClass()]
     );
-    return isWalletConnected && !Boolean(wallet);
+    return isWalletConnected && Boolean(wallet);
   }
 
   isOrganizationFounderRequest(context: ExecutionContext): boolean {
