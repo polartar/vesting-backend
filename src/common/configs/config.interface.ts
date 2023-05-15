@@ -12,6 +12,11 @@ export interface NestConfig {
 
 export interface CorsConfig {
   enabled: boolean;
+  origin: string[];
+  methods: string[];
+  allowedHeaders: string[];
+  preflightContinue: boolean;
+  optionsSuccessStatus: number;
 }
 
 export interface SwaggerConfig {

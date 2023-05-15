@@ -1,25 +1,13 @@
+import { getCors, getSwagger, getGraphql } from '../utils/api';
 import type { Config } from './config.interface';
 
 const config: Config = {
   nest: {
     port: 3000,
   },
-  cors: {
-    enabled: true,
-  },
-  swagger: {
-    enabled: true,
-    title: 'VTVL API',
-    description: 'The VTVL API description',
-    version: '1.0',
-    path: 'api',
-  },
-  graphql: {
-    playgroundEnabled: true,
-    debug: true,
-    schemaDestination: './src/schema.graphql',
-    sortSchema: true,
-  },
+  cors: getCors(),
+  swagger: getSwagger(),
+  graphql: getGraphql(),
   security: {
     expiresIn: '1d',
     refreshIn: '7d',
