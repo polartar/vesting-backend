@@ -1,0 +1,48 @@
+{
+    "executionRoleArn": "arn:aws:iam::161833711594:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+      {
+        "environmentFiles": [
+          {
+            "value": "arn:aws:s3:::vtvl-environments/production.env",
+            "type": "s3"
+          }
+        ],
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/production-backend",
+            "awslogs-region": "ap-southeast-1",
+            "awslogs-create-group": "true",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "portMappings": [
+          {
+            "hostPort": 0,
+            "protocol": "tcp",
+            "containerPort": 3000
+          }
+        ],
+        "image": "161833711594.dkr.ecr.ap-southeast-1.amazonaws.com/production-api:latest",
+        "essential": true,
+        "name": "backend"
+      }
+    ],
+    "memory": "786",
+    "taskRoleArn": "arn:aws:iam::161833711594:role/ecsTaskExecutionRole",
+    "compatibilities": [
+      "EXTERNAL",
+      "EC2"
+    ],
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:161833711594:task-definition/production-backend:3",
+    "family": "production-backend",
+    "requiresCompatibilities": [
+      "EC2"
+    ],
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": "X86_64"
+    },
+    "cpu": "512"
+  }
