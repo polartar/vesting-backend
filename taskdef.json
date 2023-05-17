@@ -24,7 +24,6 @@
             "containerPort": 3000
           }
         ],
-        "image": "161833711594.dkr.ecr.ap-southeast-1.amazonaws.com/production-api:latest",
         "essential": true,
         "name": "backend"
       }
