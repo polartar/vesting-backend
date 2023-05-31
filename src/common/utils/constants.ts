@@ -12,8 +12,14 @@ export const EMAIL_SENDER = {
   email: 'no-reply@vtvl.io',
 };
 
+export enum Platforms {
+  App = 'app',
+  Portfolio = 'portfolio',
+}
+
 export enum MailTemplates {
   Login = 'd-dbd24a1f6b69408bbdcff1b4130ecde4',
+  LoginInstitutional = 'd-4958750812af4664a91288369225afa7',
   TeammateInvite = 'd-bde77990c2394a1fba408a67285063b6',
   RecipientInvite = 'd-c7dcc8f33282470099ae8a0247710d20',
 }

@@ -1,18 +1,16 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
-import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { InputType, Field, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
+
+import { Platforms } from 'src/common/utils/constants';
+
+registerEnumType(Platforms, {
+  name: 'Platforms',
+  description: 'Platform names - app & portfolio',
+});
 
 @InputType()
 export class AuthInput {
-  @ApiProperty()
-  @Field(() => String)
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-}
-
-@InputType()
-export class AuthGoogleCallbackInput {
   @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()
@@ -20,7 +18,21 @@ export class AuthGoogleCallbackInput {
 }
 
 @InputType()
-export class AuthGoogleLoginInput extends AuthGoogleCallbackInput {
+export class AuthEmailLoginInput extends AuthInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty()
+  @Field(() => Platforms, { defaultValue: Platforms.App })
+  @IsOptional()
+  platform?: Platforms;
+}
+
+@InputType()
+export class AuthGoogleLoginInput extends AuthInput {
   @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()
@@ -28,9 +40,15 @@ export class AuthGoogleLoginInput extends AuthGoogleCallbackInput {
 }
 
 @InputType()
-export class AuthValidationInput extends AuthInput {
+export class AuthValidationInput {
   @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()
   code: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }

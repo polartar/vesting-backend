@@ -1,16 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { EmailSubjects, MailTemplates } from 'src/common/utils/constants';
+import {
+  EmailSubjects,
+  MailTemplates,
+  Platforms,
+} from 'src/common/utils/constants';
 import { sendEmail } from 'src/common/utils/sendgrid';
 
 @Injectable()
 export class EmailService {
-  async sendLoginEmail(email: string, code: string): Promise<boolean> {
+  async sendLoginEmail(
+    email: string,
+    code: string,
+    redirectUri: string,
+    platform?: Platforms
+  ): Promise<boolean> {
     try {
-      const emailLink = `${process.env.AUTH_URL}/code?=${code}`;
+      const emailLink = `${redirectUri}/code?=${code}`;
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.Login,
+        this.getLoginEmailTemplate(platform || Platforms.App),
         { emailLink }
       );
       return true;
@@ -19,4 +28,13 @@ export class EmailService {
       return false;
     }
   }
+
+  getLoginEmailTemplate = (platform: Platforms): MailTemplates => {
+    switch (platform) {
+      case Platforms.App:
+        return MailTemplates.Login;
+      case Platforms.Portfolio:
+        return MailTemplates.LoginInstitutional;
+    }
+  };
 }

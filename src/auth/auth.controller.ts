@@ -11,7 +11,7 @@ import { GoogleService } from './google.service';
 import { EmailService } from './email.service';
 
 import {
-  AuthGoogleCallbackInput,
+  AuthEmailLoginInput,
   AuthGoogleLoginInput,
   AuthInput,
   AuthValidationInput,
@@ -36,7 +36,7 @@ export class AuthController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Post('/google-callback')
-  async googleAuthUrl(@Body() body: AuthGoogleCallbackInput) {
+  async googleAuthUrl(@Body() body: AuthInput) {
     try {
       return this.google.getAuthUrl(body.redirectUri);
     } catch (error) {
@@ -71,14 +71,19 @@ export class AuthController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Post('/login')
-  async login(@Body() body: AuthInput) {
+  async login(@Body() body: AuthEmailLoginInput) {
     try {
       const code = await this.auth.login(body.email);
       if (!code) {
         return new BadRequestException(ERROR_MESSAGES.AUTH_USER_NOT_FOUND);
       }
 
-      const sent = await this.email.sendLoginEmail(body.email, code);
+      const sent = await this.email.sendLoginEmail(
+        body.email,
+        code,
+        body.redirectUri,
+        body.platform
+      );
       if (sent) {
         return SUCCESS_MESSAGES.LOGIN_EMAIL;
       }
@@ -93,14 +98,19 @@ export class AuthController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Post('/signup')
-  async signup(@Body() body: AuthInput) {
+  async signup(@Body() body: AuthEmailLoginInput) {
     try {
       const code = await this.auth.createAuthCode(body.email);
       if (!code) {
         return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
       }
 
-      const sent = await this.email.sendLoginEmail(body.email, code);
+      const sent = await this.email.sendLoginEmail(
+        body.email,
+        code,
+        body.redirectUri,
+        body.platform
+      );
       if (sent) {
         return SUCCESS_MESSAGES.SIGNUP_EMAIL;
       }

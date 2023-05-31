@@ -15,14 +15,18 @@ export const getCors = (): CorsConfig => {
 
   switch (true) {
     case isProduction:
-      origin.push('https://app.vtvl.io');
+      origin.push('https://app.vtvl.io', 'https://portfolio.vtvl.io');
       break;
     case isStaging:
-      origin.push('https://staging-v2.vtvl.io');
+      origin.push(
+        'https://staging-v2.vtvl.io',
+        'https://staging-portfolio.vtvl.io'
+      );
       break;
     default:
       origin.push(
         'https://qa-v2.vtvl.io',
+        'https://qa-portfolio.vtvl.io',
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:3002',
