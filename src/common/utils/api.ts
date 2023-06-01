@@ -32,7 +32,8 @@ export const getCors = (): CorsConfig => {
         'http://localhost:3002',
         'http://localhost:3003',
         // vercel preview link
-        /^https:\/\/vtvl-v2-app-git-[a-z0-9-]+\.vtvl\.vercel\.app\//
+        /^https:\/\/vtvl-v2-app-[a-z0-9-]+\.vtvl\.vercel\.app\//,
+        /^https:\/\/vtvl-institutional-[a-z0-9-]+\.vtvl\.vercel\.app\//
       );
   }
 
