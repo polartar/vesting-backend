@@ -29,17 +29,19 @@ export class GlobalAuthGuard implements CanActivate {
 
     if (authToken) {
       const token = authToken.split(' ')[1];
-      const decodeToken = this.auth.decodeToken(token);
+      if (token) {
+        const decodeToken = this.auth.decodeToken(token);
 
-      const user = await this.user.getUser(decodeToken.userId);
-      if (!user) {
-        throw new UnauthorizedException();
-      }
-      request.user = user;
+        const user = await this.user.getUser(decodeToken.userId);
+        if (!user) {
+          throw new UnauthorizedException();
+        }
+        request.user = user;
 
-      if (decodeToken.walletId) {
-        const wallet = await this.wallet.getWallet(decodeToken.walletId);
-        request.wallet = wallet;
+        if (decodeToken.walletId) {
+          const wallet = await this.wallet.getWallet(decodeToken.walletId);
+          request.wallet = wallet;
+        }
       }
     }
 
