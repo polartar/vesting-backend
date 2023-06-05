@@ -15,7 +15,7 @@ export class EmailService {
     platform?: Platforms
   ): Promise<boolean> {
     try {
-      const emailLink = `${redirectUri}?code=${code}&email=${email}`;
+      const emailLink = `${redirectUri}?code=${code}`;
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,

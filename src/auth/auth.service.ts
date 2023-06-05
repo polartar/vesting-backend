@@ -143,17 +143,16 @@ export class AuthService {
     return code;
   }
 
-  async validateCode(email: string, code: string): Promise<boolean> {
+  async validateCode(code: string): Promise<string | undefined> {
     try {
       const auth = await this.prisma.emailVerification.findFirst({
         where: {
-          email,
           code,
         },
       });
-      return Boolean(auth);
+      return auth.email;
     } catch (error) {
-      return false;
+      return;
     }
   }
 }

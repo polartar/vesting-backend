@@ -127,13 +127,13 @@ export class AuthController {
   @Post('/validate')
   async validate(@Body() body: AuthValidationInput) {
     try {
-      const isValidated = await this.auth.validateCode(body.email, body.code);
-      if (!isValidated) {
+      const authEmail = await this.auth.validateCode(body.code);
+      if (!authEmail) {
         return new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
       return this.auth.createUser({
-        email: body.email,
+        email: authEmail,
       });
     } catch (error) {
       console.error('Error: /auth/validate', error);

@@ -45,10 +45,4 @@ export class AuthValidationInput {
   @Field(() => String)
   @IsNotEmpty()
   code: string;
-
-  @ApiProperty()
-  @Field(() => String)
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
 }
