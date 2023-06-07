@@ -73,7 +73,7 @@ export class OrganizationsController {
   }
 
   @ApiBearerAuth()
-  @AdminAuth()
+  @OrganizationFounderAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/')
   async getOrganizations(@Request() req: { user: User }) {
