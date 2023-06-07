@@ -45,7 +45,7 @@ export class TokensController {
           body.chainId
         );
       if (!validated) {
-        return new BadRequestException(ERROR_MESSAGES.INVALID_ERC20_TOKEN);
+        throw new BadRequestException(ERROR_MESSAGES.INVALID_ERC20_TOKEN);
       }
 
       const token = await this.token.import({
@@ -60,7 +60,7 @@ export class TokensController {
       return token;
     } catch (error) {
       console.error('Importing Token Error', error);
-      return new BadRequestException(ERROR_MESSAGES.IMPORT_TOKEN_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.IMPORT_TOKEN_FAILURE);
     }
   }
 

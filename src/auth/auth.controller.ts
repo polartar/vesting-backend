@@ -41,7 +41,7 @@ export class AuthController {
       return this.google.getAuthUrl(body.redirectUri);
     } catch (error) {
       console.error('Error: /auth/google-callback', error);
-      return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
     }
   }
 
@@ -55,7 +55,7 @@ export class AuthController {
         body.redirectUri
       );
       if (!userProfile) {
-        return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
+        throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
       }
 
       return this.auth.createUser({
@@ -64,7 +64,7 @@ export class AuthController {
       });
     } catch (error) {
       console.error('Error: /auth/google-login', error);
-      return new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
     }
   }
 
@@ -75,7 +75,7 @@ export class AuthController {
     try {
       const code = await this.auth.login(body.email);
       if (!code) {
-        return new BadRequestException(ERROR_MESSAGES.AUTH_USER_NOT_FOUND);
+        throw new BadRequestException(ERROR_MESSAGES.AUTH_USER_NOT_FOUND);
       }
 
       const sent = await this.email.sendLoginEmail(
@@ -88,10 +88,10 @@ export class AuthController {
         return SUCCESS_MESSAGES.LOGIN_EMAIL;
       }
 
-      return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
       console.error('Error: /auth/login', error);
-      return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
 
@@ -102,7 +102,7 @@ export class AuthController {
     try {
       const code = await this.auth.createAuthCode(body.email);
       if (!code) {
-        return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+        throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
       }
 
       const sent = await this.email.sendLoginEmail(
@@ -115,10 +115,10 @@ export class AuthController {
         return SUCCESS_MESSAGES.SIGNUP_EMAIL;
       }
 
-      return new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.EMAIL_SEND_FAILURE);
     } catch (error) {
       console.error('Error: /auth/signup', error);
-      return new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+      throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
     }
   }
 
@@ -129,7 +129,7 @@ export class AuthController {
     try {
       const authEmail = await this.auth.validateCode(body.code);
       if (!authEmail) {
-        return new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
+        throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
       return this.auth.createUser({
@@ -137,7 +137,7 @@ export class AuthController {
       });
     } catch (error) {
       console.error('Error: /auth/validate', error);
-      return new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
+      throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
     }
   }
 
@@ -156,7 +156,7 @@ export class AuthController {
       );
 
       if (!isValidated) {
-        return new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
+        throw new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
       }
 
       const wallet = await this.wallet.findOrCreate(user.id, body.address);
@@ -164,6 +164,7 @@ export class AuthController {
       return this.auth.generateTokens({
         userId: user.id,
         walletId: wallet.id,
+        walletAddress: wallet.address,
       });
     } catch (error) {
       console.error('Error: /auth/wallet', error);

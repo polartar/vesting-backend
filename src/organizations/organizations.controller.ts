@@ -49,7 +49,7 @@ export class OrganizationsController {
       return organization;
     } catch (error) {
       console.error('Error: POST /organization', error);
-      return new BadRequestException(
+      throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_CREATION_FAILURE
       );
     }
@@ -68,9 +68,7 @@ export class OrganizationsController {
       return organization;
     } catch (error) {
       console.error('Error: PUT /organization', error);
-      return new BadRequestException(
-        ERROR_MESSAGES.ORGANIZATION_UPDATE_FAILURE
-      );
+      throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_UPDATE_FAILURE);
     }
   }
 
@@ -86,7 +84,7 @@ export class OrganizationsController {
       return organizations;
     } catch (error) {
       console.error('Error: GET /organization', error);
-      return new BadRequestException(
+      throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_GET_ALL_FAILURE
       );
     }
@@ -102,7 +100,7 @@ export class OrganizationsController {
       return organization;
     } catch (error) {
       console.error('Error: GET /organization/:organizationId', error);
-      return new BadRequestException(
+      throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_GET_ONE_FAILURE
       );
     }
@@ -118,7 +116,7 @@ export class OrganizationsController {
       return SUCCESS_MESSAGES.ORGANIZATION_ADD_MEMBERS;
     } catch (error) {
       console.error('Error: POST /organization/:organizationId/members', error);
-      return new BadRequestException(
+      throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_ADD_MEMBERS_FAILURE
       );
     }
@@ -138,7 +136,7 @@ export class OrganizationsController {
       return members;
     } catch (error) {
       console.error('Error: GET /organization/:organizationId/members', error);
-      return new BadRequestException(
+      throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_GET_ALL_MEMBERS_FAILURE
       );
     }

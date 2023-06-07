@@ -7,7 +7,7 @@ const config: Config = {
   },
   cors: getCors(),
   swagger: getSwagger(),
-  graphql: getGraphql(),
+  // graphql: getGraphql(),
   security: {
     expiresIn: '1d',
     refreshIn: '7d',

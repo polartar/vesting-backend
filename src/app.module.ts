@@ -11,7 +11,7 @@ import { WalletsModule } from 'src/wallets/wallets.module';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
 
-import { GqlConfigService } from './gql-config.service';
+// import { GqlConfigService } from './gql-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
@@ -34,10 +34,10 @@ import { VestingTemplatesModule } from './vesting-templates/vesting-templates.mo
       },
     }),
 
-    GraphQLModule.forRootAsync<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      useClass: GqlConfigService,
-    }),
+    // GraphQLModule.forRootAsync<ApolloDriverConfig>({
+    //   driver: ApolloDriver,
+    //   useClass: GqlConfigService,
+    // }),
 
     AuthModule,
     UsersModule,

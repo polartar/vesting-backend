@@ -87,7 +87,11 @@ export class AuthService {
     return this.prisma.wallet.findUnique({ where: { id } });
   }
 
-  generateTokens(payload: { userId: string; walletId?: string }): Token {
+  generateTokens(payload: {
+    userId: string;
+    walletId?: string;
+    walletAddress?: string;
+  }): Token {
     return {
       accessToken: this.generateAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),

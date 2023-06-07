@@ -34,7 +34,7 @@ export class SafesController {
       return safe;
     } catch (error) {
       console.error('Error: POST /safe/wallet', error);
-      return new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_WALLET);
+      throw new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_WALLET);
     }
   }
 
@@ -52,14 +52,14 @@ export class SafesController {
         safeWalletId
       );
       if (!safeWallet) {
-        return new NotFoundException(ERROR_MESSAGES.SAFE_NOT_FOUND_WALLET);
+        throw new NotFoundException(ERROR_MESSAGES.SAFE_NOT_FOUND_WALLET);
       }
 
       const safe = await this.safe.createSafeOwners(safeWalletId, addresses);
       return safe;
     } catch (error) {
       console.error('Error: POST /safe/owners', error);
-      return new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_OWNER_WALLETS);
+      throw new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_OWNER_WALLETS);
     }
   }
 
@@ -73,7 +73,7 @@ export class SafesController {
       return safeConfirmation;
     } catch (error) {
       console.error('Error: POST /safe/confirmation', error);
-      return new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_CONFIRMATION);
+      throw new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_CONFIRMATION);
     }
   }
 }
