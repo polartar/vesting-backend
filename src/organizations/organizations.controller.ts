@@ -18,11 +18,7 @@ import {
   UpdateOrganizationInput,
 } from './dto/organization.input';
 import { User } from 'src/users/models/user.model';
-import {
-  AdminAuth,
-  NormalAuth,
-  OrganizationFounderAuth,
-} from 'src/common/utils/auth';
+import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
 import { Role } from '@prisma/client';
@@ -73,7 +69,7 @@ export class OrganizationsController {
   }
 
   @ApiBearerAuth()
-  @OrganizationFounderAuth()
+  @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/')
   async getOrganizations(@Request() req: { user: User }) {
