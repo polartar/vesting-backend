@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -23,6 +24,8 @@ import { WalletsService } from 'src/wallets/wallets.service';
 import { ConnectWalletInput } from './dto/wallet.input';
 import { User } from 'src/users/users.decorator';
 import { UserEntity } from 'src/users/users.entity';
+import { Wallet } from 'src/wallets/wallets.decorator';
+import { WalletEntity } from 'src/wallets/wallets.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -170,5 +173,15 @@ export class AuthController {
       console.error('Error: /auth/wallet', error);
       throw new BadRequestException(ERROR_MESSAGES.WALLET_CONNECT_FAILTURE);
     }
+  }
+
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/me')
+  async me(@User() user: UserEntity, @Wallet() wallet: WalletEntity) {
+    return {
+      user,
+      wallet,
+    };
   }
 }
