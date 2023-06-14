@@ -15,7 +15,13 @@ export const getCors = (): CorsConfig => {
 
   switch (true) {
     case isProduction:
-      origin.push('https://app.vtvl.io', 'https://portfolio.vtvl.io');
+      origin.push(
+        'https://app.vtvl.io',
+        'https://portfolio.vtvl.io',
+
+        // TODO remove once api integration is done in institutional
+        'https://vtvl-institutional-git-main-backend-v2-vtvl.vercel.app'
+      );
       break;
     case isStaging:
       origin.push(
@@ -33,7 +39,10 @@ export const getCors = (): CorsConfig => {
         'http://localhost:3003',
         // vercel preview link
         /^https:\/\/(vtvl-v2-app-git-.*|qa-v2\.vtvl\.io)/,
-        /^https:\/\/(vtvl-institutional-git-.*|qa-portfolio\.vtvl\.io)/
+        /^https:\/\/(vtvl-institutional-git-.*|qa-portfolio\.vtvl\.io)/,
+
+        // TODO remove once api integration is done in institutional
+        'https://vtvl-institutional-git-dev-backend-v2-vtvl.vercel.app'
       );
   }
 
