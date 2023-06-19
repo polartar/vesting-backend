@@ -38,8 +38,8 @@ export const getCors = (): CorsConfig => {
         'http://localhost:3002',
         'http://localhost:3003',
         // vercel preview link
-        /^https:\/\/(vtvl-v2-app-git-.*|qa-v2\.vtvl\.io)/,
-        /^https:\/\/(vtvl-institutional-git-.*|qa-portfolio\.vtvl\.io)/,
+        /^https:\/\/vtvl-v2-app-.*\.vtvl\.vercel\.app/,
+        /^https:\/\/vtvl-institutional-.*\.vtvl\.vercel\.app/,
 
         // TODO remove once api integration is done in institutional
         'https://vtvl-institutional-git-dev-backend-v2-vtvl.vercel.app'
