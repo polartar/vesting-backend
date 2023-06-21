@@ -54,3 +54,18 @@ export class AddOrganizationMembersInput {
   @Field(() => AddOrganizationMemberInput)
   members: Array<AddOrganizationMemberInput>;
 }
+
+@InputType()
+export class InviteMemberInput {
+  @ApiProperty()
+  @Field(() => String)
+  email: string;
+
+  @ApiProperty()
+  @Field(() => Role)
+  role: Role;
+
+  @ApiProperty()
+  @Field(() => String)
+  redirectUri: string;
+}

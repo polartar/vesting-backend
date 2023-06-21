@@ -7,6 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { OrganizationsController } from './organizations.controller';
 import { WalletsService } from 'src/wallets/wallets.service';
 import { JwtService } from '@nestjs/jwt';
+import { EmailService } from 'src/auth/email.service';
 
 @Module({
   imports: [],
@@ -17,6 +18,7 @@ import { JwtService } from '@nestjs/jwt';
     AuthService,
     WalletsService,
     JwtService,
+    EmailService,
   ],
 })
 export class OrganizationsModule {}

@@ -26,6 +26,7 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_GET_ALL_FAILURE: 'Fetching all organizations is failed',
   ORGANIZATION_GET_ONE_FAILURE: 'Fetching an organization details is failed',
   ORGANIZATION_ADD_MEMBERS_FAILURE: 'Adding members is failed',
+  ORGANIZATION_INVITE_MEMBERS_FAILURE: 'Inviting members is failed',
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
 
   /** Safe Wallet */
@@ -47,5 +48,6 @@ export const SUCCESS_MESSAGES = {
   SIGNUP_EMAIL: 'Sent signup email successfully',
 
   /** Organization */
-  ORGANIZATION_ADD_MEMBERS: 'Invited members successfully',
+  ORGANIZATION_ADD_MEMBERS: 'Added members successfully',
+  ORGANIZATION_INVITE_MEMBERS: 'Invited members successfully',
 };

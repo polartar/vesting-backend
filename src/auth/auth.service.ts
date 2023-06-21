@@ -1,6 +1,7 @@
 import { PrismaService } from 'nestjs-prisma';
 import { User, Wallet } from '@prisma/client';
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -13,11 +14,7 @@ import { SignupInput } from './dto/signup.input';
 import { TokenPayload } from './dto/jwt.dto';
 import { Token } from './models/token.model';
 import { generateRandomCode } from 'src/common/utils/helpers';
-import { AUTHORIZATION_CODE_EXPIRE_TIME } from 'src/common/utils/constants';
-
-const getExpiredTime = () =>
-  new Date().getTime() + AUTHORIZATION_CODE_EXPIRE_TIME;
-
+import { getExpiredTime } from 'src/common/utils/helper';
 @Injectable()
 export class AuthService {
   constructor(
@@ -44,15 +41,25 @@ export class AuthService {
     });
   }
 
-  async createUser(payload: SignupInput): Promise<Token> {
+  async createUser(payload: SignupInput, activate = false): Promise<Token> {
     try {
-      const user = await this.prisma.user.upsert({
+      let user = await this.prisma.user.upsert({
         where: {
           email: payload.email,
         },
         create: payload,
         update: {},
       });
+      if (!user.isActive) {
+        if (activate) {
+          user = await this.prisma.user.update({
+            where: { id: user.id },
+            data: { isActive: true },
+          });
+        } else {
+          throw new BadRequestException(`Inactive user: ${payload.email}`);
+        }
+      }
 
       return this.generateTokens({
         userId: user.id,
@@ -63,10 +70,16 @@ export class AuthService {
   }
 
   async login(email: string): Promise<string> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findFirst({
+      where: { email },
+    });
 
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
+    }
+
+    if (!user.isActive) {
+      throw new NotFoundException(`User is not active: ${email}`);
     }
 
     const code = await this.createAuthCode(user.email);

@@ -15,6 +15,7 @@ import { OrganizationsService } from './organizations.service';
 import {
   AddOrganizationMembersInput,
   CreateOrganizationInput,
+  InviteMemberInput,
   UpdateOrganizationInput,
 } from './dto/organization.input';
 import { User } from 'src/users/models/user.model';
@@ -114,6 +115,25 @@ export class OrganizationsController {
       console.error('Error: POST /organization/:organizationId/members', error);
       throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_ADD_MEMBERS_FAILURE
+      );
+    }
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Post('/:organizationId/invite')
+  async inviteOrganizationMembers(
+    @Param('organizationId') organizationId: string,
+    @Body() body: InviteMemberInput
+  ) {
+    try {
+      await this.organization.inviteOrganizationMember(organizationId, body);
+      return SUCCESS_MESSAGES.ORGANIZATION_INVITE_MEMBERS;
+    } catch (error) {
+      console.error('Error: POST /organization/:organizationId/invite', error);
+      throw new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_INVITE_MEMBERS_FAILURE
       );
     }
   }

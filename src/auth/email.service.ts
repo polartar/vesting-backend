@@ -37,4 +37,24 @@ export class EmailService {
         return MailTemplates.LoginInstitutional;
     }
   };
+
+  async sendInvitationEmail(
+    email: string,
+    code: string,
+    redirectUri: string
+  ): Promise<boolean> {
+    try {
+      const emailLink = `${redirectUri}?code=${code}`;
+      await sendEmail<{ emailLink: string }>(
+        email,
+        EmailSubjects.Login,
+        MailTemplates.TeammateInvite,
+        { emailLink }
+      );
+      return true;
+    } catch (error) {
+      console.error('Sending invitation email: ', error);
+      return false;
+    }
+  }
 }

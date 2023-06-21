@@ -141,6 +141,7 @@ export class GlobalAuthGuard implements CanActivate {
     organizationId: string
   ): Promise<boolean> {
     const userRole = await this.user.getUserRole(user.id, organizationId);
+    if (!userRole) return false;
 
     if (this.isOrganizationFounderRequest(context)) {
       return userRole.role === Role.FOUNDER;
