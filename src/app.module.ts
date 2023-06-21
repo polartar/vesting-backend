@@ -1,8 +1,8 @@
-import { GraphQLModule } from '@nestjs/graphql';
+// import { GraphQLModule } from '@nestjs/graphql';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+// import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 import config from 'src/common/configs/config';
 import { AuthModule } from 'src/auth/auth.module';

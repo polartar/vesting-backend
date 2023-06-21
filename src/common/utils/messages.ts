@@ -14,6 +14,10 @@ export const ERROR_MESSAGES = {
   WALLET_INVALID_SIGNATURE: 'Invalid signature',
   WRONG_WALLET_OWNER: 'Wallet was already registered with different user',
 
+  /** User */
+  USER_GET: 'Fetching an user is failed',
+  USER_UPDATE: 'Update user profile is failed',
+
   /** Organization */
   ORGANIZATION_INVALID_ID: 'Organization id is invalid',
   ORGANIZATION_ID_MISSING: 'Organization id is missing',

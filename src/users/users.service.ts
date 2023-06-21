@@ -8,10 +8,19 @@ import { UpdateUserInput } from './dto/update-user.input';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  getUser(userId: string): Promise<User> {
+  getUser(userId: string, { withEmail = false } = {}): Promise<User> {
     return this.prisma.user.findUnique({
       where: {
         id: userId,
+      },
+      select: {
+        id: true,
+        email: withEmail,
+        isAdmin: true,
+        name: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
   }
