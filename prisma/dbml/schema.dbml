@@ -10,10 +10,11 @@ Table user {
   name String
   isActive Boolean [not null, default: true]
   isAdmin Boolean [not null, default: false]
-  Wallets wallet [not null]
-  Organizations organization [not null]
-  Roles user_role [not null]
-  Recipes recipe [not null]
+  wallets wallet [not null]
+  organizations organization [not null]
+  roles user_role [not null]
+  permissions user_permission [not null]
+  recipes recipe [not null]
 }
 
 Table email_verification {
@@ -31,7 +32,7 @@ Table wallet {
   updatedAt DateTime [not null]
   address String [unique, not null]
   userId String [not null]
-  User user [not null]
+  user user [not null]
 }
 
 Table organization {
@@ -39,15 +40,16 @@ Table organization {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   userId String [not null]
-  User user [not null]
+  user user [not null]
   name String [not null]
   email String [not null]
-  Users user_role [not null]
-  Tokens organization_token [not null]
-  VestingContracts vesting_contract [not null]
-  Vestings vesting [not null]
-  Recipes recipe [not null]
-  VestingTemplates vesting_template [not null]
+  roles user_role [not null]
+  tokens organization_token [not null]
+  vestingContracts vesting_contract [not null]
+  vestings vesting [not null]
+  recipes recipe [not null]
+  vestingTemplates vesting_template [not null]
+  members user_permission [not null]
 }
 
 Table user_role {
@@ -56,9 +58,22 @@ Table user_role {
   updatedAt DateTime [not null]
   role Role [not null, default: 'FOUNDER']
   userId String [not null]
-  User user [not null]
+  user user [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
+  isAccepted Boolean [not null, default: false]
+}
+
+Table user_permission {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  permission Permission [not null, default: 'READ']
+  userId String [not null]
+  user user [not null]
+  organizationId String [not null]
+  organization organization [not null]
+  isAccepted Boolean [not null, default: false]
 }
 
 Table transaction {
@@ -68,11 +83,11 @@ Table transaction {
   chainId Int [not null]
   hash String [not null]
   status TransactionStatus [not null, default: 'DRAFT']
-  Tokens token [not null]
-  VestingContracts vesting_contract [not null]
-  Vestings vesting [not null]
-  SafeWallets safe_wallet [not null]
-  SafeConfirmations safe_confirmation [not null]
+  tokens token [not null]
+  vestingContracts vesting_contract [not null]
+  vestings vesting [not null]
+  safeWallets safe_wallet [not null]
+  safeConfirmations safe_confirmation [not null]
 }
 
 Table token {
@@ -87,12 +102,12 @@ Table token {
   address String
   logo String
   transactionId String
-  Transaction transaction
+  transaction transaction
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
-  Organizations organization_token [not null]
-  VestingContracts vesting_contract [not null]
-  Vestings vesting [not null]
+  organizations organization_token [not null]
+  vestingContracts vesting_contract [not null]
+  vestings vesting [not null]
 }
 
 Table organization_token {
@@ -100,9 +115,9 @@ Table organization_token {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
   tokenId String [not null]
-  Token token [not null]
+  token token [not null]
 }
 
 Table vesting_contract {
@@ -110,17 +125,17 @@ Table vesting_contract {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
   tokenId String [not null]
-  Token token [not null]
+  token token [not null]
   name String [not null]
   address String
   chainId Int
   transactionId String
-  Transaction transaction
+  transaction transaction
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
-  Vestings vesting [not null]
+  vestings vesting [not null]
 }
 
 Table vesting {
@@ -128,11 +143,11 @@ Table vesting {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
   tokenId String [not null]
   Token token [not null]
   vestingContractId String [not null]
-  VestingContract vesting_contract [not null]
+  vestingContract vesting_contract [not null]
   name String [not null]
   startedAt DateTime [not null]
   endedAt DateTime [not null]
@@ -143,8 +158,8 @@ Table vesting {
   cliffAmount Int [not null, default: 0]
   amount String [not null]
   transactionId String
-  Transaction transaction
-  Recipies recipe [not null]
+  transaction transaction
+  recipies recipe [not null]
 }
 
 Table vesting_template {
@@ -152,7 +167,7 @@ Table vesting_template {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
   name String [not null]
   releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
   releaseFrequency Int [not null]
@@ -166,11 +181,11 @@ Table recipe {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   vestingId String [not null]
-  Vesting vesting [not null]
+  vesting vesting [not null]
   recipientId String [not null]
-  Recipient user [not null]
+  recipient user [not null]
   organizationId String [not null]
-  Organization organization [not null]
+  organization organization [not null]
   allocations String [not null]
   status RecipeStatus [not null, default: 'PENDING']
 }
@@ -184,9 +199,9 @@ Table safe_wallet {
   organizationId String [not null]
   requiredConfirmations Int [not null]
   transactionId String
-  Transaction transaction
-  SafeOwners safe_owner [not null]
-  SafeConfirmations safe_confirmation [not null]
+  transaction transaction
+  safeOwners safe_owner [not null]
+  safeConfirmations safe_confirmation [not null]
 }
 
 Table safe_owner {
@@ -194,9 +209,9 @@ Table safe_owner {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   safeWalletId String [not null]
-  SafeWallet safe_wallet [not null]
+  safeWallet safe_wallet [not null]
   address String [not null]
-  SafeConfirmations safe_confirmation [not null]
+  safeConfirmations safe_confirmation [not null]
 }
 
 Table safe_confirmation {
@@ -204,11 +219,11 @@ Table safe_confirmation {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   safeWalletId String [not null]
-  SafeWallet safe_wallet [not null]
+  safeWallet safe_wallet [not null]
   safeOwnerId String [not null]
-  SafeOwner safe_owner [not null]
+  safeOwner safe_owner [not null]
   transactionId String [not null]
-  Transaction transaction [not null]
+  transaction transaction [not null]
   status ConfirmationStatus [not null]
 }
 
@@ -219,6 +234,11 @@ Enum Role {
   ADVISOR
   EMPLOYEE
   INVESTOR
+}
+
+Enum InstitutionalRole {
+  ADMIN
+  MEMBER
 }
 
 Enum ReleaseFrequencyType {
@@ -254,6 +274,11 @@ Enum ConfirmationStatus {
   REJECTED
 }
 
+Enum Permission {
+  ADMIN
+  READ
+}
+
 Ref: wallet.userId > user.id
 
 Ref: organization.userId > user.id
@@ -261,6 +286,10 @@ Ref: organization.userId > user.id
 Ref: user_role.userId > user.id
 
 Ref: user_role.organizationId > organization.id
+
+Ref: user_permission.userId > user.id
+
+Ref: user_permission.organizationId > organization.id
 
 Ref: token.transactionId > transaction.id
 

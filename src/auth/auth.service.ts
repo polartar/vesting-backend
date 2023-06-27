@@ -167,6 +167,20 @@ export class AuthService {
           code,
         },
       });
+
+      const updateQuery = {
+        where: {
+          isAccepted: false,
+          user: {
+            email: auth.email,
+          },
+        },
+        data: { isAccepted: true },
+      };
+      await Promise.all([
+        this.prisma.userRole.updateMany(updateQuery),
+        this.prisma.userPermission.updateMany(updateQuery),
+      ]);
       return auth.email;
     } catch (error) {
       return;

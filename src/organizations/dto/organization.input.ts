@@ -1,7 +1,19 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional } from 'class-validator';
-import { Role } from '@prisma/client';
+import { Permission, Role } from '@prisma/client';
+
+import { Platforms } from 'src/common/utils/constants';
+
+registerEnumType(Platforms, {
+  name: 'Platforms',
+  description: 'Platform names - app & portfolio',
+});
+
+registerEnumType(Permission, {
+  name: 'Permissions',
+  description: 'Permissions',
+});
 
 @InputType()
 export class CreateOrganizationInput {
@@ -30,7 +42,7 @@ export class UpdateOrganizationInput {
 }
 
 @InputType()
-export class AddOrganizationMemberInput {
+export class AddOrganizationVestingMemberInput {
   @ApiProperty()
   @Field(() => String)
   organizationId: string;
@@ -45,21 +57,51 @@ export class AddOrganizationMemberInput {
 }
 
 @InputType()
-export class AddOrganizationMembersInput {
+export class AddOrganizationPortfolioMemberInput {
   @ApiProperty()
   @Field(() => String)
   organizationId: string;
 
   @ApiProperty()
-  @Field(() => AddOrganizationMemberInput)
-  members: Array<AddOrganizationMemberInput>;
+  @Field(() => String)
+  userId: string;
+
+  @ApiProperty()
+  @Field(() => Permission)
+  permission: Permission;
 }
 
 @InputType()
-export class InviteMemberInput {
+export class AddOrganizationVestingMembersInput {
+  @ApiProperty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => AddOrganizationVestingMemberInput)
+  members: Array<AddOrganizationVestingMemberInput>;
+}
+
+@InputType()
+export class AddOrganizationPortfolioMembersInput {
+  @ApiProperty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => AddOrganizationPortfolioMemberInput)
+  members: Array<AddOrganizationPortfolioMemberInput>;
+}
+
+@InputType()
+export class InviteVestingMemberInput {
   @ApiProperty()
   @Field(() => String)
   email: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  name: string;
 
   @ApiProperty()
   @Field(() => Role)
@@ -68,4 +110,30 @@ export class InviteMemberInput {
   @ApiProperty()
   @Field(() => String)
   redirectUri: string;
+}
+
+@InputType()
+export class InvitePortfolioMemberInput {
+  @ApiProperty()
+  @Field(() => String)
+  email: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  name: string;
+
+  @ApiProperty()
+  @Field(() => Permission)
+  permission: Permission;
+
+  @ApiProperty()
+  @Field(() => String)
+  redirectUri: string;
+}
+
+@InputType()
+export class DeleteOrganizationMemberInput {
+  @ApiProperty()
+  @Field(() => String)
+  userId: string;
 }

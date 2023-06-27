@@ -22,7 +22,7 @@ export class VestingsService {
     return this.prisma.vesting.findUnique({
       where: { id: vestingId },
       include: {
-        Organization: query.withOrganization
+        organization: query.withOrganization
           ? {
               select: {
                 id: true,

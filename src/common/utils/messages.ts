@@ -27,6 +27,8 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_GET_ONE_FAILURE: 'Fetching an organization details is failed',
   ORGANIZATION_ADD_MEMBERS_FAILURE: 'Adding members is failed',
   ORGANIZATION_INVITE_MEMBERS_FAILURE: 'Inviting members is failed',
+  ORGANIZATION_INVITE_MEMBERS_WITH_WRONG_ROLES:
+    'Inviting members role is incorrect',
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
 
   /** Safe Wallet */

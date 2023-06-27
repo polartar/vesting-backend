@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role, User, Wallet } from '@prisma/client';
+import { Permission, Role, User, Wallet } from '@prisma/client';
 import { GlobalAuthGuardKeys } from 'src/common/utils/auth';
 
 import { AuthService } from 'src/auth/auth.service';
@@ -24,62 +24,75 @@ export class GlobalAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const authToken = request.headers?.authorization;
+    try {
+      const request = context.switchToHttp().getRequest();
+      const authToken = request.headers?.authorization;
 
-    if (authToken) {
-      const token = authToken.split(' ')[1];
-      if (token) {
-        const decodeToken = this.auth.decodeToken(token);
+      if (authToken) {
+        const token = authToken.split(' ')[1];
+        if (token) {
+          const decodeToken = this.auth.decodeToken(token);
 
-        const user = await this.user.getUser(decodeToken.userId);
-        if (!user) {
-          throw new UnauthorizedException();
-        }
-        request.user = user;
+          const user = await this.user.getUser(decodeToken.userId);
+          if (!user) {
+            throw new UnauthorizedException();
+          }
+          request.user = user;
 
-        if (decodeToken.walletId) {
-          const wallet = await this.wallet.getWallet(decodeToken.walletId);
-          request.wallet = wallet;
+          if (decodeToken.walletId) {
+            const wallet = await this.wallet.getWallet(decodeToken.walletId);
+            request.wallet = wallet;
+          }
         }
       }
+
+      // If endpoint is public
+      if (this.isPublicRequest(context)) return true;
+
+      // If request is coming from admin
+      if (this.isAdminRequest(context, request.user)) return true;
+
+      // If request is coming from user not connecting wallet
+      if (this.isNormalRequest(context, request.user)) return true;
+
+      // If request is coming from user connecting wallet
+      if (this.isWalletRequest(context, request.wallet)) return true;
+
+      if (
+        request.body?.organizationId &&
+        request.params.organizationId &&
+        request.body.organizationId !== request.params.organizationId
+      ) {
+        throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_INVALID_ID);
+      }
+
+      const organizationId =
+        request.params?.organizationId ?? request.body?.organizationId;
+
+      if (organizationId && request.user) {
+        // if request is coming from organization founder
+        const isValidOrganizationRequest = await this.isOrganizationRequest(
+          context,
+          request.user,
+          organizationId
+        );
+
+        if (isValidOrganizationRequest) return true;
+
+        const isValidPortfolioRequest = await this.isPortfolioRequest(
+          context,
+          request.user,
+          organizationId
+        );
+
+        if (isValidPortfolioRequest) return true;
+      }
+
+      throw new UnauthorizedException();
+    } catch (error) {
+      console.error('Auth Guard: ', error);
+      throw new UnauthorizedException();
     }
-
-    // If endpoint is public
-    if (this.isPublicRequest(context)) return true;
-
-    // If request is coming from admin
-    if (this.isAdminRequest(context, request.user)) return true;
-
-    // If request is coming from user not connecting wallet
-    if (this.isNormalRequest(context, request.user)) return true;
-
-    // If request is coming from user connecting wallet
-    if (this.isWalletRequest(context, request.wallet)) return true;
-
-    if (
-      request.body?.organizationId &&
-      request.params.organizationId &&
-      request.body.organizationId !== request.params.organizationId
-    ) {
-      throw new BadRequestException(ERROR_MESSAGES.ORGANIZATION_INVALID_ID);
-    }
-
-    const organizationId =
-      request.params?.organizationId ?? request.body?.organizationId;
-
-    if (organizationId && request.user) {
-      // if request is coming from organization founder
-      const isValidOrganizationRequest = await this.isOrganizationRequest(
-        context,
-        request.user,
-        organizationId
-      );
-
-      if (isValidOrganizationRequest) return true;
-    }
-
-    throw new UnauthorizedException();
   }
 
   isPublicRequest(context: ExecutionContext): boolean {
@@ -135,6 +148,13 @@ export class GlobalAuthGuard implements CanActivate {
     );
   }
 
+  isPortfolioAdminRequest(context: ExecutionContext): boolean {
+    return this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.PORTFOLIO_ADMIN,
+      [context.getHandler(), context.getClass()]
+    );
+  }
+
   async isOrganizationRequest(
     context: ExecutionContext,
     user: User,
@@ -165,5 +185,21 @@ export class GlobalAuthGuard implements CanActivate {
     }
 
     return false;
+  }
+
+  async isPortfolioRequest(
+    context: ExecutionContext,
+    user: User,
+    organizationId: string
+  ): Promise<boolean> {
+    if (!this.isPortfolioAdminRequest(context)) return false;
+
+    const userPermission = await this.user.getUserPermission(
+      user.id,
+      organizationId
+    );
+    if (!userPermission || userPermission.permission !== Permission.ADMIN)
+      return false;
+    return true;
   }
 }

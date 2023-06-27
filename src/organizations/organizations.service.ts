@@ -1,9 +1,11 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Permission, Role } from '@prisma/client';
 import {
-  AddOrganizationMembersInput,
-  InviteMemberInput,
+  AddOrganizationVestingMembersInput,
+  AddOrganizationPortfolioMembersInput,
+  InviteVestingMemberInput,
+  InvitePortfolioMemberInput,
 } from './dto/organization.input';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { getExpiredTime } from 'src/common/utils/helper';
@@ -16,7 +18,7 @@ export class OrganizationsService {
     private readonly email: EmailService
   ) {}
 
-  async create(email: string, name: string, userId: string, role: Role) {
+  async create(email: string, name: string, userId: string) {
     const organization = await this.prisma.organization.create({
       data: {
         email,
@@ -25,7 +27,12 @@ export class OrganizationsService {
       },
     });
 
-    await this.addOrganizationMember(organization.id, userId, role);
+    await this.addRoleToVestingMember(organization.id, userId, Role.FOUNDER);
+    await this.addPermissionToPortfolioMember(
+      organization.id,
+      userId,
+      Permission.ADMIN
+    );
 
     return organization;
   }
@@ -36,7 +43,7 @@ export class OrganizationsService {
         id: organizationId,
       },
       include: {
-        User: {
+        user: {
           select: {
             id: true,
             name: true,
@@ -58,7 +65,7 @@ export class OrganizationsService {
     });
   }
 
-  async addOrganizationMember(
+  async addRoleToVestingMember(
     organizationId: string,
     userId: string,
     role: Role
@@ -72,7 +79,21 @@ export class OrganizationsService {
     });
   }
 
-  async addOrganizationMembers(payload: AddOrganizationMembersInput) {
+  async addPermissionToPortfolioMember(
+    organizationId: string,
+    userId: string,
+    permission: Permission
+  ) {
+    return this.prisma.userPermission.create({
+      data: {
+        organizationId,
+        userId,
+        permission,
+      },
+    });
+  }
+
+  async addVestingMembers(payload: AddOrganizationVestingMembersInput) {
     const { organizationId, members } = payload;
     const data = members.filter(
       (member) => member.organizationId === organizationId
@@ -86,9 +107,23 @@ export class OrganizationsService {
     });
   }
 
-  async inviteOrganizationMember(
+  async addPortfolioMembers(payload: AddOrganizationPortfolioMembersInput) {
+    const { organizationId, members } = payload;
+    const data = members.filter(
+      (member) => member.organizationId === organizationId
+    );
+    if (data.length !== members.length) {
+      throw new BadRequestException('Wrong organizationId is provided');
+    }
+
+    return this.prisma.userPermission.createMany({
+      data,
+    });
+  }
+
+  async inviteVestingMember(
     organizationId: string,
-    { email, role, redirectUri }: InviteMemberInput
+    { email, name, role, redirectUri }: InviteVestingMemberInput
   ) {
     const organization = await this.prisma.organization.findUnique({
       where: { id: organizationId },
@@ -104,6 +139,7 @@ export class OrganizationsService {
       user = await this.prisma.user.create({
         data: {
           email,
+          name,
         },
       });
     }
@@ -153,35 +189,136 @@ export class OrganizationsService {
     }
   }
 
-  async getOrganizationMembers(organizationId: string) {
-    return this.prisma.userRole.findMany({
+  async invitePortfolioMember(
+    organizationId: string,
+    { email, name, permission, redirectUri }: InvitePortfolioMemberInput
+  ) {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+    });
+    if (!organization) {
+      throw new BadRequestException('Organization not found', organizationId);
+    }
+
+    let user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: {
+          email,
+          name,
+        },
+      });
+    }
+
+    // create or update + validate role
+    let userPermission = await this.prisma.userPermission.findFirst({
       where: {
         organizationId,
+        userId: user.id,
       },
-      include: {
-        User: {
-          select: {
-            id: true,
-            name: true,
-          },
+    });
+    if (!userPermission) {
+      userPermission = await this.prisma.userPermission.create({
+        data: {
+          organizationId,
+          userId: user.id,
+          permission,
         },
+      });
+    } else {
+      if (userPermission.permission !== permission) {
+        throw new BadRequestException(
+          `This user already has ${userPermission.permission} permission`
+        );
+      }
+    }
+
+    // Generate email invitation code
+    const code = generateRandomCode();
+    await this.prisma.emailVerification.upsert({
+      where: { email },
+      create: { email, code, expiredAt: getExpiredTime() },
+      update: { code, expiredAt: getExpiredTime() },
+    });
+
+    // Send email invitation
+    const isSucceeded = await this.email.sendInvitationEmail(
+      email,
+      code,
+      redirectUri
+    );
+    if (!isSucceeded) {
+      throw new BadRequestException(
+        'Sending invitation email is failed',
+        email
+      );
+    }
+  }
+
+  async deleteVestingMember(organizationId: string, userId: string) {
+    await this.prisma.userRole.deleteMany({
+      where: {
+        userId,
+        organizationId,
       },
     });
   }
 
-  async getUserOrganizations(userId: string) {
+  async deletePortfolioMember(organizationId: string, userId: string) {
+    await this.prisma.userPermission.deleteMany({
+      where: {
+        userId,
+        organizationId,
+      },
+    });
+  }
+
+  async getVestingMembers(organizationId: string) {
+    return this.prisma.userRole.findMany({
+      where: {
+        organizationId,
+        user: {
+          isActive: true,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async getPortfolioMembers(organizationId: string) {
+    return this.prisma.userPermission.findMany({
+      where: {
+        organizationId,
+        user: {
+          isActive: true,
+        },
+      },
+      include: {
+        user: true,
+      },
+    });
+  }
+
+  async getUserVestingOrganizations(userId: string) {
     return this.prisma.userRole.findMany({
       where: {
         userId,
       },
       include: {
-        Organization: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        organization: true,
+      },
+    });
+  }
+
+  async getUserPortfolioOrganizations(userId: string) {
+    return this.prisma.userPermission.findMany({
+      where: { userId },
+      include: {
+        organization: true,
       },
     });
   }

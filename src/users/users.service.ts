@@ -42,4 +42,13 @@ export class UsersService {
       },
     });
   }
+
+  getUserPermission(userId: string, organizationId: string) {
+    return this.prisma.userPermission.findFirst({
+      where: {
+        userId,
+        organizationId,
+      },
+    });
+  }
 }

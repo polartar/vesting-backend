@@ -21,6 +21,11 @@ enum Role {
   INVESTOR
 }
 
+enum InstitutionalRole {
+  ADMIN
+  MEMBER
+}
+
 enum ReleaseFrequencyType {
   CONTINUOUS
   DAILY
@@ -54,18 +59,24 @@ enum ConfirmationStatus {
   REJECTED
 }
 
+enum Permission {
+  ADMIN
+  READ
+}
+
 model User {
-  id            String         @id @default(uuid())
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-  email         String         @unique
+  id            String           @id @default(uuid())
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+  email         String           @unique
   name          String?
-  isActive      Boolean        @default(true) @map("is_active")
-  isAdmin       Boolean        @default(false) @map("is_admin")
-  Wallets       Wallet[]
-  Organizations Organization[]
-  Roles         UserRole[]
-  Recipes       Recipe[]
+  isActive      Boolean          @default(true) @map("is_active")
+  isAdmin       Boolean          @default(false) @map("is_admin")
+  wallets       Wallet[]
+  organizations Organization[]
+  roles         UserRole[]
+  permissions   UserPermission[]
+  recipes       Recipe[]
 
   @@map("user")
 }
@@ -87,7 +98,7 @@ model Wallet {
   updatedAt DateTime @updatedAt @map("updated_at")
   address   String   @unique
   userId    String   @map("user_id")
-  User      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@map("wallet")
 }
@@ -97,15 +108,16 @@ model Organization {
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
   userId           String              @map("user_id")
-  User             User                @relation(fields: [userId], references: [id])
+  user             User                @relation(fields: [userId], references: [id])
   name             String
   email            String
-  Users            UserRole[]
-  Tokens           OrganizationToken[]
-  VestingContracts VestingContract[]
-  Vestings         Vesting[]
-  Recipes          Recipe[]
-  VestingTemplates VestingTemplate[]
+  roles            UserRole[]
+  tokens           OrganizationToken[]
+  vestingContracts VestingContract[]
+  vestings         Vesting[]
+  recipes          Recipe[]
+  vestingTemplates VestingTemplate[]
+  members          UserPermission[]
 
   @@map("organization")
 }
@@ -116,11 +128,26 @@ model UserRole {
   updatedAt      DateTime     @updatedAt @map("updated_at")
   role           Role         @default(FOUNDER)
   userId         String       @map("user_id")
-  User           User         @relation(fields: [userId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
   organizationId String       @map("organization_id")
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  isAccepted     Boolean      @default(false)
 
   @@map("user_role")
+}
+
+model UserPermission {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  permission     Permission   @default(READ)
+  userId         String       @map("user_id")
+  user           User         @relation(fields: [userId], references: [id])
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  isAccepted     Boolean      @default(false)
+
+  @@map("user_permission")
 }
 
 model Transaction {
@@ -130,11 +157,11 @@ model Transaction {
   chainId           Int                @map("chain_id")
   hash              String
   status            TransactionStatus  @default(DRAFT)
-  Tokens            Token[]
-  VestingContracts  VestingContract[]
-  Vestings          Vesting[]
-  SafeWallets       SafeWallet[]
-  SafeConfirmations SafeConfirmation[]
+  tokens            Token[]
+  vestingContracts  VestingContract[]
+  vestings          Vesting[]
+  safeWallets       SafeWallet[]
+  safeConfirmations SafeConfirmation[]
 
   @@map("transaction")
 }
@@ -151,12 +178,12 @@ model Token {
   address          String?
   logo             String?
   transactionId    String?             @map("transaction_id")
-  Transaction      Transaction?        @relation(fields: [transactionId], references: [id])
+  transaction      Transaction?        @relation(fields: [transactionId], references: [id])
   isDeployed       Boolean             @default(false) @map("is_deployed")
   isActive         Boolean             @default(true) @map("is_active")
-  Organizations    OrganizationToken[]
-  VestingContracts VestingContract[]
-  Vestings         Vesting[]
+  organizations    OrganizationToken[]
+  vestingContracts VestingContract[]
+  vestings         Vesting[]
 
   @@map("token")
 }
@@ -166,9 +193,9 @@ model OrganizationToken {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   organizationId String       @map("organization_id")
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
   tokenId        String       @map("token_id")
-  Token          Token        @relation(fields: [tokenId], references: [id])
+  token          Token        @relation(fields: [tokenId], references: [id])
 
   @@map("organization_token")
 }
@@ -178,17 +205,17 @@ model VestingContract {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   organizationId String       @map("organization_id")
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
   tokenId        String       @map("token_id")
-  Token          Token        @relation(fields: [tokenId], references: [id])
+  token          Token        @relation(fields: [tokenId], references: [id])
   name           String
   address        String?
   chainId        Int?         @map("chain_id")
   transactionId  String?      @map("transaction_id")
-  Transaction    Transaction? @relation(fields: [transactionId], references: [id])
+  transaction    Transaction? @relation(fields: [transactionId], references: [id])
   isDeployed     Boolean      @default(false) @map("is_deployed")
   isActive       Boolean      @default(true) @map("is_active")
-  Vestings       Vesting[]
+  vestings       Vesting[]
 
   @@map("vesting_contract")
 }
@@ -198,11 +225,11 @@ model Vesting {
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
   organizationId       String               @map("organization_id")
-  Organization         Organization         @relation(fields: [organizationId], references: [id])
+  organization         Organization         @relation(fields: [organizationId], references: [id])
   tokenId              String               @map("token_id")
   Token                Token                @relation(fields: [tokenId], references: [id])
   vestingContractId    String               @map("vesting_contract_id")
-  VestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
+  vestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
   name                 String
   startedAt            DateTime             @map("started_at")
   endedAt              DateTime             @map("ended_at")
@@ -213,8 +240,8 @@ model Vesting {
   cliffAmount          Int                  @default(0) @map("cliff_amount")
   amount               String
   transactionId        String?              @map("transaction_id")
-  Transaction          Transaction?         @relation(fields: [transactionId], references: [id])
-  Recipies             Recipe[]
+  transaction          Transaction?         @relation(fields: [transactionId], references: [id])
+  recipies             Recipe[]
 
   @@map("vesting")
 }
@@ -224,7 +251,7 @@ model VestingTemplate {
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
   organizationId       String               @map("organization_id")
-  Organization         Organization         @relation(fields: [organizationId], references: [id])
+  organization         Organization         @relation(fields: [organizationId], references: [id])
   name                 String
   releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
   releaseFrequency     Int                  @map("release_frequency")
@@ -240,11 +267,11 @@ model Recipe {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   vestingId      String       @map("vesting_id")
-  Vesting        Vesting      @relation(fields: [vestingId], references: [id])
+  vesting        Vesting      @relation(fields: [vestingId], references: [id])
   recipientId    String       @map("recipient_id")
-  Recipient      User         @relation(fields: [recipientId], references: [id])
+  recipient      User         @relation(fields: [recipientId], references: [id])
   organizationId String       @map("organization_id")
-  Organization   Organization @relation(fields: [organizationId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
   allocations    String
   status         RecipeStatus @default(PENDING)
 
@@ -260,9 +287,9 @@ model SafeWallet {
   organizationId        String             @map("organization_id")
   requiredConfirmations Int                @map("required_confirmations")
   transactionId         String?            @map("transaction_id")
-  Transaction           Transaction?       @relation(fields: [transactionId], references: [id])
-  SafeOwners            SafeOwner[]
-  SafeConfirmations     SafeConfirmation[]
+  transaction           Transaction?       @relation(fields: [transactionId], references: [id])
+  safeOwners            SafeOwner[]
+  safeConfirmations     SafeConfirmation[]
 
   @@map("safe_wallet")
 }
@@ -272,9 +299,9 @@ model SafeOwner {
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   safeWalletId      String             @map("safe_wallet_id")
-  SafeWallet        SafeWallet         @relation(fields: [safeWalletId], references: [id])
+  safeWallet        SafeWallet         @relation(fields: [safeWalletId], references: [id])
   address           String
-  SafeConfirmations SafeConfirmation[]
+  safeConfirmations SafeConfirmation[]
 
   @@map("safe_owner")
 }
@@ -284,11 +311,11 @@ model SafeConfirmation {
   createdAt     DateTime           @default(now()) @map("created_at")
   updatedAt     DateTime           @updatedAt @map("updated_at")
   safeWalletId  String             @map("safe_wallet_id")
-  SafeWallet    SafeWallet         @relation(fields: [safeWalletId], references: [id])
+  safeWallet    SafeWallet         @relation(fields: [safeWalletId], references: [id])
   safeOwnerId   String             @map("safe_owner_id")
-  SafeOwner     SafeOwner          @relation(fields: [safeOwnerId], references: [id])
+  safeOwner     SafeOwner          @relation(fields: [safeOwnerId], references: [id])
   transactionId String             @map("transaction_id")
-  Transaction   Transaction        @relation(fields: [transactionId], references: [id])
+  transaction   Transaction        @relation(fields: [transactionId], references: [id])
   status        ConfirmationStatus
 
   @@map("safe_confirmation")
