@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import { TokensService } from './tokens.service';
 import { CreateTokenInput, ImportTokenInput } from './dto/token.input';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { AlchemyService } from 'src/alchemy/alchemy.service';
+import { User } from '@prisma/client';
 
 @Controller('token')
 export class TokensController {
@@ -70,5 +72,13 @@ export class TokensController {
   @Get('/:tokenId')
   async getToken(@Param('tokenId') tokenId: string) {
     return this.token.get(tokenId);
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/')
+  async getTokens(@Request() req: { user: User }) {
+    return this.token.getMyTokens(req.user.id);
   }
 }

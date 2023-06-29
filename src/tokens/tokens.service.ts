@@ -72,4 +72,29 @@ export class TokensService {
       },
     });
   }
+
+  async getMyTokens(userId: string) {
+    return this.prisma.userRole.findMany({
+      where: { userId },
+      select: {
+        organizationId: true,
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            tokens: {
+              select: {
+                token: true,
+              },
+              where: {
+                token: {
+                  isActive: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }
