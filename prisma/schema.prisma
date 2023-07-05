@@ -66,6 +66,7 @@ enum Permission {
 
 model User {
   id            String           @id @default(uuid())
+  firebaseId    String?          @map("firebase_id")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
   email         String           @unique
@@ -105,6 +106,7 @@ model Wallet {
 
 model Organization {
   id               String              @id @default(uuid())
+  firebaseId       String?             @map("firebase_id")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
   userId           String              @map("user_id")
@@ -168,6 +170,7 @@ model Transaction {
 
 model Token {
   id               String              @id @default(uuid())
+  firebaseId       String?             @map("firebase_id")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
   name             String
@@ -202,6 +205,7 @@ model OrganizationToken {
 
 model VestingContract {
   id             String       @id @default(uuid())
+  firebaseId     String?      @map("firebase_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   organizationId String       @map("organization_id")
@@ -222,6 +226,7 @@ model VestingContract {
 
 model Vesting {
   id                   String               @id @default(uuid())
+  firebaseId           String?              @map("firebase_id")
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
   organizationId       String               @map("organization_id")
@@ -237,7 +242,7 @@ model Vesting {
   releaseFrequency     Int                  @map("release_frequency")
   cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
   cliffDuration        Int                  @default(0) @map("cliff_duration")
-  cliffAmount          Int                  @default(0) @map("cliff_amount")
+  cliffAmount          String               @default("0") @map("cliff_amount")
   amount               String
   transactionId        String?              @map("transaction_id")
   transaction          Transaction?         @relation(fields: [transactionId], references: [id])
@@ -257,13 +262,14 @@ model VestingTemplate {
   releaseFrequency     Int                  @map("release_frequency")
   cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
   cliffDuration        Int                  @default(0) @map("cliff_duration")
-  cliffAmount          Int                  @default(0) @map("cliff_amount")
+  cliffAmount          String               @default("0") @map("cliff_amount")
 
   @@map("vesting_template")
 }
 
 model Recipe {
   id             String       @id @default(uuid())
+  firebaseId     String?      @map("firebase_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   vestingId      String       @map("vesting_id")
@@ -280,6 +286,7 @@ model Recipe {
 
 model SafeWallet {
   id                    String             @id @default(uuid())
+  firebaseId            String?            @map("firebase_id")
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
   chainId               Int                @map("chain_id")

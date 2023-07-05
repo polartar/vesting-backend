@@ -34,6 +34,6 @@ export class Vesting extends BaseModel {
   @Field(() => Number, { defaultValue: 0 })
   cliffDuration: number;
 
-  @Field(() => Number, { defaultValue: 0 })
-  cliffAmount: number;
+  @Field(() => String, { defaultValue: '0' })
+  cliffAmount: string;
 }

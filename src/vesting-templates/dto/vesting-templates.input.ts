@@ -29,6 +29,6 @@ export class CreateVestingTemplateInput {
   cliffDuration: number;
 
   @ApiProperty()
-  @Field(() => Number)
-  cliffAmount: number;
+  @Field(() => String)
+  cliffAmount: string;
 }

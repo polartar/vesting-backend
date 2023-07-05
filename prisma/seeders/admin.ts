@@ -29,25 +29,26 @@ const AdminUsers = [
   },
 ];
 
-async function main() {
+export const migrateAdminUsers = async () => {
   console.log('Seeding admin users...');
 
   for (const user of AdminUsers) {
-    await prisma.user.create({
-      data: {
-        name: user.name,
+    const dbUser = await prisma.user.findFirst({
+      where: {
         email: user.email,
-        isActive: true,
-        isAdmin: true,
       },
     });
+    if (!dbUser) {
+      await prisma.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          isActive: true,
+          isAdmin: true,
+        },
+      });
+    }
   }
 
   console.log('Seeding Ended');
-}
-
-main()
-  .catch((e) => console.error(e))
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+};

@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
@@ -32,4 +33,10 @@ export class UserEntity extends CommonEntity implements User {
   @ApiProperty()
   @Expose()
   isAdmin: boolean;
+
+  @Field(() => String)
+  @ApiProperty()
+  @Expose()
+  @Optional()
+  firebaseId: string;
 }

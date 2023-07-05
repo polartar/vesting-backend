@@ -45,8 +45,8 @@ export class CreateVestingInput {
   cliffDuration: number;
 
   @ApiProperty()
-  @Field(() => Number)
-  cliffAmount: number;
+  @Field(() => String)
+  cliffAmount: string;
 
   @ApiProperty()
   @Field(() => String)

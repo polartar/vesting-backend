@@ -8,7 +8,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  getUser(userId: string, { withEmail = false } = {}): Promise<User> {
+  getUser(userId: string, { withEmail = false } = {}) {
     return this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -21,6 +21,7 @@ export class UsersService {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        firebaseId: true,
       },
     });
   }
