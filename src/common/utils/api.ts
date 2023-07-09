@@ -31,6 +31,9 @@ export const getCors = (): CorsConfig => {
       break;
     default:
       origin.push(
+        /\.vercel\.app$/,
+        '^(https?://(?:.+\\.)?vercel.app(?::d{1,5})?)$',
+        `^(https?:\/\/(?:.+\.)?vercel\.app(?::\d{1,5})?)$`,
         'https://qa-v2.vtvl.io',
         'https://qa-portfolio.vtvl.io',
         'http://localhost:3000',
