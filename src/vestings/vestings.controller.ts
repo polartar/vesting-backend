@@ -28,4 +28,16 @@ export class VestingsController {
       withToken: true,
     });
   }
+
+  /** Fetch all vestings by organization */
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/organization/:organizationId')
+  async getVestingsByOrganization(
+    @Param('organizationId') organizationId: string
+  ) {
+    return this.vesting.getVestingsByOrganization(organizationId);
+  }
 }

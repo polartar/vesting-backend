@@ -27,3 +27,14 @@ export class CreateVestingContractInput {
   @Field(() => Number)
   chainId: number;
 }
+
+@InputType()
+export class DeployVestingContractInput {
+  @ApiProperty()
+  @Field(() => String)
+  address: string;
+
+  @ApiProperty()
+  @Field(() => Number)
+  chainId: number;
+}

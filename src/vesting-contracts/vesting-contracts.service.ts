@@ -1,6 +1,9 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreateVestingContractInput } from './dto/vesting-contracts.input';
+import {
+  CreateVestingContractInput,
+  DeployVestingContractInput,
+} from './dto/vesting-contracts.input';
 
 @Injectable()
 export class VestingContractsService {
@@ -27,7 +30,44 @@ export class VestingContractsService {
         id: vestingContractId,
       },
       include: {
-        // TODO add relations
+        organization: true,
+        token: true,
+        vestings: true,
+      },
+    });
+  }
+
+  async update(
+    vestingContractId: string,
+    payload: Partial<CreateVestingContractInput>
+  ) {
+    const { organizationId: _, ...data } = payload;
+    return this.prisma.vestingContract.update({
+      where: {
+        id: vestingContractId,
+      },
+      data,
+    });
+  }
+
+  async deploy(vestingContractId: string, payload: DeployVestingContractInput) {
+    return this.prisma.vestingContract.update({
+      where: { id: vestingContractId },
+      data: {
+        ...payload,
+        isDeployed: true,
+      },
+    });
+  }
+
+  async getVestingContractsByOrganization(organizationId: string) {
+    return this.prisma.vestingContract.findMany({
+      where: {
+        organizationId,
+      },
+      select: {
+        token: true,
+        _count: true,
       },
     });
   }

@@ -322,4 +322,15 @@ export class OrganizationsService {
       },
     });
   }
+
+  async getOrganizationRecipients(organizationId: string) {
+    return this.prisma.recipe.findMany({
+      where: {
+        organizationId,
+      },
+      select: {
+        recipient: true,
+      },
+    });
+  }
 }

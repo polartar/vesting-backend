@@ -117,6 +117,7 @@ async function registerToken(token, organizationId) {
         firebaseId: token.id,
         name: token.name,
         symbol: token.symbol,
+        decimal: Number(token.decimal) || 18,
         chainId: token.chainId,
         address: token.address.toLowerCase(),
         logo: token.logo,
@@ -124,6 +125,9 @@ async function registerToken(token, organizationId) {
         isActive: true,
         createdAt: token.createdAt,
         updatedAt: token.updatedAt,
+        burnable: token.burnable,
+        imported: token.imported,
+        supplyCap: token.supplyCap,
       },
     });
   }

@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  Put,
+} from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingContractsService } from './vesting-contracts.service';
 import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
-import { CreateVestingContractInput } from './dto/vesting-contracts.input';
+import {
+  CreateVestingContractInput,
+  DeployVestingContractInput,
+} from './dto/vesting-contracts.input';
 
 @Controller('vesting-contract')
 export class VestingContractsController {
@@ -25,5 +36,41 @@ export class VestingContractsController {
     @Param('vestingContractId') vestingContractId: string
   ) {
     return this.vestingContract.get(vestingContractId);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:vestingContractId')
+  async updateVestingContract(
+    @Param('vestingContractId') vestingContractId: string,
+    @Body() body: Partial<CreateVestingContractInput>
+  ) {
+    return this.vestingContract.update(vestingContractId, body);
+  }
+
+  /**
+   * Update vestingContract deployment status
+   * TODO remove once the blockchain listener is done
+   */
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:vestingContractId/deploy')
+  async deployVestingContract(
+    @Param('vestingContractId') vestingContractId: string,
+    @Body() body: DeployVestingContractInput
+  ) {
+    return this.vestingContract.deploy(vestingContractId, body);
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/organization/:organizationId')
+  async getVestingContractsByOrganization(
+    @Param('organizationId') organizationId: string
+  ) {
+    return this.vestingContract.get(organizationId);
   }
 }

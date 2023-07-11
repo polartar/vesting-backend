@@ -18,6 +18,10 @@ export class CreateTokenInput {
   symbol: string;
 
   @ApiProperty()
+  @Field(() => Number)
+  decimal: number;
+
+  @ApiProperty()
   @Field(() => String)
   @Optional()
   description?: string;
@@ -27,6 +31,22 @@ export class CreateTokenInput {
   @Optional()
   @IsNumberString()
   maxSupply?: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @Optional()
+  @IsNumberString()
+  supplyCap?: string;
+
+  @ApiProperty()
+  @Field(() => Boolean)
+  @IsNumberString()
+  burnable: boolean;
+
+  @ApiProperty()
+  @Field(() => Boolean)
+  @IsNumberString()
+  imported: boolean;
 
   @ApiProperty()
   @Field(() => Number)
@@ -57,13 +77,27 @@ export class ImportTokenInput {
   @ApiProperty()
   @Field(() => String)
   address: string;
+
+  @ApiProperty()
+  @Field(() => Boolean)
+  burnable: boolean;
 }
 
 @InputType()
 export class CreateDeployedTokenInput extends ImportTokenInput {
+  @ApiProperty()
+  @Field(() => String)
   name: string;
 
+  @ApiProperty()
+  @Field(() => String)
   symbol: string;
 
+  @ApiProperty()
+  @Field(() => Number)
+  decimal: number;
+
+  @ApiProperty()
+  @Field(() => Boolean)
   isDeployed: boolean;
 }

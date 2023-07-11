@@ -175,8 +175,12 @@ model Token {
   updatedAt        DateTime            @updatedAt @map("updated_at")
   name             String
   symbol           String
+  decimal          Int
+  imported         Boolean
+  burnable         Boolean
   description      String?
   maxSupply        String?             @map("max_supply")
+  supplyCap        String?             @map("supply_cap")
   chainId          Int?                @map("chain_id")
   address          String?
   logo             String?
@@ -232,7 +236,7 @@ model Vesting {
   organizationId       String               @map("organization_id")
   organization         Organization         @relation(fields: [organizationId], references: [id])
   tokenId              String               @map("token_id")
-  Token                Token                @relation(fields: [tokenId], references: [id])
+  token                Token                @relation(fields: [tokenId], references: [id])
   vestingContractId    String               @map("vesting_contract_id")
   vestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
   name                 String

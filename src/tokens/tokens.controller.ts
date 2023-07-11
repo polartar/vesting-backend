@@ -55,9 +55,11 @@ export class TokensController {
         logo: body.logo,
         name: metadata.name,
         symbol: metadata.symbol,
+        decimal: metadata.decimals,
         organizationId: body.organizationId,
         isDeployed: true,
         address: body.address,
+        burnable: body.burnable,
       });
       return token;
     } catch (error) {
@@ -79,6 +81,7 @@ export class TokensController {
   @UseGuards(GlobalAuthGuard)
   @Get('/')
   async getTokens(@Request() req: { user: User }) {
-    return this.token.getMyTokens(req.user.id);
+    const tokens = await this.token.getMyTokens(req.user.id);
+    return tokens.map(({ token }) => token);
   }
 }

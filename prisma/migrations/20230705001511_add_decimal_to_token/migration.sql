@@ -1,7 +1,7 @@
 -- Add decimal to token
 ALTER TABLE "token" ADD COLUMN "decimal" INT DEFAULT 18;
-ALTER TABLE "token" ADD COLUMN "imported" BOOLEAN;
-ALTER TABLE "token" ADD COLUMN "burnable" BOOLEAN;
+ALTER TABLE "token" ADD COLUMN "imported" BOOLEAN DEFAULT false;
+ALTER TABLE "token" ADD COLUMN "burnable" BOOLEAN DEFAULT false;
 ALTER TABLE "token" ADD COLUMN "firebase_id" TEXT DEFAULT NULL;
 
 -- Add firebase_id to user

@@ -166,6 +166,8 @@ export class OrganizationsController {
     }
   }
 
+  /** Invite members */
+
   @ApiBearerAuth()
   @OrganizationFounderAuth()
   @UseGuards(GlobalAuthGuard)
@@ -294,6 +296,30 @@ export class OrganizationsController {
       );
       throw new BadRequestException(
         ERROR_MESSAGES.ORGANIZATION_GET_ALL_MEMBERS_FAILURE
+      );
+    }
+  }
+
+  /** Fetch All recipients */
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/:organizationId/recipients')
+  async getOrganizationRecipients(
+    @Param('organizationId') organizationId: string
+  ) {
+    try {
+      const recipients = await this.organization.getOrganizationRecipients(
+        organizationId
+      );
+      return recipients;
+    } catch (error) {
+      console.error(
+        'Error: GET /organization/:organizationId/members/portfolio',
+        error
+      );
+      throw new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_RECIPIENTS_FAILURE
       );
     }
   }

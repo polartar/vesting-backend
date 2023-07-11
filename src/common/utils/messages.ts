@@ -30,6 +30,7 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_INVITE_MEMBERS_WITH_WRONG_ROLES:
     'Inviting members role is incorrect',
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
+  ORGANIZATION_GET_ALL_RECIPIENTS_FAILURE: 'Fetching all recipients is failed',
 
   /** Safe Wallet */
   SAFE_CREATE_WALLET: 'Creating new safe wallet is failed',

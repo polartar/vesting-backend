@@ -37,7 +37,10 @@ export class TokensService {
       token = prevToken;
     } else {
       token = await this.prisma.token.create({
-        data,
+        data: {
+          ...data,
+          imported: true,
+        },
       });
     }
 
@@ -74,26 +77,20 @@ export class TokensService {
   }
 
   async getMyTokens(userId: string) {
-    return this.prisma.userRole.findMany({
+    const orgs = await this.prisma.userRole.groupBy({
+      by: ['organizationId'],
       where: { userId },
-      select: {
-        organizationId: true,
-        organization: {
-          select: {
-            id: true,
-            name: true,
-            tokens: {
-              select: {
-                token: true,
-              },
-              where: {
-                token: {
-                  isActive: true,
-                },
-              },
-            },
-          },
+    });
+    const organizationIds = orgs.map((org) => org.organizationId);
+
+    return this.prisma.organizationToken.findMany({
+      where: {
+        organizationId: {
+          in: organizationIds,
         },
+      },
+      select: {
+        token: true,
       },
     });
   }

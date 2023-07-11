@@ -99,8 +99,12 @@ Table token {
   updatedAt DateTime [not null]
   name String [not null]
   symbol String [not null]
+  decimal Int [not null]
+  imported Boolean [not null]
+  burnable Boolean [not null]
   description String
   maxSupply String
+  supplyCap String
   chainId Int
   address String
   logo String
@@ -150,7 +154,7 @@ Table vesting {
   organizationId String [not null]
   organization organization [not null]
   tokenId String [not null]
-  Token token [not null]
+  token token [not null]
   vestingContractId String [not null]
   vestingContract vesting_contract [not null]
   name String [not null]

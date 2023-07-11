@@ -1,4 +1,8 @@
-import { getCors, getSwagger, getGraphql } from '../utils/api';
+import {
+  getCors,
+  getSwagger,
+  // getGraphql,
+} from '../utils/api';
 import type { Config } from './config.interface';
 
 const config: Config = {

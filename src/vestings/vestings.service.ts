@@ -31,7 +31,7 @@ export class VestingsService {
             }
           : false,
 
-        Token: query.withToken
+        token: query.withToken
           ? {
               select: {
                 id: true,
@@ -42,6 +42,19 @@ export class VestingsService {
               },
             }
           : false,
+      },
+    });
+  }
+
+  async getVestingsByOrganization(organizationId: string) {
+    return this.prisma.vesting.findMany({
+      where: {
+        organizationId,
+      },
+      select: {
+        vestingContract: true,
+        token: true,
+        _count: true,
       },
     });
   }
