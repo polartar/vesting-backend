@@ -1,28 +1,33 @@
 import { Optional } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumberString } from 'class-validator';
+import { IsBoolean, IsNumber, IsNumberString, IsString } from 'class-validator';
 
 @InputType()
 export class CreateTokenInput {
   @ApiProperty()
   @Field(() => String)
+  @IsString()
   organizationId: string;
 
   @ApiProperty()
   @Field(() => String)
+  @IsString()
   name: string;
 
   @ApiProperty()
   @Field(() => String)
+  @IsString()
   symbol: string;
 
   @ApiProperty()
   @Field(() => Number)
+  @IsNumber()
   decimal: number;
 
   @ApiProperty()
   @Field(() => String)
+  @IsString()
   @Optional()
   description?: string;
 
@@ -35,27 +40,29 @@ export class CreateTokenInput {
   @ApiProperty()
   @Field(() => String)
   @Optional()
-  @IsNumberString()
+  @IsString()
   supplyCap?: string;
 
   @ApiProperty()
   @Field(() => Boolean)
-  @IsNumberString()
+  @IsBoolean()
   burnable: boolean;
 
   @ApiProperty()
   @Field(() => Boolean)
-  @IsNumberString()
+  @IsBoolean()
   imported: boolean;
 
   @ApiProperty()
   @Field(() => Number)
+  @IsNumber()
   @Optional()
   chainId: SupportedChainIds;
 
   @ApiProperty()
   @Field(() => String)
   @Optional()
+  @IsString()
   logo: string;
 }
 
