@@ -4,7 +4,7 @@ import { ConfirmationStatus } from '@prisma/client';
 import { IsArray, IsEthereumAddress, IsNotEmpty } from 'class-validator';
 
 @InputType()
-export class CreateSafeWalletInput {
+export class CreateSafeWalletDetailInput {
   @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()
@@ -28,24 +28,14 @@ export class CreateSafeWalletInput {
 }
 
 @InputType()
-export class CreateSafeOwnersInput {
+export class CreateSafeWalletInput extends CreateSafeWalletDetailInput {
   @ApiProperty()
-  @Field(() => String)
-  @IsNotEmpty()
-  organizationId: string;
-
-  @ApiProperty()
-  @IsArray()
-  @IsEthereumAddress({ each: true })
   @Field(() => Array)
   @IsNotEmpty()
-  addresses: string[];
-
-  @ApiProperty()
-  @Field(() => String)
-  @IsNotEmpty()
-  safeWalletId: string;
+  @IsArray()
+  owners: string[];
 }
+
 
 @InputType()
 export class CreateSafeConfirmationInput {

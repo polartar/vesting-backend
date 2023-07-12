@@ -20,6 +20,7 @@ import { VestingsModule } from './vestings/vestings.module';
 import { TokensModule } from './tokens/tokens.module';
 import { RecipesModule } from './recipe/recipes.module';
 import { VestingTemplatesModule } from './vesting-templates/vesting-templates.module';
+import { SafesModule } from './safe/safes.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { VestingTemplatesModule } from './vesting-templates/vesting-templates.mo
     VestingsModule,
     RecipesModule,
     VestingTemplatesModule,
+    SafesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
