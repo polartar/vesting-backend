@@ -1,21 +1,15 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
 
-import { CreateVestingInput } from './dto/vestings.input';
+import { CreateVestingDetailInput } from './dto/vestings.input';
 import { GetVestingQuery } from './dto/vesting.output';
 
 @Injectable()
 export class VestingsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(payload: CreateVestingInput) {
-    const vesting = await this.prisma.vesting.create({
-      data: payload,
-    });
-
-    // TODO send email invitations
-
-    return vesting;
+  async create(data: CreateVestingDetailInput) {
+    return this.prisma.vesting.create({ data });
   }
 
   async get(vestingId: string, query: GetVestingQuery) {

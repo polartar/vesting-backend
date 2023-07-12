@@ -21,6 +21,7 @@ import {
   InvitePortfolioMemberInput,
   UpdateOrganizationInput,
   DeleteOrganizationMemberInput,
+  InviteVestingRecipientInput,
 } from './dto/organization.input';
 import { User } from 'src/users/models/user.model';
 import {

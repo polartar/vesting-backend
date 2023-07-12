@@ -1,35 +1,43 @@
-import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
+import { Controller, UseGuards, Get, Put, Param, Body } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RecipesService } from './recipes.service';
-import { BulkCreateRecipesInput, CreateRecipeInput } from './dto/recipe.input';
-import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
+import {
+  NormalAuth,
+  OrganizationFounderAuth,
+  PublicAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
+import { RevokeRecipeInput } from './dto/recipe.input';
+import { RecipeStatus } from '@prisma/client';
 
 @Controller('recipe')
 export class RecipesController {
   constructor(private readonly recipe: RecipesService) {}
 
   @ApiBearerAuth()
-  @OrganizationFounderAuth()
-  @UseGuards(GlobalAuthGuard)
-  @Post('/')
-  async createRecipe(@Body() body: CreateRecipeInput) {
-    return this.recipe.create(body);
-  }
-
-  @ApiBearerAuth()
-  @OrganizationFounderAuth()
-  @UseGuards(GlobalAuthGuard)
-  @Post('/bulk')
-  async bulkCreateRecipe(@Body() body: BulkCreateRecipesInput) {
-    return this.recipe.bulkCreate(body);
-  }
-
-  @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
-  @Get('/:recipeId')
+  @Get('/get/:recipeId')
   async getRecipe(@Param('recipeId') recipeId: string) {
     return this.recipe.get(recipeId);
+  }
+
+  @ApiBearerAuth()
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/code/:code')
+  async getRecipeByCode(@Param('code') code: string) {
+    return this.recipe.getByCode(code);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/revoke/:recipeId')
+  async revokeRecipe(
+    @Param('recipeId') recipeId: string,
+    @Body() _: RevokeRecipeInput
+  ) {
+    return this.recipe.update(recipeId, { status: RecipeStatus.REVOKED });
   }
 }

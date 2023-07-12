@@ -1,6 +1,12 @@
 import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsEthereumAddress,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Permission, Role } from '@prisma/client';
 
 import { Platforms } from 'src/common/utils/constants';
@@ -96,18 +102,46 @@ export class AddOrganizationPortfolioMembersInput {
 @InputType()
 export class InviteVestingMemberInput {
   @ApiProperty()
+  @IsEmail()
   @Field(() => String)
   email: string;
 
   @ApiProperty()
+  @IsString()
   @Field(() => String)
   name: string;
 
   @ApiProperty()
+  @IsEnum(Role)
   @Field(() => Role)
   role: Role;
 
   @ApiProperty()
+  @IsString()
+  @Field(() => String)
+  redirectUri: string;
+}
+
+@InputType()
+export class InviteVestingRecipientInput {
+  @ApiProperty()
+  @IsEmail()
+  @Field(() => String)
+  email: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
+  @Field(() => String)
+  address?: string;
+
+  @ApiProperty()
+  @IsString()
+  @Field(() => String)
+  name: string;
+
+  @ApiProperty()
+  @IsString()
   @Field(() => String)
   redirectUri: string;
 }
@@ -115,18 +149,22 @@ export class InviteVestingMemberInput {
 @InputType()
 export class InvitePortfolioMemberInput {
   @ApiProperty()
+  @IsEmail()
   @Field(() => String)
   email: string;
 
   @ApiProperty()
+  @IsString()
   @Field(() => String)
   name: string;
 
   @ApiProperty()
+  @IsEnum(Permission)
   @Field(() => Permission)
   permission: Permission;
 
   @ApiProperty()
+  @IsString()
   @Field(() => String)
   redirectUri: string;
 }

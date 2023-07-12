@@ -6,12 +6,14 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Recipe, RecipeStatus } from '@prisma/client';
 
 import { AuthService } from './auth.service';
 import { GoogleService } from './google.service';
 import { EmailService } from './email.service';
 
 import {
+  AuthAcceptInvitationInput,
   AuthEmailLoginInput,
   AuthGoogleLoginInput,
   AuthInput,
@@ -26,6 +28,9 @@ import { User } from 'src/users/users.decorator';
 import { UserEntity } from 'src/users/users.entity';
 import { Wallet } from 'src/wallets/wallets.decorator';
 import { WalletEntity } from 'src/wallets/wallets.entity';
+import { RecipesService } from 'src/recipe/recipes.service';
+import { OrganizationsService } from 'src/organizations/organizations.service';
+import { compareStrings } from 'src/common/utils/helpers';
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +38,9 @@ export class AuthController {
     private readonly google: GoogleService,
     private readonly auth: AuthService,
     private readonly email: EmailService,
-    private readonly wallet: WalletsService
+    private readonly wallet: WalletsService,
+    private readonly recipe: RecipesService,
+    private readonly organization: OrganizationsService
   ) {}
 
   @PublicAuth()
@@ -186,5 +193,65 @@ export class AuthController {
       user,
       wallet,
     };
+  }
+
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Post('/accept-invitation')
+  async acceptInvitation(@Body() body: AuthAcceptInvitationInput) {
+    const recipe = await this.recipe.getByCode(body.code);
+    const wallet = body.wallet;
+    const payload: Partial<Recipe> = {};
+
+    if (!recipe.address && !wallet) {
+      throw new BadRequestException(ERROR_MESSAGES.RECIPIENT_REQUIRE_WALLET);
+    }
+
+    if (wallet) {
+      if (recipe.address && !compareStrings(recipe.address, wallet.address)) {
+        throw new BadRequestException(
+          ERROR_MESSAGES.RECIPIENT_REQUIRE_CORRECT_WALLET
+        );
+      }
+
+      const isValidated = this.wallet.validateSignature(
+        wallet.signature,
+        wallet.address,
+        wallet.utcTime
+      );
+
+      if (!isValidated) {
+        throw new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
+      }
+
+      payload.address = wallet.address.toLowerCase();
+    }
+
+    if (recipe.status !== RecipeStatus.PENDING) {
+      throw new BadRequestException(
+        ERROR_MESSAGES.RECIPIENT_NO_PENDING_INVITATION
+      );
+    }
+
+    await this.wallet.findOrCreate(
+      recipe.userId,
+      recipe.address || wallet.address
+    );
+
+    await this.organization.addVestingMembers({
+      organizationId: recipe.organizationId,
+      members: [
+        {
+          userId: recipe.userId,
+          organizationId: recipe.organizationId,
+          role: recipe.role,
+        },
+      ],
+    });
+
+    payload.status = RecipeStatus.ACCEPTED;
+    await this.recipe.update(recipe.id, payload);
+
+    return SUCCESS_MESSAGES.RECIPIENT_ACCEPT_INVITATION;
   }
 }

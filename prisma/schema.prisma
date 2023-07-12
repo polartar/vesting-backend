@@ -64,6 +64,11 @@ enum Permission {
   READ
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+}
+
 model User {
   id            String           @id @default(uuid())
   firebaseId    String?          @map("firebase_id")
@@ -242,6 +247,7 @@ model Vesting {
   name                 String
   startedAt            DateTime             @map("started_at")
   endedAt              DateTime             @map("ended_at")
+  originalEndedAt      DateTime             @map("original_ended_at")
   releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
   releaseFrequency     Int                  @map("release_frequency")
   cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
@@ -278,12 +284,15 @@ model Recipe {
   updatedAt      DateTime     @updatedAt @map("updated_at")
   vestingId      String       @map("vesting_id")
   vesting        Vesting      @relation(fields: [vestingId], references: [id])
-  recipientId    String       @map("recipient_id")
-  recipient      User         @relation(fields: [recipientId], references: [id])
+  userId         String       @map("user_id")
+  user           User         @relation(fields: [userId], references: [id])
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
+  address       String?
   allocations    String
   status         RecipeStatus @default(PENDING)
+  code           String       @unique
+  role           Role         @default(EMPLOYEE)
 
   @@map("recipe")
 }

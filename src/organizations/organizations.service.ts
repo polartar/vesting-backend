@@ -329,7 +329,7 @@ export class OrganizationsService {
         organizationId,
       },
       select: {
-        recipient: true,
+        user: true,
       },
     });
   }

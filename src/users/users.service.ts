@@ -7,6 +7,18 @@ import { UpdateUserInput } from './dto/update-user.input';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  async createUserIfNotExists(email: string, name: string) {
+    let user = await this.prisma.user.findFirst({
+      where: { email },
+    });
+    if (user) return user;
+
+    user = await this.prisma.user.create({
+      data: { email, name },
+    });
+    return user;
+  }
+
   getUser(userId: string, { withEmail = false } = {}) {
     return this.prisma.user.findUnique({
       where: {

@@ -60,14 +60,22 @@ export class VestingContractsService {
     });
   }
 
-  async getVestingContractsByOrganization(organizationId: string) {
+  async getByOrganization(organizationId: string) {
     return this.prisma.vestingContract.findMany({
       where: {
         organizationId,
+        isActive: true,
       },
       select: {
+        name: true,
+        address: true,
+        isActive: true,
+        isDeployed: true,
+        chainId: true,
+        tokenId: true,
+        createdAt: true,
+        updatedAt: true,
         token: true,
-        _count: true,
       },
     });
   }

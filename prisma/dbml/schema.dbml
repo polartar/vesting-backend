@@ -160,6 +160,7 @@ Table vesting {
   name String [not null]
   startedAt DateTime [not null]
   endedAt DateTime [not null]
+  originalEndedAt DateTime [not null]
   releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
   releaseFrequency Int [not null]
   cliffDurationType CliffDurationType [not null, default: 'NO_CLIFF']
@@ -192,12 +193,15 @@ Table recipe {
   updatedAt DateTime [not null]
   vestingId String [not null]
   vesting vesting [not null]
-  recipientId String [not null]
-  recipient user [not null]
+  userId String [not null]
+  user user [not null]
   organizationId String [not null]
   organization organization [not null]
+  address String
   allocations String [not null]
   status RecipeStatus [not null, default: 'PENDING']
+  code String [unique, not null]
+  role Role [not null, default: 'EMPLOYEE']
 }
 
 Table safe_wallet {
@@ -290,6 +294,11 @@ Enum Permission {
   READ
 }
 
+Enum InvitationStatus {
+  PENDING
+  ACCEPTED
+}
+
 Ref: wallet.userId > user.id
 
 Ref: organization.userId > user.id
@@ -326,7 +335,7 @@ Ref: vesting_template.organizationId > organization.id
 
 Ref: recipe.vestingId > vesting.id
 
-Ref: recipe.recipientId > user.id
+Ref: recipe.userId > user.id
 
 Ref: recipe.organizationId > organization.id
 

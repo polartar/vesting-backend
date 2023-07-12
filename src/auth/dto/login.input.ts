@@ -1,8 +1,9 @@
-import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { InputType, Field, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Platforms } from 'src/common/utils/constants';
+import { ConnectWalletInput } from './wallet.input';
 
 registerEnumType(Platforms, {
   name: 'Platforms',
@@ -45,4 +46,17 @@ export class AuthValidationInput {
   @Field(() => String)
   @IsNotEmpty()
   code: string;
+}
+
+@InputType()
+export class AuthAcceptInvitationInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  code: string;
+
+  @ApiProperty()
+  @IsOptional()
+  wallet?: ConnectWalletInput;
 }

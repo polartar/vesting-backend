@@ -12,6 +12,8 @@ import { GoogleService } from './google.service';
 import { EmailService } from './email.service';
 import { UsersService } from 'src/users/users.service';
 import { WalletsService } from 'src/wallets/wallets.service';
+import { RecipesService } from 'src/recipe/recipes.service';
+import { OrganizationsService } from 'src/organizations/organizations.service';
 
 @Module({
   imports: [
@@ -37,6 +39,8 @@ import { WalletsService } from 'src/wallets/wallets.service';
     EmailService,
     UsersService,
     WalletsService,
+    RecipesService,
+    OrganizationsService,
   ],
   exports: [AuthService],
 })

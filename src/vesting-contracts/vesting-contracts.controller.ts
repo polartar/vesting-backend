@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
   Put,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingContractsService } from './vesting-contracts.service';
@@ -15,6 +16,7 @@ import {
   CreateVestingContractInput,
   DeployVestingContractInput,
 } from './dto/vesting-contracts.input';
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
 
 @Controller('vesting-contract')
 export class VestingContractsController {
@@ -71,6 +73,14 @@ export class VestingContractsController {
   async getVestingContractsByOrganization(
     @Param('organizationId') organizationId: string
   ) {
-    return this.vestingContract.get(organizationId);
+    console.log(organizationId);
+    const vestingContract = await this.vestingContract.getByOrganization(
+      organizationId
+    );
+    if (!vestingContract) {
+      throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+    }
+
+    return vestingContract;
   }
 }

@@ -32,6 +32,9 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
   ORGANIZATION_GET_ALL_RECIPIENTS_FAILURE: 'Fetching all recipients is failed',
 
+  /** Vesting Contract */
+  CONTRACT_NOT_FOUND: 'Vesting contract is not found',
+
   /** Safe Wallet */
   SAFE_CREATE_WALLET: 'Creating new safe wallet is failed',
   SAFE_NOT_FOUND_WALLET: 'Finding safe wallet is failed',
@@ -44,6 +47,11 @@ export const ERROR_MESSAGES = {
   /* Token */
   INVALID_ERC20_TOKEN: 'Invalid Token address',
   IMPORT_TOKEN_FAILURE: 'Importing token is failed',
+
+  /** Recipient */
+  RECIPIENT_REQUIRE_WALLET: 'Wallet is needed for accepting the invitation',
+  RECIPIENT_NO_PENDING_INVITATION: 'No pending invitations are available',
+  RECIPIENT_REQUIRE_CORRECT_WALLET: 'Wallet is incorrect',
 };
 
 export const SUCCESS_MESSAGES = {
@@ -53,4 +61,7 @@ export const SUCCESS_MESSAGES = {
   /** Organization */
   ORGANIZATION_ADD_MEMBERS: 'Added members successfully',
   ORGANIZATION_INVITE_MEMBERS: 'Invited members successfully',
+
+  /** Recipient */
+  RECIPIENT_ACCEPT_INVITATION: 'Accepted the vesting invitation successfully',
 };
