@@ -36,7 +36,6 @@ export class CreateSafeWalletInput extends CreateSafeWalletDetailInput {
   owners: string[];
 }
 
-
 @InputType()
 export class CreateSafeConfirmationInput {
   @ApiProperty()

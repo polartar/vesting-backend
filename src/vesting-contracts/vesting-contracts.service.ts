@@ -4,6 +4,7 @@ import {
   CreateVestingContractInput,
   DeployVestingContractInput,
 } from './dto/vesting-contracts.input';
+import { VestingContractStatus } from '@prisma/client';
 
 @Injectable()
 export class VestingContractsService {
@@ -50,13 +51,10 @@ export class VestingContractsService {
     });
   }
 
-  async deploy(vestingContractId: string, payload: DeployVestingContractInput) {
+  async deploy(vestingContractId: string, data: DeployVestingContractInput) {
     return this.prisma.vestingContract.update({
       where: { id: vestingContractId },
-      data: {
-        ...payload,
-        isDeployed: true,
-      },
+      data,
     });
   }
 
@@ -66,15 +64,7 @@ export class VestingContractsService {
         organizationId,
         isActive: true,
       },
-      select: {
-        name: true,
-        address: true,
-        isActive: true,
-        isDeployed: true,
-        chainId: true,
-        tokenId: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         token: true,
       },
     });

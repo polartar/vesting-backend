@@ -143,6 +143,7 @@ Table vesting_contract {
   transaction transaction
   isDeployed Boolean [not null, default: false]
   isActive Boolean [not null, default: true]
+  status VestingContractStatus [not null, default: 'INITIALIZED']
   vestings vesting [not null]
 }
 
@@ -297,6 +298,13 @@ Enum Permission {
 Enum InvitationStatus {
   PENDING
   ACCEPTED
+}
+
+Enum VestingContractStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  INITIALIZED
 }
 
 Ref: wallet.userId > user.id
