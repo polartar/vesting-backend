@@ -4,7 +4,6 @@ import {
   CreateVestingContractInput,
   DeployVestingContractInput,
 } from './dto/vesting-contracts.input';
-import { VestingContractStatus } from '@prisma/client';
 
 @Injectable()
 export class VestingContractsService {
