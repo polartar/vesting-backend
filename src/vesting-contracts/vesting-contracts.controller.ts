@@ -7,6 +7,7 @@ import {
   UseGuards,
   Put,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingContractsService } from './vesting-contracts.service';
@@ -27,7 +28,13 @@ export class VestingContractsController {
   @UseGuards(GlobalAuthGuard)
   @Post('/')
   async createVestingContract(@Body() body: CreateVestingContractInput) {
-    return this.vestingContract.create(body);
+    try {
+      const vestingContract = await this.vestingContract.create(body);
+      return vestingContract;
+    } catch (error) {
+      console.error('POST /vesting-contract', error);
+      throw new BadRequestException(ERROR_MESSAGES.CONTRACT_CREATION_FAILURE);
+    }
   }
 
   @ApiBearerAuth()
@@ -37,7 +44,16 @@ export class VestingContractsController {
   async getVestingContract(
     @Param('vestingContractId') vestingContractId: string
   ) {
-    return this.vestingContract.get(vestingContractId);
+    try {
+      const vestingContract = await this.vestingContract.get(vestingContractId);
+      if (!vestingContract) {
+        throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+      }
+      return vestingContract;
+    } catch (error) {
+      console.error('GET /vesting-contract/:vestingContractId', error);
+      throw new BadRequestException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+    }
   }
 
   @ApiBearerAuth()
@@ -48,7 +64,19 @@ export class VestingContractsController {
     @Param('vestingContractId') vestingContractId: string,
     @Body() body: Partial<CreateVestingContractInput>
   ) {
-    return this.vestingContract.update(vestingContractId, body);
+    try {
+      const vestingContract = await this.vestingContract.update(
+        vestingContractId,
+        body
+      );
+      if (!vestingContract) {
+        throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+      }
+      return vestingContract;
+    } catch (error) {
+      console.error('Put /vesting-contract/:vestingContractId', error);
+      throw new BadRequestException(ERROR_MESSAGES.CONTRACT_UPDATE_FAILURE);
+    }
   }
 
   /**
@@ -63,7 +91,19 @@ export class VestingContractsController {
     @Param('vestingContractId') vestingContractId: string,
     @Body() body: DeployVestingContractInput
   ) {
-    return this.vestingContract.deploy(vestingContractId, body);
+    try {
+      const vestingContract = await this.vestingContract.deploy(
+        vestingContractId,
+        body
+      );
+      if (!vestingContract) {
+        throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+      }
+      return vestingContract;
+    } catch (error) {
+      console.error('Put /vesting-contract/:vestingContractId/deploy', error);
+      throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+    }
   }
 
   @ApiBearerAuth()
@@ -73,14 +113,20 @@ export class VestingContractsController {
   async getVestingContractsByOrganization(
     @Param('organizationId') organizationId: string
   ) {
-    console.log(organizationId);
-    const vestingContract = await this.vestingContract.getByOrganization(
-      organizationId
-    );
-    if (!vestingContract) {
+    try {
+      const vestingContract = await this.vestingContract.getByOrganization(
+        organizationId
+      );
+      if (!vestingContract) {
+        throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+      }
+      return vestingContract;
+    } catch (error) {
+      console.error(
+        'GET /vesting-contract/organization/:organizationId',
+        error
+      );
       throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
     }
-
-    return vestingContract;
   }
 }
