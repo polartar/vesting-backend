@@ -8,6 +8,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
 registerEnumType(VestingContractStatus, {
@@ -18,26 +19,38 @@ registerEnumType(VestingContractStatus, {
 @InputType()
 export class CreateVestingContractInput {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   @Field(() => String)
   organizationId: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   @Field(() => String)
   tokenId: string;
 
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   @Field(() => String)
   name: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
   @Field(() => String)
   address?: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
   @Field(() => String)
   transactionId?: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
   @Field(() => Number)
   chainId: number;
 }
