@@ -4,6 +4,7 @@ import { CreateRecipeInput } from './dto/recipe.input';
 import { EmailService } from 'src/auth/email.service';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { Recipe, RecipeStatus } from '@prisma/client';
+import { IRecipientsQuery } from './dto/interface';
 
 @Injectable()
 export class RecipesService {
@@ -47,6 +48,33 @@ export class RecipesService {
     return this.prisma.recipe.update({
       where: { id: recipeId },
       data,
+    });
+  }
+
+  async revokeRecipe(recipeId: string) {
+    const recipe = await this.update(recipeId, {
+      status: RecipeStatus.REVOKED,
+    });
+    await this.prisma.userRole.deleteMany({
+      where: {
+        userId: recipe.userId,
+        organizationId: recipe.organizationId,
+        role: recipe.role,
+      },
+    });
+  }
+
+  async getAll(where: IRecipientsQuery) {
+    return this.prisma.recipe.findMany({
+      where,
+      include: {
+        vesting: {
+          include: {
+            vestingContract: true,
+          },
+        },
+        user: true,
+      },
     });
   }
 }

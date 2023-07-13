@@ -54,6 +54,8 @@ export const ERROR_MESSAGES = {
   RECIPIENT_REQUIRE_WALLET: 'Wallet is needed for accepting the invitation',
   RECIPIENT_NO_PENDING_INVITATION: 'No pending invitations are available',
   RECIPIENT_REQUIRE_CORRECT_WALLET: 'Wallet is incorrect',
+  RECIPIENT_GET_ALL: 'Fetching recipients is failed',
+  RECIPIENT_REVOKE_FAILURE: 'Revoking recipient is failed',
 };
 
 export const SUCCESS_MESSAGES = {
@@ -66,4 +68,5 @@ export const SUCCESS_MESSAGES = {
 
   /** Recipient */
   RECIPIENT_ACCEPT_INVITATION: 'Accepted the vesting invitation successfully',
+  RECIPIENT_REVOKE: 'Revoked the recipient vesting successfully',
 };

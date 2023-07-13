@@ -1,4 +1,13 @@
-import { Controller, UseGuards, Get, Put, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  BadRequestException,
+  UseGuards,
+  Get,
+  Put,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RecipesService } from './recipes.service';
 import {
@@ -7,8 +16,13 @@ import {
   PublicAuth,
 } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
-import { RevokeRecipeInput } from './dto/recipe.input';
+import {
+  ListRecipientsQueryInput,
+  RevokeRecipeInput,
+} from './dto/recipe.input';
 import { RecipeStatus } from '@prisma/client';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
+import { IRecipientsQuery } from './dto/interface';
 
 @Controller('recipe')
 export class RecipesController {
@@ -38,6 +52,70 @@ export class RecipesController {
     @Param('recipeId') recipeId: string,
     @Body() _: RevokeRecipeInput
   ) {
-    return this.recipe.update(recipeId, { status: RecipeStatus.REVOKED });
+    try {
+      await this.recipe.update(recipeId, { status: RecipeStatus.REVOKED });
+      return SUCCESS_MESSAGES.RECIPIENT_REVOKE;
+    } catch (error) {
+      console.error('PUT /recipe/revoke/:recipeId', error);
+      throw new BadRequestException(ERROR_MESSAGES.RECIPIENT_REVOKE_FAILURE);
+    }
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/list')
+  async getRecipientList(@Query() query: ListRecipientsQueryInput) {
+    try {
+      const where: IRecipientsQuery = {
+        organizationId: query.organizationId,
+        status: query.status || RecipeStatus.ACCEPTED,
+      };
+
+      if (query.vestingId) {
+        where.vestingId = query.vestingId;
+      }
+
+      if (query.address) {
+        where.address = {
+          mode: 'insensitive',
+          contains: query.address,
+        };
+      }
+
+      if (query.email) {
+        where.user = {};
+
+        where.user.email = {
+          mode: 'insensitive',
+          contains: query.email,
+        };
+      }
+
+      if (query.chainId || query.vestingContractId || query.tokenId) {
+        where.vesting = {};
+
+        if (query.vestingContractId) {
+          where.vesting.vestingContractId = query.vestingContractId;
+        }
+
+        if (query.chainId || query.tokenId) {
+          where.vesting.vestingContract = {};
+
+          if (query.chainId) {
+            where.vesting.vestingContract.chainId = +query.chainId;
+          }
+
+          if (query.tokenId) {
+            where.vesting.vestingContract.tokenId = query.tokenId;
+          }
+        }
+      }
+
+      return this.recipe.getAll(where);
+    } catch (error) {
+      console.log('GET /recipe/list', error);
+      throw new BadRequestException(ERROR_MESSAGES.RECIPIENT_GET_ALL);
+    }
   }
 }

@@ -1,11 +1,12 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { RecipeStatus, Role } from '@prisma/client';
 import {
   IsEmail,
   IsEnum,
   IsEthereumAddress,
   IsNotEmpty,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -78,4 +79,55 @@ export class RevokeRecipeInput {
   @ApiProperty()
   @Field(() => String)
   organizationId: string;
+}
+
+@InputType()
+export class ListRecipientsQueryInput {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  vestingId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  vestingContractId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  tokenId?: string;
+
+  @ApiProperty()
+  @IsEnum(RecipeStatus)
+  @IsOptional()
+  @Field(() => RecipeStatus)
+  status?: RecipeStatus;
+
+  @ApiProperty()
+  @IsNumberString()
+  @IsOptional()
+  @Field(() => Number)
+  chainId?: number;
+
+  @ApiProperty()
+  @IsEthereumAddress()
+  @IsOptional()
+  @Field(() => String)
+  address?: string;
+
+  @ApiProperty()
+  @IsEmail()
+  @IsOptional()
+  @Field(() => String)
+  email?: string;
 }
