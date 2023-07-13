@@ -1,7 +1,15 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import { ConfirmationStatus } from '@prisma/client';
-import { IsArray, IsEthereumAddress, IsNotEmpty } from 'class-validator';
+import {
+  IsArray,
+  IsEthereumAddress,
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 @InputType()
 export class CreateSafeWalletDetailInput {
@@ -63,4 +71,25 @@ export class CreateSafeConfirmationInput {
   @Field(() => ConfirmationStatus)
   @IsNotEmpty()
   status: ConfirmationStatus;
+}
+
+@InputType()
+export class QuerySafeInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
+  @Field(() => String)
+  address?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumberString()
+  @Field(() => Number)
+  chainId?: string;
 }

@@ -5,7 +5,9 @@ import {
   Body,
   UseGuards,
   BadRequestException,
+  NotFoundException,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -20,6 +22,7 @@ import {
 import {
   CreateSafeConfirmationInput,
   CreateSafeWalletInput,
+  QuerySafeInput,
 } from './dto/safe.input';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 
@@ -67,5 +70,26 @@ export class SafesController {
     @Param('organizationId') organizationId: string
   ) {
     return this.safe.getSafesByOrganization(organizationId);
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/get/single')
+  async getSafeByAddress(@Query() query: QuerySafeInput) {
+    const safe = await this.safe.getSafeByQuery(query);
+    if (!safe) {
+      throw new NotFoundException(ERROR_MESSAGES.SAFE_NOT_FOUND_WALLET);
+    }
+
+    return safe;
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/get/list')
+  async getSafesByAddress(@Query() query: QuerySafeInput) {
+    return this.safe.getSafesByQuery(query);
   }
 }

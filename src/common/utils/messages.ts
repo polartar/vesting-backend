@@ -17,6 +17,7 @@ export const ERROR_MESSAGES = {
   /** User */
   USER_GET: 'Fetching an user is failed',
   USER_UPDATE: 'Update user profile is failed',
+  USER_WRONG_QUERY: 'Get single user query is incorrect',
 
   /** Organization */
   ORGANIZATION_INVALID_ID: 'Organization id is invalid',
@@ -40,7 +41,7 @@ export const ERROR_MESSAGES = {
 
   /** Safe Wallet */
   SAFE_CREATE_WALLET: 'Creating new safe wallet is failed',
-  SAFE_NOT_FOUND_WALLET: 'Finding safe wallet is failed',
+  SAFE_NOT_FOUND_WALLET: 'Safe wallet is not found',
   SAFE_CREATE_OWNER_WALLETS: 'Creating owner wallets is failed',
   SAFE_CREATE_CONFIRMATION: 'Creating safe confirmation is failed',
 

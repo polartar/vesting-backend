@@ -1,7 +1,8 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
 
-import { UpdateUserInput } from './dto/update-user.input';
+import { QueryUserInput, UpdateUserInput } from './dto/update-user.input';
+import { IUserQuery } from './dto/interface';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +34,38 @@ export class UsersService {
         createdAt: true,
         updatedAt: true,
         firebaseId: true,
+      },
+    });
+  }
+
+  getUserByQuery(query: QueryUserInput) {
+    const where: IUserQuery = {};
+    if (query.id) {
+      where.id = query.id;
+    }
+
+    if (query.email) {
+      where.email = {
+        mode: 'insensitive',
+        contains: query.email,
+      };
+    }
+
+    if (query.address) {
+      where.wallets = {
+        some: {
+          address: {
+            mode: 'insensitive',
+            contains: query.address,
+          },
+        },
+      };
+    }
+
+    return this.prisma.user.findFirst({
+      where,
+      include: {
+        wallets: true,
       },
     });
   }
