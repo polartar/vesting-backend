@@ -36,6 +36,7 @@ export const ERROR_MESSAGES = {
   CONTRACT_NOT_FOUND: 'Vesting contract is not found',
   CONTRACT_CREATION_FAILURE: 'Creating new vesting contract is failed',
   CONTRACT_UPDATE_FAILURE: 'Updating contract is failed',
+  CONTRACT_WRONG_ORGANIZATION: 'Organization id is incorrect',
 
   /** Safe Wallet */
   SAFE_CREATE_WALLET: 'Creating new safe wallet is failed',

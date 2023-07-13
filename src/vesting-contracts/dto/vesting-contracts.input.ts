@@ -56,6 +56,45 @@ export class CreateVestingContractInput {
 }
 
 @InputType()
+export class UpdateVestingContractInput {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  tokenId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  name: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
+  @Field(() => String)
+  address?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  transactionId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  @Field(() => Number)
+  chainId: number;
+}
+
+@InputType()
 export class DeployVestingContractInput {
   @ApiProperty()
   @IsOptional()
