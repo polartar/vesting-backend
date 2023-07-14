@@ -40,13 +40,13 @@ export class Vesting extends BaseModel {
   @Field(() => Date)
   endedAt: Date;
 
-  @Field(() => ReleaseFrequencyType, { defaultValue: 'CONTINUOUS' })
+  @Field(() => ReleaseFrequencyType, { defaultValue: 'continuous' })
   releaseFrequencyType: ReleaseFrequencyType;
 
   @Field(() => Number)
   releaseFrequency: number;
 
-  @Field(() => CliffDurationType, { defaultValue: 'NO_CLIFF' })
+  @Field(() => CliffDurationType, { defaultValue: 'no_cliff' })
   cliffDurationType: CliffDurationType;
 
   @Field(() => Number, { defaultValue: 0 })

@@ -27,19 +27,19 @@ enum InstitutionalRole {
 }
 
 enum ReleaseFrequencyType {
-  CONTINUOUS
-  DAILY
-  WEEKLY
-  MONTHLY
-  YEARLY
-  CUSTOM
+  continuous @map("CONTINUOUS")
+  daily @map("DAILY")
+  weekly @map("WEEKLY")
+  monthly @map("MONTHLY")
+  yearly @map("YEARLY")
+  custom @map("CUSTOM")
 }
 
 enum CliffDurationType {
-  NO_CLIFF
-  WEEKS
-  MONTHS
-  YEARS
+  no_cliff @map("NO_CLIFF")
+  weeks @map("WEEKS")
+  months @map("MONTHS")
+  years @map("YEARS")
 }
 
 enum RecipeStatus {
@@ -257,9 +257,9 @@ model Vesting {
   startedAt            DateTime             @map("started_at")
   endedAt              DateTime             @map("ended_at")
   originalEndedAt      DateTime             @map("original_ended_at")
-  releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
+  releaseFrequencyType ReleaseFrequencyType @default(continuous) @map("release_frequency_type")
   releaseFrequency     Int                  @map("release_frequency")
-  cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
+  cliffDurationType    CliffDurationType    @default(no_cliff) @map("cliff_duration_type")
   cliffDuration        Int                  @default(0) @map("cliff_duration")
   cliffAmount          String               @default("0") @map("cliff_amount")
   amount               String
@@ -277,9 +277,9 @@ model VestingTemplate {
   organizationId       String               @map("organization_id")
   organization         Organization         @relation(fields: [organizationId], references: [id])
   name                 String
-  releaseFrequencyType ReleaseFrequencyType @default(CONTINUOUS) @map("release_frequency_type")
+  releaseFrequencyType ReleaseFrequencyType @default(continuous) @map("release_frequency_type")
   releaseFrequency     Int                  @map("release_frequency")
-  cliffDurationType    CliffDurationType    @default(NO_CLIFF) @map("cliff_duration_type")
+  cliffDurationType    CliffDurationType    @default(no_cliff) @map("cliff_duration_type")
   cliffDuration        Int                  @default(0) @map("cliff_duration")
   cliffAmount          String               @default("0") @map("cliff_amount")
 

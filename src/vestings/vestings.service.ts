@@ -45,10 +45,9 @@ export class VestingsService {
       where: {
         organizationId,
       },
-      select: {
+      include: {
         vestingContract: true,
         token: true,
-        _count: true,
       },
     });
   }

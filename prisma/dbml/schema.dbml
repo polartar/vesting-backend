@@ -163,9 +163,9 @@ Table vesting {
   startedAt DateTime [not null]
   endedAt DateTime [not null]
   originalEndedAt DateTime [not null]
-  releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
+  releaseFrequencyType ReleaseFrequencyType [not null, default: 'continuous']
   releaseFrequency Int [not null]
-  cliffDurationType CliffDurationType [not null, default: 'NO_CLIFF']
+  cliffDurationType CliffDurationType [not null, default: 'no_cliff']
   cliffDuration Int [not null, default: 0]
   cliffAmount String [not null, default: '0']
   amount String [not null]
@@ -181,9 +181,9 @@ Table vesting_template {
   organizationId String [not null]
   organization organization [not null]
   name String [not null]
-  releaseFrequencyType ReleaseFrequencyType [not null, default: 'CONTINUOUS']
+  releaseFrequencyType ReleaseFrequencyType [not null, default: 'continuous']
   releaseFrequency Int [not null]
-  cliffDurationType CliffDurationType [not null, default: 'NO_CLIFF']
+  cliffDurationType CliffDurationType [not null, default: 'no_cliff']
   cliffDuration Int [not null, default: 0]
   cliffAmount String [not null, default: '0']
 }
@@ -262,19 +262,19 @@ Enum InstitutionalRole {
 }
 
 Enum ReleaseFrequencyType {
-  CONTINUOUS
-  DAILY
-  WEEKLY
-  MONTHLY
-  YEARLY
-  CUSTOM
+  continuous
+  daily
+  weekly
+  monthly
+  yearly
+  custom
 }
 
 Enum CliffDurationType {
-  NO_CLIFF
-  WEEKS
-  MONTHS
-  YEARS
+  no_cliff
+  weeks
+  months
+  years
 }
 
 Enum RecipeStatus {
