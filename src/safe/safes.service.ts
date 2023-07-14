@@ -2,6 +2,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
 import {
   CreateSafeConfirmationInput,
+  CreateSafeOwnerInput,
   CreateSafeWalletDetailInput,
   QuerySafeInput,
 } from './dto/safe.input';
@@ -23,13 +24,7 @@ export class SafesService {
       where: {
         id: safeWalletId,
       },
-      select: {
-        id: true,
-        chainId: true,
-        address: true,
-        organizationId: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         safeOwners: true,
       },
     });
@@ -110,8 +105,12 @@ export class SafesService {
   }
 
   /** Safe Owners */
-  async createSafeOwners(safeWalletId: string, addresses: string[]) {
-    const data = addresses.map((address) => ({ safeWalletId, address }));
+  async createSafeOwners(safeWalletId: string, owners: CreateSafeOwnerInput[]) {
+    const data = owners.map(({ address, name }) => ({
+      safeWalletId,
+      address,
+      name,
+    }));
     return this.prisma.safeOwner.createMany({ data });
   }
 
@@ -125,13 +124,7 @@ export class SafesService {
   async getSafesByOrganization(organizationId: string) {
     return this.prisma.safeWallet.findMany({
       where: { organizationId },
-      select: {
-        id: true,
-        chainId: true,
-        address: true,
-        organizationId: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         safeOwners: true,
       },
     });

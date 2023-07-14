@@ -106,12 +106,13 @@ model EmailVerification {
 }
 
 model Wallet {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  address   String   @unique
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id])
+  id         String      @id @default(uuid())
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+  address    String      @unique
+  userId     String      @map("user_id")
+  user       User        @relation(fields: [userId], references: [id])
+  safeOwners SafeOwner[]
 
   @@map("wallet")
 }
@@ -310,6 +311,7 @@ model SafeWallet {
   firebaseId            String?            @map("firebase_id")
   createdAt             DateTime           @default(now()) @map("created_at")
   updatedAt             DateTime           @updatedAt @map("updated_at")
+  name                  String?
   chainId               Int                @map("chain_id")
   address               String
   organizationId        String             @map("organization_id")
@@ -328,7 +330,9 @@ model SafeOwner {
   updatedAt         DateTime           @updatedAt @map("updated_at")
   safeWalletId      String             @map("safe_wallet_id")
   safeWallet        SafeWallet         @relation(fields: [safeWalletId], references: [id])
+  name              String?
   address           String
+  wallet            Wallet?            @relation(fields: [address], references: [address])
   safeConfirmations SafeConfirmation[]
 
   @@map("safe_owner")

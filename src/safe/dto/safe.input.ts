@@ -5,7 +5,6 @@ import {
   IsArray,
   IsEthereumAddress,
   IsNotEmpty,
-  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -17,6 +16,11 @@ export class CreateSafeWalletDetailInput {
   @Field(() => String)
   @IsNotEmpty()
   organizationId: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsOptional()
+  name?: string;
 
   @ApiProperty()
   @Field(() => Number)
@@ -36,12 +40,27 @@ export class CreateSafeWalletDetailInput {
 }
 
 @InputType()
+export class CreateSafeOwnerInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  @IsEthereumAddress()
+  address: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsOptional()
+  @IsString()
+  name?: string;
+}
+
+@InputType()
 export class CreateSafeWalletInput extends CreateSafeWalletDetailInput {
   @ApiProperty()
   @Field(() => Array)
   @IsNotEmpty()
   @IsArray()
-  owners: string[];
+  owners: CreateSafeOwnerInput[];
 }
 
 @InputType()
