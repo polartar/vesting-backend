@@ -69,11 +69,14 @@ export class RecipesController {
     try {
       const where: IRecipientsQuery = {
         organizationId: query.organizationId,
-        status: query.status || RecipeStatus.ACCEPTED,
       };
 
       if (query.vestingId) {
         where.vestingId = query.vestingId;
+      }
+
+      if (query.status) {
+        where.status = query.status;
       }
 
       if (query.address) {
