@@ -6,6 +6,7 @@ import {
   UpdateVestingInput,
 } from './dto/vestings.input';
 import { GetVestingQuery } from './dto/vesting.output';
+import { IVestingsQuery } from './dto/interface';
 
 @Injectable()
 export class VestingsService {
@@ -39,6 +40,15 @@ export class VestingsService {
               },
             }
           : false,
+      },
+    });
+  }
+
+  async getAll(where: IVestingsQuery) {
+    return this.prisma.vesting.findMany({
+      where,
+      include: {
+        vestingContract: true,
       },
     });
   }

@@ -224,3 +224,42 @@ export class UpdateVestingInput {
   @Field(() => String)
   amount?: string;
 }
+
+@InputType()
+export class VestingsQueryInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  vestingContractId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  transactionId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(VestingStatus)
+  @Field(() => VestingStatus)
+  status?: VestingStatus;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  @Field(() => Number)
+  chainId?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
+  @Field(() => String)
+  address?: string;
+}

@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -13,10 +14,15 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingsService } from './vestings.service';
 import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
-import { CreateVestingInput, UpdateVestingInput } from './dto/vestings.input';
+import {
+  CreateVestingInput,
+  UpdateVestingInput,
+  VestingsQueryInput,
+} from './dto/vestings.input';
 import { UsersService } from 'src/users/users.service';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { IVestingsQuery } from './dto/interface';
 
 @Controller('vesting')
 export class VestingsController {
@@ -101,5 +107,43 @@ export class VestingsController {
     @Param('organizationId') organizationId: string
   ) {
     return this.vesting.getVestingsByOrganization(organizationId);
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/list')
+  async getVestings(@Query() query: VestingsQueryInput) {
+    const where: IVestingsQuery = {
+      organizationId: query.organizationId,
+    };
+
+    if (query.vestingContractId) {
+      where.vestingContractId = query.vestingContractId;
+    }
+
+    if (query.transactionId) {
+      where.transactionId = query.transactionId;
+    }
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.chainId || query.address) {
+      where.vestingContract = {};
+      if (query.chainId) {
+        where.vestingContract.chainId = query.chainId;
+      }
+
+      if (query.address) {
+        where.vestingContract.address = {
+          mode: 'insensitive',
+          contains: query.address,
+        };
+      }
+    }
+
+    return this.vesting.getAll(where);
   }
 }
