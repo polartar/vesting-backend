@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RecipesService } from './recipes.service';
@@ -18,9 +19,8 @@ import {
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   ListRecipientsQueryInput,
-  RevokeRecipeInput,
+  UpdateRecipeInput,
 } from './dto/recipe.input';
-import { RecipeStatus } from '@prisma/client';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
 import { IRecipientsQuery } from './dto/interface';
 
@@ -37,6 +37,24 @@ export class RecipesController {
   }
 
   @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:recipeId')
+  async updateRecipe(
+    @Param('recipeId') recipeId: string,
+    @Body() body: UpdateRecipeInput
+  ) {
+    const recipe = await this.recipe.update(recipeId, body);
+    if (!recipe) {
+      throw new NotFoundException(
+        ERROR_MESSAGES.RECIPIENT_NO_PENDING_INVITATION
+      );
+    }
+
+    return recipe;
+  }
+
+  @ApiBearerAuth()
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/code/:code')
@@ -50,10 +68,11 @@ export class RecipesController {
   @Put('/revoke/:recipeId')
   async revokeRecipe(
     @Param('recipeId') recipeId: string,
-    @Body() _: RevokeRecipeInput
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Body() _: UpdateRecipeInput
   ) {
     try {
-      await this.recipe.update(recipeId, { status: RecipeStatus.REVOKED });
+      await this.recipe.revokeRecipe(recipeId);
       return SUCCESS_MESSAGES.RECIPIENT_REVOKE;
     } catch (error) {
       console.error('PUT /recipe/revoke/:recipeId', error);

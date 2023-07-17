@@ -1,7 +1,10 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
 
-import { CreateVestingDetailInput } from './dto/vestings.input';
+import {
+  CreateVestingDetailInput,
+  UpdateVestingInput,
+} from './dto/vestings.input';
 import { GetVestingQuery } from './dto/vesting.output';
 
 @Injectable()
@@ -37,6 +40,16 @@ export class VestingsService {
             }
           : false,
       },
+    });
+  }
+
+  async update(vestingId: string, data: UpdateVestingInput) {
+    return this.prisma.vesting.updateMany({
+      where: {
+        id: vestingId,
+        organizationId: data.organizationId,
+      },
+      data,
     });
   }
 

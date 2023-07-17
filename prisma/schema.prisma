@@ -28,18 +28,18 @@ enum InstitutionalRole {
 
 enum ReleaseFrequencyType {
   continuous @map("CONTINUOUS")
-  daily @map("DAILY")
-  weekly @map("WEEKLY")
-  monthly @map("MONTHLY")
-  yearly @map("YEARLY")
-  custom @map("CUSTOM")
+  daily      @map("DAILY")
+  weekly     @map("WEEKLY")
+  monthly    @map("MONTHLY")
+  yearly     @map("YEARLY")
+  custom     @map("CUSTOM")
 }
 
 enum CliffDurationType {
   no_cliff @map("NO_CLIFF")
-  weeks @map("WEEKS")
-  months @map("MONTHS")
-  years @map("YEARS")
+  weeks    @map("WEEKS")
+  months   @map("MONTHS")
+  years    @map("YEARS")
 }
 
 enum RecipeStatus {
@@ -74,6 +74,20 @@ enum VestingContractStatus {
   SUCCESS
   FAILED
   INITIALIZED
+}
+
+enum VestingStatus {
+  INITIALIZED
+  WAITING_APPROVAL
+  WAITING_FUNDS
+  LIVE
+  CREATING
+  CREATED
+  COMPLETED
+  REVOKED
+  APPROVED
+  SUCCESS
+  FAILED
 }
 
 model User {
@@ -266,6 +280,7 @@ model Vesting {
   transactionId        String?              @map("transaction_id")
   transaction          Transaction?         @relation(fields: [transactionId], references: [id])
   recipies             Recipe[]
+  status               VestingStatus        @default(INITIALIZED)
 
   @@map("vesting")
 }

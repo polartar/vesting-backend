@@ -41,6 +41,7 @@ export class VestingContractsService {
     vestingContractId: string,
     payload: Partial<CreateVestingContractInput>
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { organizationId: _, ...data } = payload;
     return this.prisma.vestingContract.update({
       where: {

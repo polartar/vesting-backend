@@ -1,6 +1,11 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { CliffDurationType, ReleaseFrequencyType, Role } from '@prisma/client';
+import {
+  CliffDurationType,
+  ReleaseFrequencyType,
+  Role,
+  VestingStatus,
+} from '@prisma/client';
 import {
   IsArray,
   IsEnum,
@@ -11,6 +16,11 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+
+registerEnumType(VestingStatus, {
+  name: 'VestingStatus',
+  description: 'VestingStatus',
+});
 
 @InputType()
 export class CreateVestingRecipeInput {
@@ -138,4 +148,79 @@ export class CreateVestingInput extends CreateVestingDetailInput {
   @IsString()
   @Field(() => String)
   redirectUri: string;
+}
+
+@InputType()
+export class UpdateVestingInput {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsEnum(VestingStatus)
+  @IsNotEmpty()
+  @Field(() => VestingStatus)
+  status: VestingStatus;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  name?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => Date)
+  startedAt?: Date;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => Date)
+  endedAt?: Date;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => Date)
+  originalEndedAt?: Date;
+
+  @ApiProperty()
+  @IsEnum(ReleaseFrequencyType)
+  @IsOptional()
+  @Field(() => ReleaseFrequencyType)
+  releaseFrequencyType?: ReleaseFrequencyType;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number)
+  releaseFrequency?: number;
+
+  @ApiProperty()
+  @IsEnum(CliffDurationType)
+  @IsOptional()
+  @Field(() => CliffDurationType)
+  cliffDurationType?: CliffDurationType;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  @Field(() => Number)
+  cliffDuration?: number;
+
+  @ApiProperty()
+  @IsNumberString()
+  @IsOptional()
+  @Field(() => String)
+  cliffAmount?: string;
+
+  @ApiProperty()
+  @IsNumberString()
+  @IsOptional()
+  @Field(() => String)
+  amount?: string;
 }

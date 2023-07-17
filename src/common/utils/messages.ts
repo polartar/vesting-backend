@@ -58,6 +58,9 @@ export const ERROR_MESSAGES = {
   RECIPIENT_REQUIRE_CORRECT_WALLET: 'Wallet is incorrect',
   RECIPIENT_GET_ALL: 'Fetching recipients is failed',
   RECIPIENT_REVOKE_FAILURE: 'Revoking recipient is failed',
+
+  /** Vesting */
+  VESTING_NOT_FOUND: 'Vesting is not found',
 };
 
 export const SUCCESS_MESSAGES = {

@@ -250,7 +250,7 @@ export class AuthController {
     });
 
     payload.status = RecipeStatus.ACCEPTED;
-    await this.recipe.update(recipe.id, payload);
+    await this.recipe.acceptInvitation(recipe.id, payload);
 
     return SUCCESS_MESSAGES.RECIPIENT_ACCEPT_INVITATION;
   }

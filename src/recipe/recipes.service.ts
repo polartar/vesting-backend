@@ -1,6 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
-import { CreateRecipeInput } from './dto/recipe.input';
+import { CreateRecipeInput, UpdateRecipeInput } from './dto/recipe.input';
 import { EmailService } from 'src/auth/email.service';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { Recipe, RecipeStatus } from '@prisma/client';
@@ -44,7 +44,21 @@ export class RecipesService {
     });
   }
 
-  async update(recipeId: string, data: Partial<Recipe>) {
+  async update(recipeId: string, data: UpdateRecipeInput) {
+    return this.prisma.recipe.updateMany({
+      where: {
+        id: recipeId,
+        organizationId: data.organizationId,
+        vesting: {
+          // TODO double check
+          status: 'INITIALIZED',
+        },
+      },
+      data,
+    });
+  }
+
+  async acceptInvitation(recipeId: string, data: Partial<Recipe>) {
     return this.prisma.recipe.update({
       where: { id: recipeId },
       data,
@@ -52,8 +66,11 @@ export class RecipesService {
   }
 
   async revokeRecipe(recipeId: string) {
-    const recipe = await this.update(recipeId, {
-      status: RecipeStatus.REVOKED,
+    const recipe = await this.prisma.recipe.update({
+      where: { id: recipeId },
+      data: {
+        status: RecipeStatus.REVOKED,
+      },
     });
     await this.prisma.userRole.deleteMany({
       where: {

@@ -172,6 +172,7 @@ Table vesting {
   transactionId String
   transaction transaction
   recipies recipe [not null]
+  status VestingStatus [not null, default: 'INITIALIZED']
 }
 
 Table vesting_template {
@@ -309,6 +310,20 @@ Enum VestingContractStatus {
   SUCCESS
   FAILED
   INITIALIZED
+}
+
+Enum VestingStatus {
+  INITIALIZED
+  WAITING_APPROVAL
+  WAITING_FUNDS
+  LIVE
+  CREATING
+  CREATED
+  COMPLETED
+  REVOKED
+  APPROVED
+  SUCCESS
+  FAILED
 }
 
 Ref: wallet.userId > user.id

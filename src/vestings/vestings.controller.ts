@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { VestingsService } from './vestings.service';
 import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
-import { CreateVestingInput } from './dto/vestings.input';
+import { CreateVestingInput, UpdateVestingInput } from './dto/vestings.input';
 import { UsersService } from 'src/users/users.service';
 import { RecipesService } from 'src/recipe/recipes.service';
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
 
 @Controller('vesting')
 export class VestingsController {
@@ -66,8 +76,23 @@ export class VestingsController {
     });
   }
 
-  /** Fetch all vestings by organization */
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:vestingId')
+  async updateVesting(
+    @Param('vestingId') vestingId: string,
+    @Body() body: UpdateVestingInput
+  ) {
+    const vesting = await this.vesting.update(vestingId, body);
+    if (!vesting) {
+      throw new NotFoundException(ERROR_MESSAGES.VESTING_NOT_FOUND);
+    }
 
+    return vesting;
+  }
+
+  /** Fetch all vestings by organization */
   @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)

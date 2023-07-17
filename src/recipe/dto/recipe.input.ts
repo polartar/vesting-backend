@@ -6,7 +6,6 @@ import {
   IsEnum,
   IsEthereumAddress,
   IsNotEmpty,
-  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -64,14 +63,30 @@ export class CreateRecipeInput {
 }
 
 @InputType()
-export class BulkCreateRecipesInput {
+export class UpdateRecipeInput {
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   @Field(() => String)
   organizationId: string;
 
   @ApiProperty()
-  @Field(() => Array<CreateRecipeInput>)
-  recipes: Array<CreateRecipeInput>;
+  @IsOptional()
+  @IsEthereumAddress()
+  @Field(() => String)
+  address?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumberString()
+  @Field(() => String)
+  allocations?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEmail()
+  @Field(() => String)
+  email?: string;
 }
 
 @InputType()
