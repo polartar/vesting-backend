@@ -127,6 +127,7 @@ model Wallet {
   userId     String      @map("user_id")
   user       User        @relation(fields: [userId], references: [id])
   safeOwners SafeOwner[]
+  recipes    Recipe[]
 
   @@map("wallet")
 }
@@ -308,11 +309,13 @@ model Recipe {
   updatedAt      DateTime     @updatedAt @map("updated_at")
   vestingId      String       @map("vesting_id")
   vesting        Vesting      @relation(fields: [vestingId], references: [id])
-  userId         String       @map("user_id")
-  user           User         @relation(fields: [userId], references: [id])
+  name           String?
+  email          String?
+  user           User?        @relation(fields: [email], references: [email])
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
   address        String?
+  wallet         Wallet?      @relation(fields: [address], references: [address])
   allocations    String
   status         RecipeStatus @default(PENDING)
   code           String       @unique

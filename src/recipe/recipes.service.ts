@@ -18,6 +18,7 @@ export class RecipesService {
     const recipe = await this.prisma.recipe.create({
       data: {
         ...payload,
+        email,
         code,
         status: 'PENDING',
       },
@@ -71,14 +72,22 @@ export class RecipesService {
       data: {
         status: RecipeStatus.REVOKED,
       },
-    });
-    await this.prisma.userRole.deleteMany({
-      where: {
-        userId: recipe.userId,
-        organizationId: recipe.organizationId,
-        role: recipe.role,
+      include: {
+        user: true,
       },
     });
+
+    if (recipe?.user) {
+      await this.prisma.userRole.deleteMany({
+        where: {
+          organizationId: recipe.organizationId,
+          role: recipe.role,
+          userId: recipe.user.id,
+        },
+      });
+    }
+
+    return recipe;
   }
 
   async getAll(where: IRecipientsQuery) {

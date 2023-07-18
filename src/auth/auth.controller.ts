@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  NotFoundException,
   Body,
   Controller,
   Get,
@@ -31,12 +32,14 @@ import { WalletEntity } from 'src/wallets/wallets.entity';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 import { compareStrings } from 'src/common/utils/helpers';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly google: GoogleService,
     private readonly auth: AuthService,
+    private readonly user: UsersService,
     private readonly email: EmailService,
     private readonly wallet: WalletsService,
     private readonly recipe: RecipesService,
@@ -200,6 +203,14 @@ export class AuthController {
   @Post('/accept-invitation')
   async acceptInvitation(@Body() body: AuthAcceptInvitationInput) {
     const recipe = await this.recipe.getByCode(body.code);
+    if (!recipe) {
+      throw new NotFoundException(ERROR_MESSAGES.RECIPIENT_INVALID_CODE);
+    }
+
+    if (recipe.status !== RecipeStatus.PENDING) {
+      throw new BadRequestException(ERROR_MESSAGES.RECIPIENT_ALREADY_ACCEPTED);
+    }
+
     const wallet = body.wallet;
     const payload: Partial<Recipe> = {};
 
@@ -227,14 +238,14 @@ export class AuthController {
       payload.address = wallet.address.toLowerCase();
     }
 
-    if (recipe.status !== RecipeStatus.PENDING) {
-      throw new BadRequestException(
-        ERROR_MESSAGES.RECIPIENT_NO_PENDING_INVITATION
-      );
-    }
+    // Create user data
+    const user = await this.user.createUserIfNotExists(
+      recipe.email,
+      recipe.name
+    );
 
-    await this.wallet.findOrCreate(
-      recipe.userId,
+    const newWallet = await this.wallet.findOrCreate(
+      user.id,
       recipe.address || wallet.address
     );
 
@@ -242,7 +253,7 @@ export class AuthController {
       organizationId: recipe.organizationId,
       members: [
         {
-          userId: recipe.userId,
+          userId: user.id,
           organizationId: recipe.organizationId,
           role: recipe.role,
         },
@@ -252,6 +263,11 @@ export class AuthController {
     payload.status = RecipeStatus.ACCEPTED;
     await this.recipe.acceptInvitation(recipe.id, payload);
 
-    return SUCCESS_MESSAGES.RECIPIENT_ACCEPT_INVITATION;
+    const token = this.auth.generateTokens({
+      userId: user.id,
+      walletId: newWallet.id,
+      walletAddress: newWallet.address,
+    });
+    return token;
   }
 }

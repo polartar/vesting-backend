@@ -55,9 +55,12 @@ export const ERROR_MESSAGES = {
   /** Recipient */
   RECIPIENT_REQUIRE_WALLET: 'Wallet is needed for accepting the invitation',
   RECIPIENT_NO_PENDING_INVITATION: 'No pending invitations are available',
+  RECIPIENT_NOT_FOUND: 'Not found recipient',
+  RECIPIENT_ALREADY_ACCEPTED: 'Invitation was already accepted',
   RECIPIENT_REQUIRE_CORRECT_WALLET: 'Wallet is incorrect',
   RECIPIENT_GET_ALL: 'Fetching recipients is failed',
   RECIPIENT_REVOKE_FAILURE: 'Revoking recipient is failed',
+  RECIPIENT_INVALID_CODE: 'Invitation code is invalid',
 
   /** Vesting */
   VESTING_NOT_FOUND: 'Vesting is not found',

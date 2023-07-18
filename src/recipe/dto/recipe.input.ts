@@ -21,9 +21,15 @@ export class CreateRecipeInput {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  @Field(() => String)
+  name?: string;
+
+  @ApiProperty()
+  @IsEmail()
   @IsNotEmpty()
   @Field(() => String)
-  userId: string;
+  email: string;
 
   @ApiProperty()
   @IsString()
@@ -48,12 +54,6 @@ export class CreateRecipeInput {
   @IsEnum(Role)
   @Field(() => Role)
   role: Role;
-
-  @ApiProperty()
-  @IsEmail()
-  @IsNotEmpty()
-  @Field(() => String)
-  email: string;
 
   @ApiProperty()
   @IsString()

@@ -19,6 +19,7 @@ import {
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   ListRecipientsQueryInput,
+  RevokeRecipeInput,
   UpdateRecipeInput,
 } from './dto/recipe.input';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
@@ -69,15 +70,14 @@ export class RecipesController {
   async revokeRecipe(
     @Param('recipeId') recipeId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @Body() _: UpdateRecipeInput
+    @Body() _: RevokeRecipeInput
   ) {
-    try {
-      await this.recipe.revokeRecipe(recipeId);
-      return SUCCESS_MESSAGES.RECIPIENT_REVOKE;
-    } catch (error) {
-      console.error('PUT /recipe/revoke/:recipeId', error);
-      throw new BadRequestException(ERROR_MESSAGES.RECIPIENT_REVOKE_FAILURE);
+    const recipe = await this.recipe.revokeRecipe(recipeId);
+    if (!recipe) {
+      throw new NotFoundException(ERROR_MESSAGES.RECIPIENT_NOT_FOUND);
     }
+
+    return SUCCESS_MESSAGES.RECIPIENT_REVOKE;
   }
 
   @ApiBearerAuth()

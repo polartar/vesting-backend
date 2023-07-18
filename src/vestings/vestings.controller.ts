@@ -19,7 +19,6 @@ import {
   UpdateVestingInput,
   VestingsQueryInput,
 } from './dto/vestings.input';
-import { UsersService } from 'src/users/users.service';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { IVestingsQuery } from './dto/interface';
@@ -28,7 +27,6 @@ import { IVestingsQuery } from './dto/interface';
 export class VestingsController {
   constructor(
     private readonly vesting: VestingsService,
-    private readonly user: UsersService,
     private readonly recipe: RecipesService
   ) {}
 
@@ -40,15 +38,11 @@ export class VestingsController {
     @Body()
     { recipes, redirectUri, ...vestingDetails }: CreateVestingInput
   ) {
-    const recipientUsers = await Promise.all(
-      recipes.map(({ email, name }) =>
-        this.user.createUserIfNotExists(email.toLowerCase(), name || '')
-      )
-    );
-    const vestingRecipients = recipes.map((recipient, index) => ({
+    const vestingRecipients = recipes.map((recipient) => ({
       ...recipient,
-      email: recipient.email.toLowerCase(),
-      userId: recipientUsers[index].id,
+      name: recipient.name || '',
+      email: recipient.email?.toLowerCase() || '',
+      address: recipient.address?.toLowerCase() || '',
     }));
 
     const vesting = await this.vesting.create(vestingDetails);
@@ -57,8 +51,8 @@ export class VestingsController {
       vestingRecipients.map((recipe) =>
         this.recipe.create({
           allocations: recipe.allocations,
-          userId: recipe.userId,
           organizationId: vestingDetails.organizationId,
+          name: recipe.name,
           email: recipe.email,
           role: recipe.role,
           vestingId: vesting.id,

@@ -35,6 +35,7 @@ Table wallet {
   userId String [not null]
   user user [not null]
   safeOwners safe_owner [not null]
+  recipes recipe [not null]
 }
 
 Table organization {
@@ -196,11 +197,13 @@ Table recipe {
   updatedAt DateTime [not null]
   vestingId String [not null]
   vesting vesting [not null]
-  userId String [not null]
-  user user [not null]
+  name String
+  email String
+  user user
   organizationId String [not null]
   organization organization [not null]
   address String
+  wallet wallet
   allocations String [not null]
   status RecipeStatus [not null, default: 'PENDING']
   code String [unique, not null]
@@ -362,9 +365,11 @@ Ref: vesting_template.organizationId > organization.id
 
 Ref: recipe.vestingId > vesting.id
 
-Ref: recipe.userId > user.id
+Ref: recipe.email > user.email
 
 Ref: recipe.organizationId > organization.id
+
+Ref: recipe.address > wallet.address
 
 Ref: safe_wallet.transactionId > transaction.id
 
