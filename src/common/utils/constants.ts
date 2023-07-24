@@ -22,12 +22,19 @@ export enum MailTemplates {
   LoginInstitutional = 'd-4958750812af4664a91288369225afa7',
   TeammateInvite = 'd-bde77990c2394a1fba408a67285063b6',
   RecipientInvite = 'd-c7dcc8f33282470099ae8a0247710d20',
+  /** V2 Email theme */
+  LoginV2 = 'd-d7421e14f0f049e1a0e18488ff1b2f63',
+  TeammateInviteV2 = 'd-82a9d1093c4f42bcaa53a93d6eb23815',
+  RecipientInviteV2 = 'd-02355a5f1ee04a21b54952fc13e91923',
 }
 
 export enum EmailSubjects {
   Login = 'Login to VTVL',
   Signup = 'Signup to VTVL',
 }
+
+export const WEBSITE_NAME = 'VTVL';
+export const WEBSITE_EMAIL = 'no-reply@vtvl.io';
 
 export const SIGN_MESSAGE_TEMPLATE = (
   address: string,

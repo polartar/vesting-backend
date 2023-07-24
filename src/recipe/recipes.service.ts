@@ -24,7 +24,7 @@ export class RecipesService {
       },
     });
 
-    await this.email.sendInvitationEmail(email, code, redirectUri);
+    await this.email.sendRecipientInvitationEmail(email, code, redirectUri);
     return recipe;
   }
 

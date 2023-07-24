@@ -32,7 +32,7 @@ export class EmailService {
   getLoginEmailTemplate = (platform: Platforms): MailTemplates => {
     switch (platform) {
       case Platforms.App:
-        return MailTemplates.Login;
+        return MailTemplates.LoginV2;
       case Platforms.Portfolio:
         return MailTemplates.LoginInstitutional;
     }
@@ -48,7 +48,27 @@ export class EmailService {
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.TeammateInvite,
+        MailTemplates.TeammateInviteV2,
+        { emailLink }
+      );
+      return true;
+    } catch (error) {
+      console.error('Sending invitation email: ', error);
+      return false;
+    }
+  }
+
+  async sendRecipientInvitationEmail(
+    email: string,
+    code: string,
+    redirectUri: string
+  ): Promise<boolean> {
+    try {
+      const emailLink = `${redirectUri}?code=${code}`;
+      await sendEmail<{ emailLink: string }>(
+        email,
+        EmailSubjects.Login,
+        MailTemplates.RecipientInviteV2,
         { emailLink }
       );
       return true;

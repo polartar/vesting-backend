@@ -154,4 +154,10 @@ export class ResendInvitationInput {
   @IsNotEmpty()
   @Field(() => String)
   redirectUri: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  organizationId: string;
 }
