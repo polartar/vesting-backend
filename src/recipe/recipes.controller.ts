@@ -19,22 +19,32 @@ import {
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   ListRecipientsQueryInput,
+  ResendInvitationInput,
   RevokeRecipeInput,
   UpdateRecipeInput,
 } from './dto/recipe.input';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
 import { IRecipientsQuery } from './dto/interface';
+import { EmailService } from 'src/auth/email.service';
 
 @Controller('recipe')
 export class RecipesController {
-  constructor(private readonly recipe: RecipesService) {}
+  constructor(
+    private readonly recipe: RecipesService,
+    private readonly email: EmailService
+  ) {}
 
   @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/get/:recipeId')
   async getRecipe(@Param('recipeId') recipeId: string) {
-    return this.recipe.get(recipeId);
+    const recipe = await this.recipe.get(recipeId);
+    if (!recipe) {
+      throw new NotFoundException(ERROR_MESSAGES.RECIPIENT_NOT_FOUND);
+    }
+
+    return recipe;
   }
 
   @ApiBearerAuth()
@@ -60,7 +70,36 @@ export class RecipesController {
   @UseGuards(GlobalAuthGuard)
   @Get('/code/:code')
   async getRecipeByCode(@Param('code') code: string) {
-    return this.recipe.getByCode(code);
+    const recipe = await this.recipe.getByCode(code);
+    if (!recipe) {
+      throw new NotFoundException(ERROR_MESSAGES.RECIPIENT_NOT_FOUND);
+    }
+
+    return recipe;
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/resend/:recipeId')
+  async resendInvitation(
+    @Param('recipeId') recipeId: string,
+    @Body() body: ResendInvitationInput
+  ) {
+    const recipe = await this.recipe.getByQuery({
+      id: recipeId,
+      status: 'PENDING',
+    });
+    if (!recipe) {
+      throw new NotFoundException(ERROR_MESSAGES.RECIPIENT_NOT_FOUND);
+    }
+
+    await this.email.sendInvitationEmail(
+      recipe.email,
+      recipe.code,
+      body.redirectUri
+    );
+    return recipe;
   }
 
   @ApiBearerAuth()
@@ -86,9 +125,10 @@ export class RecipesController {
   @Get('/list')
   async getRecipientList(@Query() query: ListRecipientsQueryInput) {
     try {
-      const where: IRecipientsQuery = {
-        organizationId: query.organizationId,
-      };
+      const where: IRecipientsQuery = {};
+      if (query.organizationId) {
+        where.organizationId = query.organizationId;
+      }
 
       if (query.vestingId) {
         where.vestingId = query.vestingId;

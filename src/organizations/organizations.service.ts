@@ -279,9 +279,6 @@ export class OrganizationsService {
     return this.prisma.userRole.findMany({
       where: {
         organizationId,
-        user: {
-          isActive: true,
-        },
       },
       include: {
         user: true,
@@ -293,9 +290,6 @@ export class OrganizationsService {
     return this.prisma.userPermission.findMany({
       where: {
         organizationId,
-        user: {
-          isActive: true,
-        },
       },
       include: {
         user: true,

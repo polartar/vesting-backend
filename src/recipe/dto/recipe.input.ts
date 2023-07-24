@@ -100,9 +100,9 @@ export class RevokeRecipeInput {
 export class ListRecipientsQueryInput {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 
   @ApiProperty()
   @IsString()
@@ -145,4 +145,13 @@ export class ListRecipientsQueryInput {
   @IsOptional()
   @Field(() => String)
   email?: string;
+}
+
+@InputType()
+export class ResendInvitationInput {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  redirectUri: string;
 }

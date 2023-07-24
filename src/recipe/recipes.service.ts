@@ -32,7 +32,18 @@ export class RecipesService {
     return this.prisma.recipe.findUnique({
       where: { id: recipeId },
       include: {
-        // TODO add relations
+        user: true,
+        organization: true,
+      },
+    });
+  }
+
+  async getByQuery(where: Partial<Recipe>) {
+    return this.prisma.recipe.findFirst({
+      where,
+      include: {
+        user: true,
+        organization: true,
       },
     });
   }
@@ -41,6 +52,10 @@ export class RecipesService {
     return this.prisma.recipe.findUnique({
       where: {
         code,
+      },
+      include: {
+        user: true,
+        organization: true,
       },
     });
   }
