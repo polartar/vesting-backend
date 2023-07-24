@@ -54,6 +54,7 @@ Table organization {
   recipes recipe [not null]
   vestingTemplates vesting_template [not null]
   members user_permission [not null]
+  websites website [not null]
 }
 
 Table user_role {
@@ -251,6 +252,21 @@ Table safe_confirmation {
   status ConfirmationStatus [not null]
 }
 
+Table website {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  organizationId String [not null]
+  organization organization [not null]
+  email String
+  domains Json[] [not null]
+  features Json
+  assets Json
+  links Json
+  styles Json
+}
+
 Enum Role {
   FOUNDER
   MANAGER
@@ -382,3 +398,5 @@ Ref: safe_confirmation.safeWalletId > safe_wallet.id
 Ref: safe_confirmation.safeOwnerId > safe_owner.id
 
 Ref: safe_confirmation.transactionId > transaction.id
+
+Ref: website.organizationId > organization.id

@@ -21,6 +21,7 @@ import { TokensModule } from './tokens/tokens.module';
 import { RecipesModule } from './recipe/recipes.module';
 import { VestingTemplatesModule } from './vesting-templates/vesting-templates.module';
 import { SafesModule } from './safe/safes.module';
+import { WebsiteModule } from './websites/websites.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { SafesModule } from './safe/safes.module';
     RecipesModule,
     VestingTemplatesModule,
     SafesModule,
+    WebsiteModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

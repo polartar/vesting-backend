@@ -120,7 +120,6 @@ export class RecipesController {
   }
 
   @ApiBearerAuth()
-  @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
   async getRecipientList(@Query() query: ListRecipientsQueryInput) {

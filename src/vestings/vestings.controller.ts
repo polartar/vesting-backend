@@ -66,7 +66,6 @@ export class VestingsController {
   }
 
   @ApiBearerAuth()
-  @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/:vestingId')
   async getVesting(@Param('vestingId') vestingId: string) {
