@@ -164,28 +164,23 @@ export class AuthController {
     @Body() body: ConnectWalletInput,
     @User() user: UserEntity
   ) {
-    try {
-      const isValidated = this.wallet.validateSignature(
-        body.signature,
-        body.address,
-        body.utcTime
-      );
+    const isValidated = this.wallet.validateSignature(
+      body.signature,
+      body.address,
+      body.utcTime
+    );
 
-      if (!isValidated) {
-        throw new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
-      }
-
-      const wallet = await this.wallet.findOrCreate(user.id, body.address);
-
-      return this.auth.generateTokens({
-        userId: user.id,
-        walletId: wallet.id,
-        walletAddress: wallet.address,
-      });
-    } catch (error) {
-      console.error('Error: /auth/wallet', error);
-      throw new BadRequestException(ERROR_MESSAGES.WALLET_CONNECT_FAILTURE);
+    if (!isValidated) {
+      throw new BadRequestException(ERROR_MESSAGES.WALLET_INVALID_SIGNATURE);
     }
+
+    const wallet = await this.wallet.findOrCreate(user.id, body.address);
+
+    return this.auth.generateTokens({
+      userId: user.id,
+      walletId: wallet.id,
+      walletAddress: wallet.address,
+    });
   }
 
   @NormalAuth()

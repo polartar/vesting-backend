@@ -26,7 +26,6 @@ export class WalletsService {
   ): boolean {
     const message = SIGN_MESSAGE_TEMPLATE(address, utcTime);
     const recovered = ethers.verifyMessage(message, signature);
-    console.info({ recovered, address });
     return compareStrings(recovered, address);
   }
 
@@ -38,11 +37,13 @@ export class WalletsService {
       },
     });
 
-    if (wallet && wallet.userId !== userId) {
-      throw new BadRequestException(ERROR_MESSAGES.WRONG_WALLET_OWNER);
-    }
+    if (wallet) {
+      if (wallet.userId !== userId) {
+        throw new BadRequestException(ERROR_MESSAGES.WRONG_WALLET_OWNER);
+      }
 
-    if (wallet) return wallet;
+      return wallet;
+    }
 
     return this.prisma.wallet.create({
       data: {
