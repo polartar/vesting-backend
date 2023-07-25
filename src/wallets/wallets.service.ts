@@ -26,6 +26,7 @@ export class WalletsService {
   ): boolean {
     const message = SIGN_MESSAGE_TEMPLATE(address, utcTime);
     const recovered = ethers.verifyMessage(message, signature);
+    console.info({ recovered, address });
     return compareStrings(recovered, address);
   }
 

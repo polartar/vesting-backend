@@ -12,7 +12,11 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { VestingsService } from './vestings.service';
-import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
+import {
+  NormalAuth,
+  OrganizationFounderAuth,
+  PublicAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   CreateVestingInput,
@@ -66,6 +70,7 @@ export class VestingsController {
   }
 
   @ApiBearerAuth()
+  @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/:vestingId')
   async getVesting(@Param('vestingId') vestingId: string) {
