@@ -12,11 +12,12 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 
-import { NormalAuth, PublicAuth } from 'src/common/utils/auth';
+import { AdminAuth, NormalAuth, PublicAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { QueryUserInput, UpdateUserInput } from './dto/update-user.input';
 import { User } from '@prisma/client';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class UsersController {
@@ -31,6 +32,14 @@ export class UsersController {
       throw new NotFoundException(ERROR_MESSAGES.AUTH_USER_NOT_FOUND);
     }
     return user;
+  }
+
+  @ApiBearerAuth()
+  @AdminAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/')
+  async getAllActiveUsers() {
+    return this.user.getAllActiveUsers();
   }
 
   @PublicAuth()

@@ -62,10 +62,18 @@ export class VestingContractsService {
     return this.prisma.vestingContract.findMany({
       where: {
         organizationId,
-        isActive: true,
       },
       include: {
         token: true,
+      },
+    });
+  }
+
+  async setDeployTransaction(vestingContractId: string, transactionId: string) {
+    return this.prisma.vesting.update({
+      where: { id: vestingContractId },
+      data: {
+        transactionId,
       },
     });
   }

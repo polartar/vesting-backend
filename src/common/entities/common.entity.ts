@@ -18,4 +18,9 @@ export class CommonEntity {
   @ApiProperty()
   @Expose()
   updatedAt: Date;
+
+  @ApiProperty()
+  @Field(() => Date)
+  @Expose()
+  deletedAt: Date | null;
 }

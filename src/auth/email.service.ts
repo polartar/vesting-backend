@@ -32,7 +32,7 @@ export class EmailService {
   getLoginEmailTemplate = (platform: Platforms): MailTemplates => {
     switch (platform) {
       case Platforms.App:
-        return MailTemplates.LoginV2;
+        return MailTemplates.Login;
       case Platforms.Portfolio:
         return MailTemplates.LoginInstitutional;
     }
@@ -48,7 +48,7 @@ export class EmailService {
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.TeammateInviteV2,
+        MailTemplates.TeammateInvite,
         { emailLink }
       );
       return true;
@@ -68,7 +68,7 @@ export class EmailService {
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.RecipientInviteV2,
+        MailTemplates.RecipientInvite,
         { emailLink }
       );
       return true;

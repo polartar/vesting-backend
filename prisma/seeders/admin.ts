@@ -43,7 +43,6 @@ export const migrateAdminUsers = async () => {
         data: {
           name: user.name,
           email: user.email,
-          isActive: true,
           isAdmin: true,
         },
       });

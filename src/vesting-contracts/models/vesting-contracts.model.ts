@@ -9,6 +9,11 @@ import { Transaction } from 'src/transactions/models/transactions.model';
 
 @ObjectType()
 export class VestingContract extends BaseModel {
+  @Field({
+    description: 'Identifies the date and time when the object was deleted.',
+  })
+  deletedAt: Date;
+
   @Field(() => String)
   organizationId: string;
 
@@ -40,7 +45,4 @@ export class VestingContract extends BaseModel {
 
   @Field(() => Boolean, { defaultValue: false })
   isDeployed: boolean;
-
-  @Field(() => Boolean, { defaultValue: true })
-  isActive: boolean;
 }

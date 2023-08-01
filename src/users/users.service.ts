@@ -30,7 +30,6 @@ export class UsersService {
         email: withEmail,
         isAdmin: true,
         name: true,
-        isActive: true,
         createdAt: true,
         updatedAt: true,
         firebaseId: true,
@@ -95,5 +94,9 @@ export class UsersService {
         organizationId,
       },
     });
+  }
+
+  getAllActiveUsers() {
+    return this.prisma.user.findMany();
   }
 }

@@ -49,9 +49,18 @@ enum RecipeStatus {
 }
 
 enum TransactionStatus {
-  DRAFT
   PENDING
-  CONFIRMED
+  SUCCESS
+  FAILED
+}
+
+enum TransactionType {
+  VESTING_DEPLOYMENT
+  FUNDING_CONTRACT
+  ADDING_CLAIMS
+  TOKEN_DEPLOYMENT
+  REVOKE_CLAIM
+  ADMIN_WITHDRAW
 }
 
 enum ConfirmationStatus {
@@ -95,9 +104,9 @@ model User {
   firebaseId    String?          @map("firebase_id")
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
+  deletedAt     DateTime?        @map("deleted_at")
   email         String           @unique
   name          String?
-  isActive      Boolean          @default(true) @map("is_active")
   isAdmin       Boolean          @default(false) @map("is_admin")
   wallets       Wallet[]
   organizations Organization[]
@@ -137,6 +146,7 @@ model Organization {
   firebaseId       String?             @map("firebase_id")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
+  deletedAt        DateTime?           @map("deleted_at")
   userId           String              @map("user_id")
   user             User                @relation(fields: [userId], references: [id])
   name             String
@@ -149,6 +159,7 @@ model Organization {
   vestingTemplates VestingTemplate[]
   members          UserPermission[]
   websites         Website[]
+  transactions     Transaction[]
 
   @@map("organization")
 }
@@ -185,9 +196,14 @@ model Transaction {
   id                String             @id @default(uuid())
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
+  organizationId    String             @map("organization_id")
+  organization      Organization       @relation(fields: [organizationId], references: [id])
   chainId           Int                @map("chain_id")
-  hash              String
-  status            TransactionStatus  @default(DRAFT)
+  hash              String?
+  to                String
+  safeHash          String?            @map("safe_hash")
+  status            TransactionStatus  @default(PENDING)
+  type              TransactionType
   tokens            Token[]
   vestingContracts  VestingContract[]
   vestings          Vesting[]
@@ -202,6 +218,7 @@ model Token {
   firebaseId       String?             @map("firebase_id")
   createdAt        DateTime            @default(now()) @map("created_at")
   updatedAt        DateTime            @updatedAt @map("updated_at")
+  deletedAt        DateTime?           @map("deleted_at")
   name             String
   symbol           String
   decimal          Int
@@ -216,7 +233,6 @@ model Token {
   transactionId    String?             @map("transaction_id")
   transaction      Transaction?        @relation(fields: [transactionId], references: [id])
   isDeployed       Boolean             @default(false) @map("is_deployed")
-  isActive         Boolean             @default(true) @map("is_active")
   organizations    OrganizationToken[]
   vestingContracts VestingContract[]
   vestings         Vesting[]
@@ -241,6 +257,7 @@ model VestingContract {
   firebaseId     String?               @map("firebase_id")
   createdAt      DateTime              @default(now()) @map("created_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
+  deletedAt      DateTime?             @map("deleted_at")
   organizationId String                @map("organization_id")
   organization   Organization          @relation(fields: [organizationId], references: [id])
   tokenId        String                @map("token_id")
@@ -251,7 +268,6 @@ model VestingContract {
   transactionId  String?               @map("transaction_id")
   transaction    Transaction?          @relation(fields: [transactionId], references: [id])
   isDeployed     Boolean               @default(false) @map("is_deployed")
-  isActive       Boolean               @default(true) @map("is_active")
   status         VestingContractStatus @default(INITIALIZED)
   vestings       Vesting[]
 
@@ -263,6 +279,7 @@ model Vesting {
   firebaseId           String?              @map("firebase_id")
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
+  deletedAt            DateTime?            @map("deleted_at")
   organizationId       String               @map("organization_id")
   organization         Organization         @relation(fields: [organizationId], references: [id])
   tokenId              String               @map("token_id")
@@ -291,6 +308,7 @@ model VestingTemplate {
   id                   String               @id @default(uuid())
   createdAt            DateTime             @default(now()) @map("created_at")
   updatedAt            DateTime             @updatedAt @map("updated_at")
+  deletedAt            DateTime?            @map("deleted_at")
   organizationId       String               @map("organization_id")
   organization         Organization         @relation(fields: [organizationId], references: [id])
   name                 String
@@ -308,6 +326,7 @@ model Recipe {
   firebaseId     String?      @map("firebase_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
   vestingId      String       @map("vesting_id")
   vesting        Vesting      @relation(fields: [vestingId], references: [id])
   name           String?

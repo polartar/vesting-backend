@@ -22,6 +22,9 @@ import { RecipesModule } from './recipe/recipes.module';
 import { VestingTemplatesModule } from './vesting-templates/vesting-templates.module';
 import { SafesModule } from './safe/safes.module';
 import { WebsiteModule } from './websites/websites.module';
+import { TransactionsModule } from './transactions/transactions.module';
+
+// import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 
 @Module({
   imports: [
@@ -32,6 +35,8 @@ import { WebsiteModule } from './websites/websites.module';
         middlewares: [
           // configure your prisma middleware
           loggingMiddleware(new Logger('PrismaMiddleware')),
+          // soft delete middleware
+          // softDeleteMiddleware(),
         ],
       },
     }),
@@ -52,6 +57,7 @@ import { WebsiteModule } from './websites/websites.module';
     VestingTemplatesModule,
     SafesModule,
     WebsiteModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -7,6 +7,11 @@ import { Transaction } from 'src/transactions/models/transactions.model';
 
 @ObjectType()
 export class Token extends BaseModel {
+  @Field({
+    description: 'Identifies the date and time when the object was deleted.',
+  })
+  deletedAt: Date;
+
   @Field(() => String)
   name: string;
 
@@ -43,7 +48,4 @@ export class Token extends BaseModel {
 
   @Field(() => Boolean, { defaultValue: false })
   isDeployed: boolean;
-
-  @Field(() => Boolean, { defaultValue: true })
-  isActive: boolean;
 }

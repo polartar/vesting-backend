@@ -7,6 +7,11 @@ import { User } from 'src/users/models/user.model';
 
 @ObjectType()
 export class Organization extends BaseModel {
+  @Field({
+    description: 'Identifies the date and time when the object was deleted.',
+  })
+  deletedAt: Date;
+
   @Field(() => String)
   userId: string;
 

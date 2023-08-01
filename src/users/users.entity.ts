@@ -27,11 +27,6 @@ export class UserEntity extends CommonEntity implements User {
   @Field(() => Boolean)
   @ApiProperty()
   @Expose()
-  isActive: boolean;
-
-  @Field(() => Boolean)
-  @ApiProperty()
-  @Expose()
   isAdmin: boolean;
 
   @Field(() => String)

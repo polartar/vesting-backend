@@ -1,7 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { User, Wallet } from '@prisma/client';
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -41,25 +40,15 @@ export class AuthService {
     });
   }
 
-  async createUser(payload: SignupInput, activate = false): Promise<Token> {
+  async createUser(payload: SignupInput): Promise<Token> {
     try {
-      let user = await this.prisma.user.upsert({
+      const user = await this.prisma.user.upsert({
         where: {
           email: payload.email,
         },
         create: payload,
         update: {},
       });
-      if (!user.isActive) {
-        if (activate) {
-          user = await this.prisma.user.update({
-            where: { id: user.id },
-            data: { isActive: true },
-          });
-        } else {
-          throw new BadRequestException(`Inactive user: ${payload.email}`);
-        }
-      }
 
       return this.generateTokens({
         userId: user.id,
@@ -76,10 +65,6 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
-    }
-
-    if (!user.isActive) {
-      throw new NotFoundException(`User is not active: ${email}`);
     }
 
     const code = await this.createAuthCode(user.email);

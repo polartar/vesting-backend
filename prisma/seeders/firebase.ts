@@ -21,7 +21,6 @@ async function registerUser(user) {
         email: getEmail(user.email),
         createdAt: user.created_at,
         updatedAt: user.updated_at,
-        isActive: true,
         isAdmin: false,
       },
     });
@@ -122,7 +121,6 @@ async function registerToken(token, organizationId) {
         address: token.address.toLowerCase(),
         logo: token.logo,
         isDeployed: true,
-        isActive: true,
         createdAt: token.createdAt,
         updatedAt: token.updatedAt,
         burnable: token.burnable,
@@ -166,7 +164,6 @@ async function registerContract(contract, tokenId, organizationId) {
         chainId: contract.chainId,
         address: contract.address.toLowerCase(),
         isDeployed: true,
-        isActive: true,
         organizationId,
         tokenId,
         createdAt: contract.created_at,

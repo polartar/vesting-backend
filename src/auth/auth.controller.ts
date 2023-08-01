@@ -145,12 +145,9 @@ export class AuthController {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
-      return this.auth.createUser(
-        {
-          email: authEmail,
-        },
-        true
-      );
+      return this.auth.createUser({
+        email: authEmail,
+      });
     } catch (error) {
       console.error('Error: /auth/validate', error);
       throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);

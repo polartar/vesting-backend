@@ -9,15 +9,17 @@ import { Recipe } from 'src/recipe/model/recipe.model';
 
 @ObjectType()
 export class User extends BaseModel {
+  @Field({
+    description: 'Identifies the date and time when the object was deleted.',
+  })
+  deletedAt: Date;
+
   @Field(() => String)
   @IsEmail()
   email: string;
 
   @Field(() => String)
   name: string;
-
-  @Field(() => Boolean, { defaultValue: true })
-  isActive: boolean;
 
   @Field(() => Boolean, { defaultValue: false })
   isAdmin: boolean;
