@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -15,7 +16,11 @@ import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 
 import { TokensService } from './tokens.service';
 
-import { CreateTokenInput, ImportTokenInput } from './dto/token.input';
+import {
+  CreateTokenInput,
+  ImportTokenInput,
+  UpdateTokenInput,
+} from './dto/token.input';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { AlchemyService } from 'src/alchemy/alchemy.service';
 import { User } from '@prisma/client';
@@ -33,6 +38,17 @@ export class TokensController {
   @Post('/')
   async createToken(@Body() body: CreateTokenInput) {
     return this.token.create(body);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:tokenId')
+  async updateToken(
+    @Param('tokenId') tokenId: string,
+    @Body() body: UpdateTokenInput
+  ) {
+    return this.token.update(tokenId, body);
   }
 
   @ApiBearerAuth()

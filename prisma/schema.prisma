@@ -227,6 +227,7 @@ model Token {
   description      String?
   maxSupply        String?             @map("max_supply")
   supplyCap        String?             @map("supply_cap")
+  totalSupply    String?             @map("total_supply")
   chainId          Int?                @map("chain_id")
   address          String?
   logo             String?

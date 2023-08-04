@@ -1,26 +1,36 @@
 import { Optional } from '@nestjs/common';
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsNumberString, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  IsString,
+} from 'class-validator';
 
 @InputType()
 export class CreateTokenInput {
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => String)
   @IsString()
   organizationId: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => String)
   @IsString()
   name: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => String)
   @IsString()
   symbol: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => Number)
   @IsNumber()
   decimal: number;
@@ -40,15 +50,23 @@ export class CreateTokenInput {
   @ApiProperty()
   @Field(() => String)
   @Optional()
+  @IsNumberString()
+  totalSupply?: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @Optional()
   @IsString()
   supplyCap?: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => Boolean)
   @IsBoolean()
   burnable: boolean;
 
   @ApiProperty()
+  @IsNotEmpty()
   @Field(() => Boolean)
   @IsBoolean()
   imported: boolean;
@@ -64,6 +82,21 @@ export class CreateTokenInput {
   @Optional()
   @IsString()
   logo: string;
+}
+
+@InputType()
+export class UpdateTokenInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  @IsString()
+  organizationId: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  @IsNumberString()
+  totalSupply: string;
 }
 
 @InputType()

@@ -1,8 +1,13 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { CreateDeployedTokenInput, CreateTokenInput } from './dto/token.input';
+import {
+  CreateDeployedTokenInput,
+  CreateTokenInput,
+  UpdateTokenInput,
+} from './dto/token.input';
 import { Token } from './models/tokens.model';
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
 
 @Injectable()
 export class TokensService {
@@ -22,6 +27,27 @@ export class TokensService {
     });
 
     return token;
+  }
+
+  async update(
+    tokenId: string,
+    { organizationId, ...payload }: UpdateTokenInput
+  ) {
+    const organizationToken = await this.prisma.organizationToken.findFirst({
+      where: {
+        organizationId,
+        tokenId,
+      },
+    });
+
+    if (!organizationToken) {
+      throw new BadRequestException(ERROR_MESSAGES.TOKEN_NOT_FOUND);
+    }
+
+    return this.prisma.token.update({
+      where: { id: tokenId },
+      data: payload,
+    });
   }
 
   async import(payload: CreateDeployedTokenInput) {

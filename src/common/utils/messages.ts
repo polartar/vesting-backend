@@ -51,6 +51,7 @@ export const ERROR_MESSAGES = {
   /* Token */
   INVALID_ERC20_TOKEN: 'Invalid Token address',
   IMPORT_TOKEN_FAILURE: 'Importing token is failed',
+  TOKEN_NOT_FOUND: 'Token not found',
 
   /** Recipient */
   RECIPIENT_REQUIRE_WALLET: 'Wallet is needed for accepting the invitation',

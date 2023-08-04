@@ -116,6 +116,7 @@ Table token {
   description String
   maxSupply String
   supplyCap String
+  totalSupply String
   chainId Int
   address String
   logo String
