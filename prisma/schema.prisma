@@ -160,6 +160,7 @@ model Organization {
   members          UserPermission[]
   websites         Website[]
   transactions     Transaction[]
+  entities         Entity[]
 
   @@map("organization")
 }
@@ -227,7 +228,7 @@ model Token {
   description      String?
   maxSupply        String?             @map("max_supply")
   supplyCap        String?             @map("supply_cap")
-  totalSupply    String?             @map("total_supply")
+  totalSupply      String?             @map("total_supply")
   chainId          Int?                @map("chain_id")
   address          String?
   logo             String?
@@ -407,4 +408,16 @@ model Website {
   styles         Json?
 
   @@map("website")
+}
+
+model Entity {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+  name           String
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@map("entity")
 }

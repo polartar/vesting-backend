@@ -57,6 +57,7 @@ Table organization {
   members user_permission [not null]
   websites website [not null]
   transactions transaction [not null]
+  entities entity [not null]
 }
 
 Table user_role {
@@ -278,6 +279,16 @@ Table website {
   styles Json
 }
 
+Table entity {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  name String [not null]
+  organizationId String [not null]
+  organization organization [not null]
+}
+
 Enum Role {
   FOUNDER
   MANAGER
@@ -422,3 +433,5 @@ Ref: safe_confirmation.safeOwnerId > safe_owner.id
 Ref: safe_confirmation.transactionId > transaction.id
 
 Ref: website.organizationId > organization.id
+
+Ref: entity.organizationId > organization.id

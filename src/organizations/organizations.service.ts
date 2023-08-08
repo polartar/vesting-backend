@@ -49,6 +49,7 @@ export class OrganizationsService {
             name: true,
           },
         },
+        entities: true,
       },
     });
   }
@@ -312,7 +313,11 @@ export class OrganizationsService {
     return this.prisma.userPermission.findMany({
       where: { userId },
       include: {
-        organization: true,
+        organization: {
+          include: {
+            entities: true,
+          },
+        },
       },
     });
   }
