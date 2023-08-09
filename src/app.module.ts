@@ -23,7 +23,8 @@ import { VestingTemplatesModule } from './vesting-templates/vesting-templates.mo
 import { SafesModule } from './safe/safes.module';
 import { WebsiteModule } from './websites/websites.module';
 import { TransactionsModule } from './transactions/transactions.module';
-
+import { EntitiesModule } from './entities/entities.module';
+import { ProjectsModule } from './projects/projects.module';
 // import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 
 @Module({
@@ -58,6 +59,8 @@ import { TransactionsModule } from './transactions/transactions.module';
     SafesModule,
     WebsiteModule,
     TransactionsModule,
+    EntitiesModule,
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
