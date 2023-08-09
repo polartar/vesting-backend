@@ -16,3 +16,12 @@ export class CreateEntityInput {
   @Field(() => String)
   name: string;
 }
+
+@InputType()
+export class QueryEntityInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  organizationId: string;
+}

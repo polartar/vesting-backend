@@ -29,5 +29,5 @@ CREATE TABLE "project_entity" (
   CONSTRAINT "project_entity_pkey" PRIMARY KEY ("id")
 );
 
-ALTER TABLE "project_entity_pkey" ADD CONSTRAINT "project_entity_pkey_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-ALTER TABLE "project_entity_pkey" ADD CONSTRAINT "project_entity_pkey_entity_id_fkey" FOREIGN KEY ("entity_id") REFERENCES "entity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "project_entity" ADD CONSTRAINT "project_entity_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "project_entity" ADD CONSTRAINT "project_entity_entity_id_fkey" FOREIGN KEY ("entity_id") REFERENCES "entity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
