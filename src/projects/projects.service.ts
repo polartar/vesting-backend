@@ -9,7 +9,12 @@ export class ProjectsService {
 
   async create({ entityIds, ...data }: CreateProjectInput) {
     const project = await this.prisma.project.create({
-      data,
+      data: {
+        ...data,
+        chainId: data.chainId ?? 0,
+        contract: data.contract ?? '',
+        wallet: data.wallet ?? '',
+      },
     });
 
     await this.prisma.projectEntity.createMany({

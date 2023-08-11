@@ -301,6 +301,8 @@ Table project {
   chainId Int [not null]
   isLive Boolean [not null]
   contract String [not null]
+  website String
+  tgeDate DateTime
   wallet String [not null]
   projectEntities project_entity [not null]
 }

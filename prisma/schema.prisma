@@ -434,6 +434,8 @@ model Project {
   chainId         Int             @map("chain_id")
   isLive          Boolean         @map("is_live")
   contract        String
+  website         String?
+  tgeDate         DateTime?        @map("tge_date")
   wallet          String
   projectEntities ProjectEntity[]
 

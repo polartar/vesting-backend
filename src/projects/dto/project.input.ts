@@ -25,24 +25,36 @@ export class CreateProjectInput {
   name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsEthereumAddress()
   @Field(() => String)
-  contract: string;
+  contract?: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsEthereumAddress()
   @Field(() => String)
-  wallet: string;
+  wallet?: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Field(() => Number)
-  chainId: number;
+  chainId?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  website?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => Date)
+  tgeDate?: Date;
 
   @ApiProperty()
   @IsOptional()
