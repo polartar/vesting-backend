@@ -98,6 +98,9 @@ export class TokensController {
   @Get('/')
   async getTokens(@Request() req: { user: User }) {
     const tokens = await this.token.getMyTokens(req.user.id);
-    return tokens.map(({ token }) => token);
+    return tokens.map(({ token, organizationId }) => ({
+      ...token,
+      organizationId,
+    }));
   }
 }

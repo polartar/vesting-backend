@@ -117,6 +117,7 @@ export class TokensService {
       },
       select: {
         token: true,
+        organizationId: true,
       },
     });
   }
