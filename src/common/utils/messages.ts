@@ -65,6 +65,9 @@ export const ERROR_MESSAGES = {
 
   /** Vesting */
   VESTING_NOT_FOUND: 'Vesting is not found',
+
+  /** Revoking */
+  REVOKING_NOT_FOUND: 'Revoking is not found',
 };
 
 export const SUCCESS_MESSAGES = {
