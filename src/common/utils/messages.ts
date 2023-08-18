@@ -30,6 +30,8 @@ export const ERROR_MESSAGES = {
   ORGANIZATION_INVITE_MEMBERS_FAILURE: 'Inviting members is failed',
   ORGANIZATION_INVITE_MEMBERS_WITH_WRONG_ROLES:
     'Inviting members role is incorrect',
+  ORGANIZATION_INVITE_MEMBERS_WITH_EMPTY_ENTITIES: 'EntityIds are missing',
+  ORGANIZATION_INVITE_MEMBERS_WITH_BAD_ENTITIES: 'Bad entityIds are provided',
   ORGANIZATION_GET_ALL_MEMBERS_FAILURE: 'Fetching all members is failed',
   ORGANIZATION_GET_ALL_RECIPIENTS_FAILURE: 'Fetching all recipients is failed',
 

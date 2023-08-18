@@ -1,9 +1,11 @@
 import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsEthereumAddress,
+  IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -149,21 +151,31 @@ export class InviteVestingRecipientInput {
 @InputType()
 export class InvitePortfolioMemberInput {
   @ApiProperty()
+  @IsNotEmpty()
   @IsEmail()
   @Field(() => String)
   email: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
   @Field(() => String)
-  name: string;
+  name?: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @IsEnum(Permission)
   @Field(() => Permission)
   permission: Permission;
 
   @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @Field(() => Array)
+  entityIds?: string[];
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   @Field(() => String)
   redirectUri: string;

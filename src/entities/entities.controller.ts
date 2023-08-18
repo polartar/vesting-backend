@@ -23,7 +23,7 @@ export class EntitiesController {
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
   async getEntities(@Query() query: QueryEntityInput) {
-    const entities = await this.entity.get(query);
+    const entities = await this.entity.getAll(query);
     return entities;
   }
 }

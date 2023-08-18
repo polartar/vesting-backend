@@ -79,6 +79,7 @@ Table user_permission {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   permission Permission [not null, default: 'READ']
+  permissions Json
   userId String [not null]
   user user [not null]
   organizationId String [not null]

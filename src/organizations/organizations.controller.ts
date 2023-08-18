@@ -30,10 +30,15 @@ import {
 } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
+import { EntitiesService } from 'src/entities/entities.service';
+import { Permission } from '@prisma/client';
 
 @Controller('organization')
 export class OrganizationsController {
-  constructor(private readonly organization: OrganizationsService) {}
+  constructor(
+    private readonly organization: OrganizationsService,
+    private readonly entities: EntitiesService
+  ) {}
 
   @ApiBearerAuth()
   @NormalAuth()
@@ -198,18 +203,50 @@ export class OrganizationsController {
     @Param('organizationId') organizationId: string,
     @Body() body: InvitePortfolioMemberInput
   ) {
-    try {
-      await this.organization.invitePortfolioMember(organizationId, body);
-      return SUCCESS_MESSAGES.ORGANIZATION_INVITE_MEMBERS;
-    } catch (error) {
-      console.error(
-        'Error: POST /organization/:organizationId/invite/portfolio',
-        error
-      );
-      throw new BadRequestException(
-        ERROR_MESSAGES.ORGANIZATION_INVITE_MEMBERS_FAILURE
-      );
+    let permissions: Record<string, boolean> = {};
+
+    if (body.permission === Permission.READ) {
+      const entityCount = await this.entities.count({ organizationId });
+
+      // if organization has any entity, entityId should be provided in request.
+      if (entityCount > 0) {
+        if (!body.entityIds?.length) {
+          throw new BadRequestException(
+            ERROR_MESSAGES.ORGANIZATION_INVITE_MEMBERS_WITH_EMPTY_ENTITIES
+          );
+        }
+
+        // calculate the entities count with request entityIds
+        const count = await this.entities.count({
+          organizationId,
+          id: {
+            in: body.entityIds,
+          },
+        });
+        if (count !== body.entityIds.length) {
+          throw new BadRequestException(
+            ERROR_MESSAGES.ORGANIZATION_INVITE_MEMBERS_WITH_BAD_ENTITIES
+          );
+        }
+
+        permissions = body.entityIds.reduce(
+          (value, entityId) => ({
+            ...value,
+            [entityId]: true,
+          }),
+          permissions
+        );
+      }
     }
+
+    await this.organization.invitePortfolioMember(organizationId, {
+      email: body.email,
+      name: body.name,
+      permission: body.permission,
+      redirectUri: body.redirectUri,
+      permissions,
+    });
+    return SUCCESS_MESSAGES.ORGANIZATION_INVITE_MEMBERS;
   }
 
   /** Remove organization members */

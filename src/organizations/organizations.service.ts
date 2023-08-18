@@ -192,7 +192,7 @@ export class OrganizationsService {
 
   async invitePortfolioMember(
     organizationId: string,
-    { email, name, permission, redirectUri }: InvitePortfolioMemberInput
+    { email, name, permission, redirectUri, permissions }
   ) {
     const organization = await this.prisma.organization.findUnique({
       where: { id: organizationId },
@@ -226,6 +226,7 @@ export class OrganizationsService {
           organizationId,
           userId: user.id,
           permission,
+          permissions,
         },
       });
     } else {
