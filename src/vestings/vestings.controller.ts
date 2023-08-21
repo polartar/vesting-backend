@@ -26,12 +26,14 @@ import {
 import { RecipesService } from 'src/recipe/recipes.service';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { IVestingsQuery } from './dto/interface';
+import { TokensService } from 'src/tokens/tokens.service';
 
 @Controller('vesting')
 export class VestingsController {
   constructor(
     private readonly vesting: VestingsService,
-    private readonly recipe: RecipesService
+    private readonly recipe: RecipesService,
+    private readonly token: TokensService
   ) {}
 
   @ApiBearerAuth()
@@ -42,6 +44,11 @@ export class VestingsController {
     @Body()
     { recipes, redirectUri, ...vestingDetails }: CreateVestingInput
   ) {
+    const token = await this.token.get(vestingDetails.tokenId);
+    if (!token) {
+      throw new NotFoundException(ERROR_MESSAGES.TOKEN_NOT_FOUND);
+    }
+
     const vestingRecipients = recipes.map((recipient) => ({
       ...recipient,
       name: recipient.name || '',
@@ -62,6 +69,7 @@ export class VestingsController {
           vestingId: vesting.id,
           redirectUri,
           address: recipe.address,
+          tokenSymbol: token.symbol,
         })
       )
     );

@@ -26,6 +26,7 @@ import {
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from 'src/common/utils/messages';
 import { IRecipientsQuery } from './dto/interface';
 import { EmailService } from 'src/auth/email.service';
+import { Platforms } from 'src/common/utils/constants';
 
 @Controller('recipe')
 export class RecipesController {
@@ -97,7 +98,8 @@ export class RecipesController {
     await this.email.sendInvitationEmail(
       recipe.email,
       recipe.code,
-      body.redirectUri
+      body.redirectUri,
+      Platforms.App
     );
     return recipe;
   }

@@ -18,10 +18,15 @@ export enum Platforms {
 }
 
 export enum MailTemplates {
+  // Login needs { subject, emailLink }
   Login = 'd-dbd24a1f6b69408bbdcff1b4130ecde4',
   LoginInstitutional = 'd-4958750812af4664a91288369225afa7',
+  // Teammate invites need { subject, name, emailLink }
   TeammateInvite = 'd-bde77990c2394a1fba408a67285063b6',
+  TeammateInviteInstitutional = 'd-b96028ec402346388bd67b0152420d66',
+  // Recipient invites need { subject, name, emailLink, tokenSymbol }
   RecipientInvite = 'd-c7dcc8f33282470099ae8a0247710d20',
+  RecipientInviteInstitutional = 'd-1c967524efa84b719f5f40a95ad6e5d4',
   /** V2 Email theme */
   LoginV2 = 'd-d7421e14f0f049e1a0e18488ff1b2f63',
   TeammateInviteV2 = 'd-82a9d1093c4f42bcaa53a93d6eb23815',

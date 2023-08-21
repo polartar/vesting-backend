@@ -12,14 +12,14 @@ export class EmailService {
     email: string,
     code: string,
     redirectUri: string,
-    platform?: Platforms
+    platform: Platforms
   ): Promise<boolean> {
     try {
       const emailLink = `${redirectUri}?code=${code}`;
       await sendEmail<{ emailLink: string }>(
         email,
         EmailSubjects.Login,
-        this.getLoginEmailTemplate(platform || Platforms.App),
+        this.getEmailTemplate(platform).Login,
         { emailLink }
       );
       return true;
@@ -29,27 +29,43 @@ export class EmailService {
     }
   }
 
-  getLoginEmailTemplate = (platform: Platforms): MailTemplates => {
+  getEmailTemplate = (
+    platform: Platforms
+  ): {
+    Login: MailTemplates;
+    RecipientInvite: MailTemplates;
+    TeammateInvite: MailTemplates;
+  } => {
     switch (platform) {
       case Platforms.App:
-        return MailTemplates.Login;
+        return {
+          Login: MailTemplates.Login,
+          RecipientInvite: MailTemplates.RecipientInvite,
+          TeammateInvite: MailTemplates.TeammateInvite,
+        };
       case Platforms.Portfolio:
-        return MailTemplates.LoginInstitutional;
+        return {
+          Login: MailTemplates.LoginInstitutional,
+          RecipientInvite: MailTemplates.RecipientInviteInstitutional,
+          TeammateInvite: MailTemplates.RecipientInviteInstitutional,
+        };
     }
   };
 
   async sendInvitationEmail(
     email: string,
     code: string,
-    redirectUri: string
+    redirectUri: string,
+    platform?: Platforms,
+    name?: string
   ): Promise<boolean> {
     try {
       const emailLink = `${redirectUri}?code=${code}`;
-      await sendEmail<{ emailLink: string }>(
+      await sendEmail<{ emailLink: string; name?: string }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.TeammateInvite,
-        { emailLink }
+        this.getEmailTemplate(platform || Platforms.App).TeammateInvite,
+        { emailLink, name }
       );
       return true;
     } catch (error) {
@@ -61,15 +77,21 @@ export class EmailService {
   async sendRecipientInvitationEmail(
     email: string,
     code: string,
-    redirectUri: string
+    redirectUri: string,
+    name?: string,
+    tokenSymbol?: string
   ): Promise<boolean> {
     try {
       const emailLink = `${redirectUri}?code=${code}`;
-      await sendEmail<{ emailLink: string }>(
+      await sendEmail<{
+        emailLink: string;
+        name?: string;
+        tokenSymbol?: string;
+      }>(
         email,
         EmailSubjects.Login,
-        MailTemplates.RecipientInvite,
-        { emailLink }
+        this.getEmailTemplate(Platforms.App).RecipientInvite,
+        { emailLink, tokenSymbol, name }
       );
       return true;
     } catch (error) {

@@ -60,6 +60,12 @@ export class CreateRecipeInput {
   @IsNotEmpty()
   @Field(() => String)
   redirectUri: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsString()
+  @IsOptional()
+  tokenSymbol?: string;
 }
 
 @InputType()

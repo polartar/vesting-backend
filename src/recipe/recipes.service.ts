@@ -13,7 +13,13 @@ export class RecipesService {
     private readonly email: EmailService
   ) {}
 
-  async create({ email, redirectUri, ...payload }: CreateRecipeInput) {
+  async create({
+    email,
+    redirectUri,
+    name,
+    tokenSymbol,
+    ...payload
+  }: CreateRecipeInput) {
     const code = generateRandomCode();
     const recipe = await this.prisma.recipe.create({
       data: {
@@ -24,7 +30,13 @@ export class RecipesService {
       },
     });
 
-    await this.email.sendRecipientInvitationEmail(email, code, redirectUri);
+    await this.email.sendRecipientInvitationEmail(
+      email,
+      code,
+      redirectUri,
+      name,
+      tokenSymbol
+    );
     return recipe;
   }
 

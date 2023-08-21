@@ -10,6 +10,7 @@ import {
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { getExpiredTime } from 'src/common/utils/helper';
 import { EmailService } from 'src/auth/email.service';
+import { Platforms } from 'src/common/utils/constants';
 
 @Injectable()
 export class OrganizationsService {
@@ -180,7 +181,9 @@ export class OrganizationsService {
     const isSucceeded = await this.email.sendInvitationEmail(
       email,
       code,
-      redirectUri
+      redirectUri,
+      Platforms.App,
+      name
     );
     if (!isSucceeded) {
       throw new BadRequestException(
@@ -249,7 +252,9 @@ export class OrganizationsService {
     const isSucceeded = await this.email.sendInvitationEmail(
       email,
       code,
-      redirectUri
+      redirectUri,
+      Platforms.Portfolio,
+      name
     );
     if (!isSucceeded) {
       throw new BadRequestException(
