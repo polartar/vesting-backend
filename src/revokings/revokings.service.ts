@@ -26,6 +26,9 @@ export class RevokingsService {
   async getAll(where: Partial<Revoking>) {
     return this.prisma.revoking.findMany({
       where,
+      include: {
+        recipe: true,
+      },
     });
   }
 

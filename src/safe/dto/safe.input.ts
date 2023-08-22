@@ -66,12 +66,6 @@ export class CreateSafeWalletInput extends CreateSafeWalletDetailInput {
 @InputType()
 export class CreateSafeConfirmationInput {
   @ApiProperty()
-  @IsEthereumAddress()
-  @Field(() => String)
-  @IsNotEmpty()
-  address: string;
-
-  @ApiProperty()
   @Field(() => String)
   @IsNotEmpty()
   safeWalletId: string;

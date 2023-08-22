@@ -21,6 +21,7 @@ import {
 import { RecipesService } from 'src/recipe/recipes.service';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { Revoking } from '@prisma/client';
+import { IRevokingsQuery } from './dto/interface';
 
 @Controller('revoking')
 export class RevokingsController {
@@ -73,7 +74,7 @@ export class RevokingsController {
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
   async getRevokings(@Query() query: QueryRevokingsInput) {
-    const where: Partial<Revoking> = {};
+    const where: IRevokingsQuery = {};
 
     if (query.organizationId) {
       where.organizationId = query.organizationId;
@@ -93,6 +94,15 @@ export class RevokingsController {
 
     if (query.chainId) {
       where.chainId = +query.chainId;
+    }
+
+    if (query.recipient) {
+      where.recipe = {
+        address: {
+          contains: query.recipient,
+          mode: 'insensitive',
+        },
+      };
     }
 
     return this.revoking.getAll(where);

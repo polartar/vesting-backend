@@ -68,7 +68,7 @@ export class VestingsController {
           role: recipe.role,
           vestingId: vesting.id,
           redirectUri,
-          address: recipe.address,
+          address: recipe.address?.toLowerCase() ?? '',
           tokenSymbol: token.symbol,
         })
       )

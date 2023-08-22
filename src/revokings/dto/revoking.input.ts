@@ -8,6 +8,7 @@ import {
   IsEnum,
   IsOptional,
   IsNumberString,
+  IsEthereumAddress,
 } from 'class-validator';
 
 @InputType()
@@ -89,4 +90,10 @@ export class QueryRevokingsInput {
   @IsEnum(TransactionStatus)
   @Field(() => TransactionStatus)
   status?: TransactionStatus;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEthereumAddress()
+  @IsOptional()
+  recipient?: string;
 }

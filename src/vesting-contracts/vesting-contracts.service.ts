@@ -19,8 +19,12 @@ export class VestingContractsService {
       );
     }
 
+    const address = payload.address?.toLowerCase() ?? '';
     return this.prisma.vestingContract.create({
-      data: payload,
+      data: {
+        ...payload,
+        address,
+      },
     });
   }
 
@@ -43,6 +47,11 @@ export class VestingContractsService {
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { organizationId: _, ...data } = payload;
+
+    if (data.address) {
+      data.address = data.address.toLowerCase();
+    }
+
     return this.prisma.vestingContract.update({
       where: {
         id: vestingContractId,
@@ -52,6 +61,10 @@ export class VestingContractsService {
   }
 
   async deploy(vestingContractId: string, data: DeployVestingContractInput) {
+    if (data.address) {
+      data.address = data.address.toLowerCase();
+    }
+
     return this.prisma.vestingContract.update({
       where: { id: vestingContractId },
       data,

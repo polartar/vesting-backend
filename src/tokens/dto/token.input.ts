@@ -3,10 +3,12 @@ import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEthereumAddress,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
   IsString,
+  IsOptional,
 } from 'class-validator';
 
 @InputType()
@@ -61,27 +63,33 @@ export class CreateTokenInput {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Field(() => Boolean)
+  @Field(() => Boolean, { defaultValue: false })
   @IsBoolean()
   burnable: boolean;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Field(() => Boolean)
+  @Field(() => Boolean, { defaultValue: false })
   @IsBoolean()
   imported: boolean;
 
   @ApiProperty()
   @Field(() => Number)
   @IsNumber()
-  @Optional()
+  @IsOptional()
   chainId: SupportedChainIds;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsEthereumAddress()
+  @IsOptional()
+  address?: string;
 
   @ApiProperty()
   @Field(() => String)
   @Optional()
   @IsString()
-  logo: string;
+  logo?: string;
 }
 
 @InputType()

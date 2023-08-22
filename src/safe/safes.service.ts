@@ -14,8 +14,12 @@ export class SafesService {
 
   /** Safe wallets */
   async createSafeWallet(data: CreateSafeWalletDetailInput) {
+    const address = data.address.toLowerCase();
     return this.prisma.safeWallet.create({
-      data,
+      data: {
+        ...data,
+        address,
+      },
     });
   }
 
@@ -108,7 +112,7 @@ export class SafesService {
   async createSafeOwners(safeWalletId: string, owners: CreateSafeOwnerInput[]) {
     const data = owners.map(({ address, name }) => ({
       safeWalletId,
-      address,
+      address: address.toLowerCase(),
       name,
     }));
     return this.prisma.safeOwner.createMany({ data });

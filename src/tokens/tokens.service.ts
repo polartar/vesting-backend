@@ -15,8 +15,12 @@ export class TokensService {
 
   async create(payload: CreateTokenInput) {
     const { organizationId, ...data } = payload;
+    const address = data.address?.toLowerCase() ?? '';
     const token = await this.prisma.token.create({
-      data,
+      data: {
+        ...data,
+        address,
+      },
     });
 
     await this.prisma.organizationToken.create({
@@ -52,9 +56,10 @@ export class TokensService {
 
   async import(payload: CreateDeployedTokenInput) {
     const { organizationId, ...data } = payload;
+    const address = data.address.toLowerCase();
     const prevToken = await this.prisma.token.findFirst({
       where: {
-        address: data.address,
+        address,
       },
     });
 
@@ -65,6 +70,7 @@ export class TokensService {
       token = await this.prisma.token.create({
         data: {
           ...data,
+          address,
           imported: true,
         },
       });
