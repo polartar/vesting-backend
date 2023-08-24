@@ -102,9 +102,6 @@ export class TokensService {
       where: {
         id: tokenId,
       },
-      include: {
-        // TODO add relations
-      },
     });
   }
 
