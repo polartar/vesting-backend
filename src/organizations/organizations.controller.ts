@@ -105,7 +105,10 @@ export class OrganizationsController {
   async getPortfolioOrganizations(@Request() req: { user: User }) {
     try {
       const organizations =
-        await this.organization.getUserPortfolioOrganizations(req.user.id);
+        await this.organization.getUserPortfolioOrganizations(
+          req.user.id,
+          req.user.isAdmin
+        );
       return organizations;
     } catch (error) {
       console.error('Error: GET /organization', error);
