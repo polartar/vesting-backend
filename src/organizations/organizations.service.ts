@@ -1,11 +1,10 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { Permission, Role } from '@prisma/client';
+import { Permission, Role, UserPermission } from '@prisma/client';
 import {
   AddOrganizationVestingMembersInput,
   AddOrganizationPortfolioMembersInput,
   InviteVestingMemberInput,
-  InvitePortfolioMemberInput,
 } from './dto/organization.input';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { getExpiredTime } from 'src/common/utils/helper';
@@ -315,9 +314,17 @@ export class OrganizationsService {
     });
   }
 
-  async getUserPortfolioOrganizations(userId: string) {
+  async getUserPortfolioOrganizations(userId: string, isAdmin?: boolean) {
+    const where: {
+      userId?: string;
+    } = {};
+
+    if (!isAdmin) {
+      where.userId = userId;
+    }
+
     return this.prisma.userPermission.findMany({
-      where: { userId },
+      where,
       include: {
         organization: {
           include: {
