@@ -325,8 +325,9 @@ export class OrganizationsService {
 
     return this.prisma.userPermission.findMany({
       where: {
+        ...where,
         organization: {
-          isNot: null,
+          isNot: undefined,
         },
       },
       include: {
