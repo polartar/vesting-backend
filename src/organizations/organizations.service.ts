@@ -337,6 +337,7 @@ export class OrganizationsService {
           },
         },
       },
+      distinct: ['organizationId'],
     });
   }
 
