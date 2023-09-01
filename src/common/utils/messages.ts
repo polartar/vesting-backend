@@ -70,6 +70,9 @@ export const ERROR_MESSAGES = {
 
   /** Revoking */
   REVOKING_NOT_FOUND: 'Revoking is not found',
+
+  /** Transaction */
+  TRANSACTION_NOT_FOUND: 'Transaction not found',
 };
 
 export const SUCCESS_MESSAGES = {

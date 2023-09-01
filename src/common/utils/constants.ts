@@ -48,3 +48,6 @@ export const SIGN_MESSAGE_TEMPLATE = (
   `VTVL uses cryptographic signatures instead of passwords to verify that you are the owner of this address. The wallet address is ${
     address /* wallet: 0xab12 */
   } and the time is ${utcTimeString /* 2022-06-01 16:47:55 UTC */}.`;
+
+// TODO: improve security
+export const INDEXER_JWT_SECRET = process.env.JWT_INDEXER_SECRET;

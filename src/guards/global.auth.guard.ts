@@ -13,6 +13,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { WalletsService } from 'src/wallets/wallets.service';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { INDEXER_JWT_SECRET } from 'src/common/utils/constants';
 
 @Injectable()
 export class GlobalAuthGuard implements CanActivate {
@@ -27,6 +28,9 @@ export class GlobalAuthGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest();
       const authToken = request.headers?.authorization;
+
+      // if endpoint is indexer
+      if (this.isIndexerRequest(context, authToken)) return true;
 
       if (authToken) {
         const token = authToken.split(' ')[1];
@@ -109,6 +113,14 @@ export class GlobalAuthGuard implements CanActivate {
       [context.getHandler(), context.getClass()]
     );
     return isAdmin && user.isAdmin;
+  }
+
+  isIndexerRequest(context: ExecutionContext, authToken: string): boolean {
+    const isIndexer = this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.INDEXER,
+      [context.getHandler(), context.getClass()]
+    );
+    return isIndexer && authToken === INDEXER_JWT_SECRET;
   }
 
   isNormalRequest(context: ExecutionContext, user?: User): boolean {

@@ -161,6 +161,7 @@ Table vesting_contract {
   isDeployed Boolean [not null, default: false]
   status VestingContractStatus [not null, default: 'INITIALIZED']
   vestings vesting [not null]
+  balance String
 }
 
 Table vesting {

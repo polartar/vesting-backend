@@ -26,6 +26,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { EntitiesModule } from './entities/entities.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RevokingsModule } from './revokings/revokings.module';
+import { IndexerModule } from './indexer/indexer.module';
 // import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 
 @Module({
@@ -63,6 +64,7 @@ import { RevokingsModule } from './revokings/revokings.module';
     EntitiesModule,
     ProjectsModule,
     RevokingsModule,
+    IndexerModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

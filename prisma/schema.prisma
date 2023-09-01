@@ -276,6 +276,7 @@ model VestingContract {
   isDeployed     Boolean               @default(false) @map("is_deployed")
   status         VestingContractStatus @default(INITIALIZED)
   vestings       Vesting[]
+  balance        String?
 
   @@map("vesting_contract")
 }
