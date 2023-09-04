@@ -50,6 +50,12 @@ export class RecipesService {
     });
   }
 
+  async delete(recipeId: string) {
+    return this.prisma.recipe.delete({
+      where: { id: recipeId },
+    });
+  }
+
   async getByQuery(where: Partial<Recipe>) {
     return this.prisma.recipe.findFirst({
       where,

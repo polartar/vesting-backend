@@ -1,6 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { Permission, Role, UserPermission } from '@prisma/client';
+import { Permission, Role } from '@prisma/client';
 import {
   AddOrganizationVestingMembersInput,
   AddOrganizationPortfolioMembersInput,
@@ -10,6 +10,7 @@ import { generateRandomCode } from 'src/common/utils/helpers';
 import { getExpiredTime } from 'src/common/utils/helper';
 import { EmailService } from 'src/auth/email.service';
 import { Platforms } from 'src/common/utils/constants';
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
 
 @Injectable()
 export class OrganizationsService {
@@ -263,6 +264,58 @@ export class OrganizationsService {
     }
   }
 
+  async resendPortfolioInvitation(
+    organizationId: string,
+    email: string,
+    redirectUri: string
+  ) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: {
+          contains: email,
+          mode: 'insensitive',
+        },
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const userPermission = await this.prisma.userPermission.findFirst({
+      where: {
+        userId: user.id,
+        organizationId,
+      },
+    });
+
+    if (!userPermission) {
+      throw new BadRequestException(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const code = generateRandomCode();
+    await this.prisma.emailVerification.upsert({
+      where: { email },
+      create: { email, code, expiredAt: getExpiredTime() },
+      update: { code, expiredAt: getExpiredTime() },
+    });
+
+    // Send email invitation
+    const isSucceeded = await this.email.sendInvitationEmail(
+      email,
+      code,
+      redirectUri,
+      Platforms.Portfolio,
+      user.name
+    );
+    if (!isSucceeded) {
+      throw new BadRequestException(
+        'Sending invitation email is failed',
+        email
+      );
+    }
+  }
+
   async deleteVestingMember(organizationId: string, userId: string) {
     await this.prisma.userRole.deleteMany({
       where: {
@@ -307,6 +360,9 @@ export class OrganizationsService {
     return this.prisma.userRole.findMany({
       where: {
         userId,
+        organization: {
+          deletedAt: null,
+        },
       },
       include: {
         organization: true,
@@ -327,7 +383,7 @@ export class OrganizationsService {
       where: {
         ...where,
         organization: {
-          isNot: undefined,
+          deletedAt: null,
         },
       },
       include: {

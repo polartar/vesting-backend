@@ -8,6 +8,7 @@ import {
   Body,
   Query,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RecipesService } from './recipes.service';
@@ -63,6 +64,15 @@ export class RecipesController {
       );
     }
 
+    return recipe;
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Delete('/:recipeId')
+  async deleteRecipe(@Param('recipeId') recipeId: string) {
+    const recipe = await this.recipe.delete(recipeId);
     return recipe;
   }
 
@@ -127,7 +137,18 @@ export class RecipesController {
   @Get('/list')
   async getRecipientList(@Query() query: ListRecipientsQueryInput) {
     try {
-      const where: IRecipientsQuery = {};
+      const where: IRecipientsQuery = {
+        user: {
+          deletedAt: null,
+        },
+        vesting: {
+          deletedAt: null,
+          vestingContract: {
+            deletedAt: null,
+          },
+        },
+      };
+
       if (query.organizationId) {
         where.organizationId = query.organizationId;
       }
@@ -148,8 +169,6 @@ export class RecipesController {
       }
 
       if (query.email) {
-        where.user = {};
-
         where.user.email = {
           mode: 'insensitive',
           contains: query.email,
@@ -157,15 +176,11 @@ export class RecipesController {
       }
 
       if (query.chainId || query.vestingContractId || query.tokenId) {
-        where.vesting = {};
-
         if (query.vestingContractId) {
           where.vesting.vestingContractId = query.vestingContractId;
         }
 
         if (query.chainId || query.tokenId) {
-          where.vesting.vestingContract = {};
-
           if (query.chainId) {
             where.vesting.vestingContract.chainId = +query.chainId;
           }

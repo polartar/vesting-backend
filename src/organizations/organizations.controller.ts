@@ -21,6 +21,7 @@ import {
   InvitePortfolioMemberInput,
   UpdateOrganizationInput,
   DeleteOrganizationMemberInput,
+  ResendPortfolioMemberInput,
 } from './dto/organization.input';
 import { User } from 'src/users/models/user.model';
 import {
@@ -250,6 +251,22 @@ export class OrganizationsController {
       permissions,
     });
     return SUCCESS_MESSAGES.ORGANIZATION_INVITE_MEMBERS;
+  }
+
+  @ApiBearerAuth()
+  @PortfolioAdminAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:organizationId/resend/portfolio')
+  async resentPortfolioInvitation(
+    @Param('organizationId') organizationId: string,
+    @Body() body: ResendPortfolioMemberInput
+  ) {
+    await this.organization.resendPortfolioInvitation(
+      organizationId,
+      body.email.toLowerCase(),
+      body.redirectUri
+    );
+    return SUCCESS_MESSAGES.ORGANIZATION_RESEND_INVITATION;
   }
 
   /** Remove organization members */

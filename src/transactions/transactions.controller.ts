@@ -1,4 +1,12 @@
-import { Controller, UseGuards, Body, Post, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Body,
+  Post,
+  Get,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { OrganizationFounderAuth, PublicAuth } from 'src/common/utils/auth';
@@ -24,6 +32,12 @@ export class TransactionsController {
   async createTransaction(
     @Body() { vestingContractId, ...body }: CreateTransactionInput
   ) {
+    if (body.type === 'VESTING_DEPLOYMENT' && !vestingContractId) {
+      throw new BadRequestException(
+        `'vestingContractId' is a required field for 'VESTING_DEPLOYMENT' transaction.`
+      );
+    }
+
     const transaction = await this.transaction.create(body);
 
     if (vestingContractId) {

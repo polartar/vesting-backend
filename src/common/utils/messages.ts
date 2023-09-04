@@ -18,6 +18,7 @@ export const ERROR_MESSAGES = {
   USER_GET: 'Fetching an user is failed',
   USER_UPDATE: 'Update user profile is failed',
   USER_WRONG_QUERY: 'Get single user query is incorrect',
+  USER_NOT_FOUND: 'User not found',
 
   /** Organization */
   ORGANIZATION_INVALID_ID: 'Organization id is invalid',
@@ -82,6 +83,7 @@ export const SUCCESS_MESSAGES = {
   /** Organization */
   ORGANIZATION_ADD_MEMBERS: 'Added members successfully',
   ORGANIZATION_INVITE_MEMBERS: 'Invited members successfully',
+  ORGANIZATION_RESEND_INVITATION: 'Resent invitation successfully',
 
   /** Recipient */
   RECIPIENT_ACCEPT_INVITATION: 'Accepted the vesting invitation successfully',

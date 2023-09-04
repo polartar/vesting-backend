@@ -88,3 +88,15 @@ export const getGraphql = (): GraphqlConfig => {
     sortSchema: true,
   };
 };
+
+export const SOFT_DELETABLE_MODELS = [
+  'user',
+  'organization',
+  'token',
+  'vesting_contract',
+  'vesting',
+  'vesting_template',
+  'entity',
+  'project',
+  'website',
+];

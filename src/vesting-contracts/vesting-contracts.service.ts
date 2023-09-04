@@ -29,9 +29,20 @@ export class VestingContractsService {
   }
 
   async get(vestingContractId: string) {
-    return this.prisma.vestingContract.findUnique({
+    return this.prisma.vestingContract.findFirst({
       where: {
         id: vestingContractId,
+        organization: {
+          deletedAt: null,
+        },
+        token: {
+          deletedAt: null,
+        },
+        vestings: {
+          every: {
+            deletedAt: null,
+          },
+        },
       },
       include: {
         organization: true,

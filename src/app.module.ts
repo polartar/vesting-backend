@@ -1,5 +1,10 @@
 // import { GraphQLModule } from '@nestjs/graphql';
-import { Logger, Module } from '@nestjs/common';
+import {
+  Logger,
+  Module,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from 'nestjs-prisma';
 // import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -9,7 +14,6 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { WalletsModule } from 'src/wallets/wallets.module';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
-import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
 
 // import { GqlConfigService } from './gql-config.service';
 import { AppController } from './app.controller';
@@ -27,7 +31,14 @@ import { EntitiesModule } from './entities/entities.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RevokingsModule } from './revokings/revokings.module';
 import { IndexerModule } from './indexer/indexer.module';
-// import { softDeleteMiddleware } from './common/middleware/delete.middleware';
+
+// Middleware
+import { VestingContractsMiddleware } from './vesting-contracts/vesting-contracts.middleware';
+import { VestingsMiddleware } from './vestings/vestings.middleware';
+
+// prisma middleware
+import { softDeleteMiddleware } from './common/middleware/delete.middleware';
+import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
 
 @Module({
   imports: [
@@ -39,7 +50,7 @@ import { IndexerModule } from './indexer/indexer.module';
           // configure your prisma middleware
           loggingMiddleware(new Logger('PrismaMiddleware')),
           // soft delete middleware
-          // softDeleteMiddleware(),
+          softDeleteMiddleware(),
         ],
       },
     }),
@@ -69,4 +80,18 @@ import { IndexerModule } from './indexer/indexer.module';
   controllers: [AppController],
   providers: [AppService, AppResolver],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(VestingContractsMiddleware).forRoutes(
+      { path: '/vesting-contract', method: RequestMethod.POST },
+      {
+        path: '/vesting-contract/:vestingContractId',
+        method: RequestMethod.PUT,
+      }
+    );
+
+    consumer
+      .apply(VestingsMiddleware)
+      .forRoutes({ path: '/vesting', method: RequestMethod.POST });
+  }
+}

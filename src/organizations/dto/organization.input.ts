@@ -182,6 +182,21 @@ export class InvitePortfolioMemberInput {
 }
 
 @InputType()
+export class ResendPortfolioMemberInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail()
+  @Field(() => String)
+  email: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  redirectUri: string;
+}
+
+@InputType()
 export class DeleteOrganizationMemberInput {
   @ApiProperty()
   @Field(() => String)

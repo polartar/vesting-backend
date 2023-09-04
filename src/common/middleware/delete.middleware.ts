@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient({});
+import { Prisma } from '@prisma/client';
+import { SOFT_DELETABLE_MODELS } from '../utils/api';
 
 export function softDeleteMiddleware(): Prisma.Middleware {
-  return async () => {
-    prisma.$use(async (params, next) => {
+  return async (params, next) => {
+    const model = params.model as string;
+    if (SOFT_DELETABLE_MODELS.includes(model)) {
       switch (params.action) {
         case 'delete':
           params.action = 'update';
@@ -21,11 +21,12 @@ export function softDeleteMiddleware(): Prisma.Middleware {
         case 'count':
         case 'findFirst':
         case 'findMany':
-        case 'findUnique':
           params.args['where'].deletedAt = null;
+          break;
       }
+    }
 
-      return next(params);
-    });
+    const result = await next(params);
+    return result;
   };
 }
