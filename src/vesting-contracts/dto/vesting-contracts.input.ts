@@ -7,6 +7,7 @@ import {
   IsEthereumAddress,
   IsNotEmpty,
   IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -122,12 +123,12 @@ export class DeployVestingContractInput {
 }
 
 @InputType()
-export class QueryVestingContractInput {
+export class QueryVestingContractsInput {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 
   @ApiProperty()
   @IsString()
@@ -137,7 +138,7 @@ export class QueryVestingContractInput {
 
   @ApiProperty()
   @IsOptional()
-  @IsNumber()
-  @Field(() => Number)
-  chainId?: number;
+  @IsNumberString()
+  @Field(() => String)
+  chainId?: string;
 }

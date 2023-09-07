@@ -17,7 +17,7 @@ import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   CreateVestingContractInput,
   DeployVestingContractInput,
-  QueryVestingContractInput,
+  QueryVestingContractsInput,
   UpdateVestingContractInput,
 } from './dto/vesting-contracts.input';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
@@ -44,7 +44,7 @@ export class VestingContractsController {
   @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
-  @Get('/:vestingContractId')
+  @Get('/get/:vestingContractId')
   async getVestingContract(
     @Param('vestingContractId') vestingContractId: string
   ) {
@@ -127,17 +127,19 @@ export class VestingContractsController {
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
-  async getVestingContracts(@Query() query: QueryVestingContractInput) {
-    const where: Partial<VestingContract> = {
-      organizationId: query.organizationId,
-    };
+  async getVestingContracts(@Query() query: QueryVestingContractsInput) {
+    const where: Partial<VestingContract> = {};
+
+    if (query.organizationId) {
+      where.organizationId = query.organizationId;
+    }
 
     if (query.tokenId) {
       where.tokenId = query.tokenId;
     }
 
     if (query.chainId) {
-      where.chainId = query.chainId;
+      where.chainId = +query.chainId;
     }
 
     const contracts = await this.vestingContract.getAll(where);
