@@ -120,3 +120,24 @@ export class DeployVestingContractInput {
   @Field(() => Boolean)
   isDeployed: boolean;
 }
+
+@InputType()
+export class QueryVestingContractInput {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  tokenId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  @Field(() => Number)
+  chainId?: number;
+}

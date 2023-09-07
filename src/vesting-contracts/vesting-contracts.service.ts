@@ -4,6 +4,7 @@ import {
   CreateVestingContractInput,
   DeployVestingContractInput,
 } from './dto/vesting-contracts.input';
+import { VestingContract } from '@prisma/client';
 
 @Injectable()
 export class VestingContractsService {
@@ -48,6 +49,16 @@ export class VestingContractsService {
         organization: true,
         token: true,
         vestings: true,
+      },
+    });
+  }
+
+  async getAll(where: Partial<VestingContract>) {
+    return this.prisma.vestingContract.findMany({
+      where,
+      include: {
+        organization: true,
+        token: true,
       },
     });
   }

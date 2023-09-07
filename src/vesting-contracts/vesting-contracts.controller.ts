@@ -8,6 +8,7 @@ import {
   Put,
   NotFoundException,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingContractsService } from './vesting-contracts.service';
@@ -16,9 +17,11 @@ import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   CreateVestingContractInput,
   DeployVestingContractInput,
+  QueryVestingContractInput,
   UpdateVestingContractInput,
 } from './dto/vesting-contracts.input';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { VestingContract } from '@prisma/client';
 
 @Controller('vesting-contract')
 export class VestingContractsController {
@@ -118,5 +121,26 @@ export class VestingContractsController {
       throw new NotFoundException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
     }
     return vestingContract;
+  }
+
+  @ApiBearerAuth()
+  @NormalAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/list')
+  async getVestingContracts(@Query() query: QueryVestingContractInput) {
+    const where: Partial<VestingContract> = {
+      organizationId: query.organizationId,
+    };
+
+    if (query.tokenId) {
+      where.tokenId = query.tokenId;
+    }
+
+    if (query.chainId) {
+      where.chainId = query.chainId;
+    }
+
+    const contracts = await this.vestingContract.getAll(where);
+    return contracts;
   }
 }
