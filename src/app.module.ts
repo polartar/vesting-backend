@@ -39,6 +39,7 @@ import { VestingsMiddleware } from './vestings/vestings.middleware';
 // prisma middleware
 import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
+import { ListenerModule } from './listener/listener.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
     ProjectsModule,
     RevokingsModule,
     IndexerModule,
+    ListenerModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

@@ -3,7 +3,7 @@ name: Workflow
 on:
   pull_request:
     branches: [develop]
-  
+
 jobs:
   lint:
     name: Linting
@@ -48,3 +48,7 @@ jobs:
           JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
           JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          ETHEREUM_ALCHEMY_API_KEY: ${{ secrets.ETHEREUM_ALCHEMY_API_KEY }}
+          GOERLI_ALCHEMY_API_KEY: ${{ secrets.GOERLI_ALCHEMY_API_KEY }}
+          POLYGON_ALCHEMY_API_KEY: ${{ secrets.POLYGON_ALCHEMY_API_KEY }}
+          MUMBAI_ALCHEMY_API_KEY: ${{ secrets.MUMBAI_ALCHEMY_API_KEY }}
