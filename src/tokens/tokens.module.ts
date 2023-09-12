@@ -7,6 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/users.service';
 import { WalletsService } from 'src/wallets/wallets.service';
 import { AlchemyService } from 'src/alchemy/alchemy.service';
+import { ListenerService } from 'src/listener/listener.service';
 
 @Module({
   imports: [],
@@ -18,6 +19,7 @@ import { AlchemyService } from 'src/alchemy/alchemy.service';
     WalletsService,
     JwtService,
     AlchemyService,
+    ListenerService,
   ],
 })
 export class TokensModule {}

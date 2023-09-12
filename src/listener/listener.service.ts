@@ -1,16 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Network } from 'alchemy-sdk';
-import { TokensService } from 'src/tokens/tokens.service';
-import { VestingContractsService } from 'src/vesting-contracts/vesting-contracts.service';
 import { AlchemyMultichainClient } from './alchemy_multichains';
-import { ethers, formatEther } from 'ethers';
+import { ethers } from 'ethers';
 import VestingABI from './vestingABI.json';
-import { TransactionsService } from 'src/transactions/transactions.service';
 import { PrismaService } from 'nestjs-prisma';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { RecipeStatus, VestingStatus } from '@prisma/client';
-import { NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
+import {
+  AlchemyApiKeys,
+  AlchemyNetworks,
+  CHAIN_IDS,
+  NETWORK_TO_CHAIN_IDS,
+} from 'src/common/utils/web3';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ListenerService {
@@ -20,23 +22,18 @@ export class ListenerService {
     'event Transfer(address indexed from, address indexed to, uint256 value)',
   ];
   constructor(
-    private readonly tokenService: TokensService,
-    private readonly vestingContractService: VestingContractsService,
-    private readonly transactionService: TransactionsService,
     private readonly prisma: PrismaService,
-    readonly configService: ConfigService
+    private readonly configService: ConfigService
   ) {
     this.alchemyConfigure();
     this.transferIface = new ethers.Interface(this.erc20ABI);
   }
 
   alchemyConfigure() {
-    const mainnetKey = this.configService.get<string>(
-      'ETHEREUM_ALCHEMY_API_KEY'
-    );
-    const goerliKey = this.configService.get<string>('GOERLI_ALCHEMY_API_KEY');
-    const maticKey = this.configService.get<string>('POLYGON_ALCHEMY_API_KEY');
-    const mumbaiKey = this.configService.get<string>('MUMBAI_ALCHEMY_API_KEY');
+    const mainnetKey = this.configService.get('ETHEREUM_ALCHEMY_API_KEY');
+    const goerliKey = this.configService.get('GOERLI_ALCHEMY_API_KEY');
+    const maticKey = this.configService.get('POLYGON_ALCHEMY_API_KEY');
+    const mumbaiKey = this.configService.get('MUMBAI_ALCHEMY_API_KEY');
 
     const defaultConfig = {
       apiKey: mainnetKey,
@@ -52,36 +49,32 @@ export class ListenerService {
       defaultConfig,
       overrides
     );
+    this.createVestingListener();
   }
 
-  createTransferListener = (fromAddress: string) => {
+  createTransferListener = (
+    fromAddress: string,
+    chainId: SupportedChainIds
+  ) => {
     const transferFilter = {
       address: fromAddress,
       topics: [ethers.id('Transfer(address,address,uint256)')],
     };
 
-    const networks = [
-      Network.ETH_MAINNET,
-      Network.ETH_GOERLI,
-      Network.MATIC_MAINNET,
-      Network.MATIC_MUMBAI,
-    ];
-
-    networks.map((network) => {
-      this.alchemyInstance
-        .forNetwork(network)
-        .ws.on(transferFilter, async (log: any) => {
+    this.alchemyInstance
+      .forNetwork(AlchemyNetworks[chainId])
+      .ws.on(transferFilter, async (log: any) => {
+        try {
           const { args } = this.transferIface.parseLog(log);
-          this.updateVestingContractBalance(
+          await this.updateVestingContractBalance(
             log.transactionHash,
             args.from,
             args.to,
             args.value,
-            NETWORK_TO_CHAIN_IDS[network]
+            chainId
           );
-        });
-      return;
-    });
+        } catch (err) {}
+      });
   };
 
   createVestingListener = () => {
@@ -90,11 +83,11 @@ export class ListenerService {
       topics: [
         [
           ethers.id(
-            'ClaimCreated(address,(uint40,uint40,uint40,uint40,uint112,uint112,uint112,bool))'
+            'ClaimCreated(address,(uint40,uint40,uint40,uint40,uint256,uint256,uint112,bool,uint40),uint256)'
           ),
-          ethers.id('Claimed(address,uint112)'),
+          ethers.id('Claimed(address,uint256,uint256)'),
           ethers.id(
-            'ClaimRevoked(address,uint112,uint256,(uint40,uint40,uint40,uint40,uint112,uint112,uint112,bool))'
+            'ClaimRevoked(address,uint256,uint256,(uint40,uint40,uint40,uint40,uint256,uint256,uint112,bool,uint40),uint256)'
           ),
         ],
       ],
@@ -111,18 +104,22 @@ export class ListenerService {
       this.alchemyInstance
         .forNetwork(network)
         .ws.on(claimFilter, async (log: any) => {
-          const { args } = iface.parseLog(log);
-
-          const hash = log.transactionHash;
-          if (log.topics[0] === claimFilter.topics[0][0]) {
-            this.updateVestingStatus(hash, NETWORK_TO_CHAIN_IDS[network]);
-          } else if (log.topics[0] === claimFilter.topics[0][2]) {
-            this.revokeRecipient(
-              hash,
-              NETWORK_TO_CHAIN_IDS[network],
-              args.from
-            );
-          }
+          try {
+            const { args } = iface.parseLog(log);
+            const hash = log.transactionHash;
+            if (log.topics[0] === claimFilter.topics[0][0]) {
+              await this.updateVestingStatus(
+                hash,
+                NETWORK_TO_CHAIN_IDS[network]
+              );
+            } else if (log.topics[0] === claimFilter.topics[0][2]) {
+              await this.revokeRecipient(
+                hash,
+                NETWORK_TO_CHAIN_IDS[network],
+                args[0]
+              );
+            }
+          } catch (err) {}
         });
       return;
     });
@@ -246,7 +243,7 @@ export class ListenerService {
 
     const contract = await this.prisma.vestingContract.findFirst({
       where: {
-        address: { in: [fromAddress, toAddress] },
+        address: { in: [fromAddress, toAddress], mode: 'insensitive' },
       },
     });
     if (contract) {

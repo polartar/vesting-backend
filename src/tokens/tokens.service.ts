@@ -1,5 +1,5 @@
 import { PrismaService } from 'nestjs-prisma';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 
 import {
   CreateDeployedTokenInput,
@@ -8,14 +8,43 @@ import {
 } from './dto/token.input';
 import { Token } from './models/tokens.model';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { ListenerService } from 'src/listener/listener.service';
+import { getAddress } from 'ethers';
 
 @Injectable()
-export class TokensService {
-  constructor(private readonly prisma: PrismaService) {}
+export class TokensService implements OnModuleInit {
+  static initialized = false;
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly listenerService: ListenerService
+  ) {}
+
+  async onModuleInit() {
+    if (!TokensService.initialized) {
+      const tokens = await this.getAllTokens();
+      tokens.forEach((token) => {
+        try {
+          this.listenerService.createTransferListener(
+            token.address,
+            token.chainId as SupportedChainIds
+          );
+        } catch (err) {
+          console.log(err);
+        }
+        return;
+      });
+      TokensService.initialized = true;
+    }
+  }
 
   async create(payload: CreateTokenInput) {
     const { organizationId, ...data } = payload;
     const address = data.address?.toLowerCase() ?? '';
+    this.listenerService.createTransferListener(
+      getAddress(address),
+      payload.chainId
+    );
     const token = await this.prisma.token.create({
       data: {
         ...data,
@@ -123,5 +152,9 @@ export class TokensService {
         organizationId: true,
       },
     });
+  }
+
+  async getAllTokens() {
+    return this.prisma.token.findMany();
   }
 }
