@@ -30,7 +30,6 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { EntitiesModule } from './entities/entities.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RevokingsModule } from './revokings/revokings.module';
-import { IndexerModule } from './indexer/indexer.module';
 
 // Middleware
 import { VestingContractsMiddleware } from './vesting-contracts/vesting-contracts.middleware';
@@ -76,7 +75,6 @@ import { ListenerModule } from './listener/listener.module';
     EntitiesModule,
     ProjectsModule,
     RevokingsModule,
-    IndexerModule,
     ListenerModule,
   ],
   controllers: [AppController],
