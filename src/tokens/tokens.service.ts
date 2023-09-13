@@ -29,9 +29,7 @@ export class TokensService implements OnModuleInit {
             token.address,
             token.chainId as SupportedChainIds
           );
-        } catch (err) {
-          console.log(err);
-        }
+        } catch (err) {}
         return;
       });
       TokensService.initialized = true;
