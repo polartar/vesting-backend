@@ -153,6 +153,6 @@ export class TokensService implements OnModuleInit {
   }
 
   async getAllTokens() {
-    return this.prisma.token.findMany();
+    return await this.prisma.token.findMany();
   }
 }
