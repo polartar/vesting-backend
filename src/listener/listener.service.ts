@@ -1,18 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Network } from 'alchemy-sdk';
-import { AlchemyMultichainClient } from './alchemy_multichains';
-import { ethers } from 'ethers';
-import VestingABI from './vestingABI.json';
-import { PrismaService } from 'nestjs-prisma';
-import { ERROR_MESSAGES } from 'src/common/utils/messages';
-import { RecipeStatus, VestingStatus } from '@prisma/client';
-import {
-  AlchemyApiKeys,
-  AlchemyNetworks,
-  CHAIN_IDS,
-  NETWORK_TO_CHAIN_IDS,
-} from 'src/common/utils/web3';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from 'nestjs-prisma';
+import { Network } from 'alchemy-sdk';
+import { ethers } from 'ethers';
+import { RecipeStatus, VestingStatus } from '@prisma/client';
+
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { AlchemyNetworks, NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
+
+import VestingABI from './vestingABI.json';
+import { AlchemyMultichainClient } from './alchemy_multichains';
 
 @Injectable()
 export class ListenerService {
@@ -21,6 +18,13 @@ export class ListenerService {
   erc20ABI = [
     'event Transfer(address indexed from, address indexed to, uint256 value)',
   ];
+  networks = [
+    Network.ETH_MAINNET,
+    Network.ETH_GOERLI,
+    Network.MATIC_MAINNET,
+    Network.MATIC_MUMBAI,
+  ];
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService
@@ -51,6 +55,14 @@ export class ListenerService {
     );
     this.createVestingListener();
   }
+
+  closeAllListeners = async () => {
+    await Promise.all(
+      this.networks.map((network) =>
+        this.alchemyInstance.forNetwork(network).ws.removeAllListeners()
+      )
+    );
+  };
 
   createTransferListener = (
     fromAddress: string,
@@ -93,14 +105,7 @@ export class ListenerService {
       ],
     };
 
-    const networks = [
-      Network.ETH_MAINNET,
-      Network.ETH_GOERLI,
-      Network.MATIC_MAINNET,
-      Network.MATIC_MUMBAI,
-    ];
-
-    networks.map((network) => {
+    this.networks.map((network) => {
       this.alchemyInstance
         .forNetwork(network)
         .ws.on(claimFilter, async (log: any) => {
