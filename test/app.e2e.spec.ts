@@ -4,8 +4,6 @@ import request from 'supertest';
 import { Chance } from 'chance';
 import { AppModule } from 'src/app.module';
 
-const chance = new Chance();
-
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
@@ -26,6 +24,8 @@ describe('AppController (e2e)', () => {
   });
 
   it('/hello/:name (GET)', () => {
+    const chance = new Chance();
+
     const name = chance.name();
     return request(app.getHttpServer())
       .get(`/hello/${name}`)
