@@ -1,4 +1,4 @@
-import { Alchemy, AlchemySettings, Network } from 'alchemy-sdk'
+import { Alchemy, AlchemySettings, Network } from 'alchemy-sdk';
 
 /**
  * This is a wrapper around the Alchemy class that allows you to use the same
@@ -11,14 +11,14 @@ import { Alchemy, AlchemySettings, Network } from 'alchemy-sdk'
  * networks.
  */
 export class AlchemyMultichainClient {
-  readonly settings: AlchemyMultichainSettings
-  readonly overrides: Partial<Record<Network, AlchemyMultichainSettings>>
+  readonly settings: AlchemyMultichainSettings;
+  readonly overrides: Partial<Record<Network, AlchemyMultichainSettings>>;
   /**
    * Lazy-loaded mapping of `Network` enum to `Alchemy` instance.
    *
    * @private
    */
-  private readonly instances: Map<Network, Alchemy> = new Map()
+  private readonly instances: Map<Network, Alchemy> = new Map();
 
   /**
    * @param settings The settings to use for all networks.
@@ -26,10 +26,10 @@ export class AlchemyMultichainClient {
    */
   constructor(
     settings: AlchemyMultichainSettings,
-    overrides?: Partial<Record<Network, AlchemyMultichainSettings>>,
+    overrides?: Partial<Record<Network, AlchemyMultichainSettings>>
   ) {
-    this.settings = settings
-    this.overrides = overrides
+    this.settings = settings;
+    this.overrides = overrides;
   }
 
   /**
@@ -38,7 +38,7 @@ export class AlchemyMultichainClient {
    * @param network
    */
   forNetwork(network: Network): Alchemy {
-    return this.loadInstance(network)
+    return this.loadInstance(network);
   }
 
   /**
@@ -54,12 +54,12 @@ export class AlchemyMultichainClient {
       const alchemySettings =
         this.overrides && this.overrides[network]
           ? { ...this.overrides[network], network }
-          : { ...this.settings, network }
-      this.instances.set(network, new Alchemy(alchemySettings))
+          : { ...this.settings, network };
+      this.instances.set(network, new Alchemy(alchemySettings));
     }
-    return this.instances.get(network)
+    return this.instances.get(network);
   }
 }
 
 /** AlchemySettings with the `network` param omitted in order to avoid confusion. */
-export type AlchemyMultichainSettings = Omit<AlchemySettings, 'network'>
+export type AlchemyMultichainSettings = Omit<AlchemySettings, 'network'>;

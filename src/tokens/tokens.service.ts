@@ -1,5 +1,6 @@
 import { PrismaService } from 'nestjs-prisma';
 import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import {
   CreateDeployedTokenInput,
@@ -17,10 +18,15 @@ export class TokensService implements OnModuleInit {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
     private readonly listenerService: ListenerService
   ) {}
 
   async onModuleInit() {
+    if (this.configService.get('NODE_ENV') === 'test') {
+      return;
+    }
+
     if (!TokensService.initialized) {
       const tokens = await this.getAllTokens();
       // tokens.forEach((token) => {

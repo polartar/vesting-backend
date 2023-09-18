@@ -2,17 +2,10 @@ import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { Network } from 'alchemy-sdk';
 import { AlchemyMultichainClient } from './alchemy_multichains';
 import { ethers } from 'ethers';
-import VestingABI from './vestingABI.json';
-import SafeABI from './safeABI.json';
 import { PrismaService } from 'nestjs-prisma';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { RecipeStatus, TransactionType, VestingStatus } from '@prisma/client';
-import {
-  AlchemyApiKeys,
-  AlchemyNetworks,
-  CHAIN_IDS,
-  NETWORK_TO_CHAIN_IDS,
-} from 'src/common/utils/web3';
+import { AlchemyNetworks, NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -23,6 +16,13 @@ export class ListenerService implements OnModuleInit {
   erc20ABI = [
     'event Transfer(address indexed from, address indexed to, uint256 value)',
   ];
+  networks = [
+    Network.ETH_MAINNET,
+    Network.ETH_GOERLI,
+    Network.MATIC_MAINNET,
+    Network.MATIC_MUMBAI,
+  ];
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService
@@ -59,6 +59,14 @@ export class ListenerService implements OnModuleInit {
       overrides
     );
   }
+
+  closeAllListeners = async () => {
+    await Promise.all(
+      this.networks.map((network) =>
+        this.alchemyInstance.forNetwork(network).ws.removeAllListeners()
+      )
+    );
+  };
 
   createTransferListener = (
     fromAddress: string,
@@ -107,10 +115,10 @@ export class ListenerService implements OnModuleInit {
     };
 
     const networks = [
-      // Network.ETH_MAINNET,
+      Network.ETH_MAINNET,
       Network.ETH_GOERLI,
-      // Network.MATIC_MAINNET,
-      // Network.MATIC_MUMBAI,
+      Network.MATIC_MAINNET,
+      Network.MATIC_MUMBAI,
     ];
 
     networks.map((network) => {
