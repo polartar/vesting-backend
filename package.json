@@ -35,7 +35,7 @@
     "prisma:format": "npx prisma format",
     "prisma:db:push": "npx prisma db push",
     "prisma:checkout": "npm run prisma:generate && npm run migrate:dev",
-    "test": "jest",
+    "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

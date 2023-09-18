@@ -3,7 +3,7 @@ name: Workflow
 on:
   pull_request:
     branches: [develop]
-  
+
 jobs:
   lint:
     name: Linting
@@ -11,10 +11,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Use Node.js 16.14.0
+      - name: Use Node.js 18.16.1
         uses: actions/setup-node@v1
         with:
-          node-version: 16.14.0
+          node-version: 18.16.1
       - name: cache dependencies
         uses: actions/cache@v2
         with:
@@ -31,10 +31,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Use Node.js 16.14.0
+      - name: Use Node.js 18.16.1
         uses: actions/setup-node@v1
         with:
-          node-version: 16.14.0
+          node-version: 18.16.1
       - name: cache dependencies
         uses: actions/cache@v2
         with:
@@ -45,6 +45,7 @@ jobs:
       - name: Run Testing
         run: yarn test
         env:
+          NODE_ENV: test
           JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
           JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}

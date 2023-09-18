@@ -9,6 +9,7 @@ import { WalletsService } from 'src/wallets/wallets.service';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { EmailService } from 'src/auth/email.service';
 import { TokensService } from 'src/tokens/tokens.service';
+import { ListenerService } from 'src/listener/listener.service';
 
 @Module({
   imports: [],
@@ -23,6 +24,7 @@ import { TokensService } from 'src/tokens/tokens.service';
     WalletsService,
     EmailService,
     TokensService,
+    ListenerService,
   ],
 })
 export class VestingsModule {}

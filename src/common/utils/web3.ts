@@ -8,6 +8,13 @@ declare global {
   type SupportedTestnetChainIds = (typeof SUPPORTED_TESTNET_CHAIN_IDS)[number];
 }
 
+export const NETWORK_TO_CHAIN_IDS = {
+  [Network.ETH_MAINNET]: 1,
+  [Network.ETH_GOERLI]: 5,
+  [Network.MATIC_MAINNET]: 137,
+  [Network.MATIC_MUMBAI]: 80001,
+};
+
 export const CHAIN_IDS = {
   ethereum: 1,
   goerli: 5,
