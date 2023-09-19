@@ -40,7 +40,7 @@ export class ListenerService implements OnModuleInit {
       return;
     }
     if (!ListenerService.initialized) {
-      this.createVestingListener();
+      // this.createVestingListener();
       ListenerService.initialized = true;
     }
   }
