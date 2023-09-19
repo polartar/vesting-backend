@@ -7,6 +7,8 @@ export const AUTHORIZATION_CODE_EXPIRE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 
 export const DEFAULT_CODE_LENGTH = 24;
 
+export const DEFAULT_API_KEY_LENGTH = 64;
+
 export const EMAIL_SENDER = {
   name: 'VTVL',
   email: 'no-reply@vtvl.io',

@@ -1,4 +1,5 @@
-import { DEFAULT_CODE_LENGTH } from './constants';
+import crypto from 'crypto';
+import { DEFAULT_API_KEY_LENGTH, DEFAULT_CODE_LENGTH } from './constants';
 
 export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
   const characters = String(
@@ -13,4 +14,8 @@ export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
 
 export const compareStrings = (str1: string, str2: string) => {
   return str1.toLowerCase() === str2.toLowerCase();
+};
+
+export const generateApiKey = (length: number = DEFAULT_API_KEY_LENGTH) => {
+  return crypto.randomBytes(length).toString('hex');
 };

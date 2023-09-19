@@ -3,6 +3,10 @@ export const ERROR_MESSAGES = {
   AUTH_INVALID_CODE: 'Invalid authorization code',
   AUTH_TOKEN_EXPIRED: 'Access token is no longer valid, please log in again',
   AUTH_USER_NOT_FOUND: 'User is not found',
+  AUTH_NO_API_KEY: 'No API KEY',
+
+  /** Membership */
+  MEMBERSHIP_NOT_FOUND: 'Membership not found',
 
   /** Google Auth */
   EMAIL_SEND_FAILURE: 'Sending email is failed',
