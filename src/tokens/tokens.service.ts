@@ -28,7 +28,7 @@ export class TokensService implements OnModuleInit {
     }
 
     if (!TokensService.initialized) {
-      const tokens = await this.getAllTokens();
+      // const tokens = await this.getAllTokens();
       // tokens.forEach((token) => {
       //   try {
       //     this.listenerService.createTransferListener(
@@ -45,10 +45,10 @@ export class TokensService implements OnModuleInit {
   async create(payload: CreateTokenInput) {
     const { organizationId, ...data } = payload;
     const address = data.address?.toLowerCase() ?? '';
-    this.listenerService.createTransferListener(
-      getAddress(address),
-      payload.chainId
-    );
+    // this.listenerService.createTransferListener(
+    //   getAddress(address),
+    //   payload.chainId
+    // );
     const token = await this.prisma.token.create({
       data: {
         ...data,
