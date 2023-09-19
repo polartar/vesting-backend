@@ -23,21 +23,24 @@ export class TokensService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    if (this.configService.get('NODE_ENV') === 'test') {
+    if (
+      this.configService.get('NODE_ENV') === 'test' ||
+      this.configService.get('NODE_ENV') === 'staging'
+    ) {
       return;
     }
 
     if (!TokensService.initialized) {
       const tokens = await this.getAllTokens();
-      // tokens.forEach((token) => {
-      //   try {
-      //     this.listenerService.createTransferListener(
-      //       token.address,
-      //       token.chainId as SupportedChainIds
-      //     );
-      //   } catch (err) {}
-      //   return;
-      // });
+      tokens.forEach((token) => {
+        try {
+          this.listenerService.createTransferListener(
+            token.address,
+            token.chainId as SupportedChainIds
+          );
+        } catch (err) {}
+        return;
+      });
       TokensService.initialized = true;
     }
   }
