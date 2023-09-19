@@ -23,7 +23,10 @@ export class TokensService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    if (this.configService.get('NODE_ENV') === 'test') {
+    if (
+      this.configService.get('NODE_ENV') === 'test' ||
+      this.configService.get('NODE_ENV') === 'staging'
+    ) {
       return;
     }
 

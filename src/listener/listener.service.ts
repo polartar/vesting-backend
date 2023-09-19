@@ -33,6 +33,12 @@ export class ListenerService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    if (
+      this.configService.get('NODE_ENV') === 'test' ||
+      this.configService.get('NODE_ENV') === 'staging'
+    ) {
+      return;
+    }
     if (!ListenerService.initialized) {
       // this.createVestingListener();
       ListenerService.initialized = true;
