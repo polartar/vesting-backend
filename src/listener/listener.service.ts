@@ -7,6 +7,7 @@ import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { RecipeStatus, TransactionType, VestingStatus } from '@prisma/client';
 import { AlchemyNetworks, NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
 import { ConfigService } from '@nestjs/config';
+import { isProduction } from 'src/common/utils/api';
 
 @Injectable()
 export class ListenerService implements OnModuleInit {
@@ -114,12 +115,9 @@ export class ListenerService implements OnModuleInit {
       ],
     };
 
-    const networks = [
-      Network.ETH_MAINNET,
-      Network.ETH_GOERLI,
-      Network.MATIC_MAINNET,
-      Network.MATIC_MUMBAI,
-    ];
+    const networks = isProduction
+      ? [Network.ETH_MAINNET, Network.MATIC_MAINNET]
+      : [Network.ETH_GOERLI, Network.MATIC_MUMBAI];
 
     networks.map((network) => {
       this.alchemyInstance
@@ -130,7 +128,7 @@ export class ListenerService implements OnModuleInit {
             if (log.topics.includes(claimFilter.topics[0][3])) {
               const { args } = safeIface.parseLog(log);
               const safeHash = args[0];
-              this.handleSafeTransactionEvent(
+              await this.handleSafeTransactionEvent(
                 safeHash,
                 NETWORK_TO_CHAIN_IDS[network]
               );
