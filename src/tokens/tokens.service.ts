@@ -161,6 +161,18 @@ export class TokensService implements OnModuleInit {
     });
   }
 
+  async getMyTokensByOrgId(organizationId: string) {
+    return this.prisma.organizationToken.findMany({
+      where: {
+        organizationId,
+      },
+      select: {
+        token: true,
+        organizationId: true,
+      },
+    });
+  }
+
   async getAllTokens() {
     return await this.prisma.token.findMany();
   }

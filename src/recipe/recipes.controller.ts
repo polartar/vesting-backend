@@ -8,11 +8,13 @@ import {
   Body,
   Query,
   NotFoundException,
+  Request,
   Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RecipesService } from './recipes.service';
 import {
+  ApiKeyAuth,
   NormalAuth,
   OrganizationFounderAuth,
   PublicAuth,
@@ -37,6 +39,7 @@ export class RecipesController {
   ) {}
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/get/:recipeId')
@@ -135,7 +138,10 @@ export class RecipesController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
-  async getRecipientList(@Query() query: ListRecipientsQueryInput) {
+  async getRecipientList(
+    @Query() query: ListRecipientsQueryInput,
+    @Request() req: { organizationId: string }
+  ) {
     try {
       const where: IRecipientsQuery = {
         user: {
@@ -148,9 +154,9 @@ export class RecipesController {
           },
         },
       };
-
-      if (query.organizationId) {
-        where.organizationId = query.organizationId;
+      const organizationId = query.organizationId || req.organizationId;
+      if (organizationId) {
+        where.organizationId = organizationId;
       }
 
       if (query.vestingId) {

@@ -8,11 +8,14 @@ import {
   Put,
   Query,
   UseGuards,
+  Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { VestingsService } from './vestings.service';
 import {
+  ApiKeyAuth,
   NormalAuth,
   OrganizationFounderAuth,
   PublicAuth,
@@ -117,11 +120,19 @@ export class VestingsController {
 
   @ApiBearerAuth()
   @NormalAuth()
+  @ApiKeyAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
-  async getVestings(@Query() query: VestingsQueryInput) {
+  async getVestings(
+    @Query() query: VestingsQueryInput,
+    @Request() req: { organizationId: string }
+  ) {
+    const organizationId = query.organizationId || req.organizationId;
+    if (!organizationId) {
+      throw new BadRequestException("OrganizationId can't be empty");
+    }
     const where: IVestingsQuery = {
-      organizationId: query.organizationId,
+      organizationId: organizationId,
     };
 
     if (query.vestingContractId) {

@@ -28,10 +28,6 @@ import { ProjectsModule } from './projects/projects.module';
 import { RevokingsModule } from './revokings/revokings.module';
 import { ListenerModule } from './listener/listener.module';
 
-// Middleware
-import { VestingContractsMiddleware } from './vesting-contracts/vesting-contracts.middleware';
-import { VestingsMiddleware } from './vestings/vestings.middleware';
-
 // prisma middleware
 import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
@@ -76,17 +72,6 @@ import { ApiMiddleware } from './common/middleware/api.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(VestingContractsMiddleware).forRoutes(
-      { path: '/vesting-contract', method: RequestMethod.POST },
-      {
-        path: '/vesting-contract/:vestingContractId',
-        method: RequestMethod.PUT,
-      }
-    );
-
-    consumer
-      .apply(VestingsMiddleware)
-      .forRoutes({ path: '/vesting', method: RequestMethod.POST });
     consumer
       .apply(ApiMiddleware)
       .exclude(

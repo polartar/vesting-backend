@@ -25,6 +25,7 @@ import {
 } from './dto/organization.input';
 import { User } from 'src/users/models/user.model';
 import {
+  ApiKeyAuth,
   NormalAuth,
   OrganizationFounderAuth,
   PortfolioAdminAuth,
@@ -337,6 +338,29 @@ export class OrganizationsController {
   }
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/members/app')
+  async getVestingMembersWithApiKey(
+    @Request() req: { organizationId: string }
+  ) {
+    try {
+      const members = await this.organization.getVestingMembers(
+        req.organizationId
+      );
+      return members;
+    } catch (error) {
+      console.error(
+        'Error: GET /organization/:organizationId/members/app',
+        error
+      );
+      throw new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_MEMBERS_FAILURE
+      );
+    }
+  }
+
+  @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/:organizationId/members/portfolio')
@@ -344,6 +368,29 @@ export class OrganizationsController {
     try {
       const members = await this.organization.getPortfolioMembers(
         organizationId
+      );
+      return members;
+    } catch (error) {
+      console.error(
+        'Error: GET /organization/:organizationId/members/portfolio',
+        error
+      );
+      throw new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_MEMBERS_FAILURE
+      );
+    }
+  }
+
+  @ApiBearerAuth()
+  @ApiKeyAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/members/portfolio')
+  async getPortfolioMembersWithApiKey(
+    @Request() req: { organizationId: string }
+  ) {
+    try {
+      const members = await this.organization.getPortfolioMembers(
+        req.organizationId
       );
       return members;
     } catch (error) {
@@ -368,6 +415,28 @@ export class OrganizationsController {
     try {
       const recipients = await this.organization.getOrganizationRecipients(
         organizationId
+      );
+      return recipients;
+    } catch (error) {
+      console.error(
+        'Error: GET /organization/:organizationId/members/portfolio',
+        error
+      );
+      throw new BadRequestException(
+        ERROR_MESSAGES.ORGANIZATION_GET_ALL_RECIPIENTS_FAILURE
+      );
+    }
+  }
+
+  /** Fetch All recipients */
+  @ApiBearerAuth()
+  @ApiKeyAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/recipients')
+  async getRecipientsWithApiKey(@Request() req: { organizationId: string }) {
+    try {
+      const recipients = await this.organization.getOrganizationRecipients(
+        req.organizationId
       );
       return recipients;
     } catch (error) {

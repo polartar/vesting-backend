@@ -72,10 +72,10 @@ export class CreateProjectInput {
 @InputType()
 export class QueryProjectInput {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 
   @ApiProperty()
   @IsOptional()

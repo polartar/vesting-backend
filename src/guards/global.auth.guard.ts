@@ -29,9 +29,6 @@ export class GlobalAuthGuard implements CanActivate {
       const request = context.switchToHttp().getRequest();
       const authToken = request.headers?.authorization;
 
-      // if endpoint is indexer
-      if (this.isIndexerRequest(context, authToken)) return true;
-
       if (authToken) {
         const token = authToken.split(' ')[1];
         if (token) {
@@ -52,6 +49,9 @@ export class GlobalAuthGuard implements CanActivate {
 
       // If endpoint is public
       if (this.isPublicRequest(context)) return true;
+
+      // If the request is coming with api-key
+      if (this.isApiKeyRequest(context, request.organizationId)) return true;
 
       // If request is coming from admin
       if (this.isAdminRequest(context, request.user)) return true;
@@ -103,6 +103,7 @@ export class GlobalAuthGuard implements CanActivate {
       GlobalAuthGuardKeys.PUBLIC,
       [context.getHandler(), context.getClass()]
     );
+
     return isPublic;
   }
 
@@ -114,12 +115,13 @@ export class GlobalAuthGuard implements CanActivate {
     return isAdmin && user.isAdmin;
   }
 
-  isIndexerRequest(context: ExecutionContext, authToken: string): boolean {
-    const isIndexer = this.reflector.getAllAndOverride<boolean>(
-      GlobalAuthGuardKeys.INDEXER,
+  isApiKeyRequest(context: ExecutionContext, organizationId?: string): boolean {
+    const isAuthorized = this.reflector.getAllAndOverride<boolean>(
+      GlobalAuthGuardKeys.API_KEY,
       [context.getHandler(), context.getClass()]
     );
-    return isIndexer && authToken === INDEXER_JWT_SECRET;
+
+    return isAuthorized && Boolean(organizationId);
   }
 
   isNormalRequest(context: ExecutionContext, user?: User): boolean {
@@ -127,6 +129,7 @@ export class GlobalAuthGuard implements CanActivate {
       GlobalAuthGuardKeys.NORMAL,
       [context.getHandler(), context.getClass()]
     );
+
     return isAuthorized && Boolean(user);
   }
 

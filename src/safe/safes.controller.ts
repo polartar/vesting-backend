@@ -15,6 +15,7 @@ import { SafesService } from './safes.service';
 
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
+  ApiKeyAuth,
   NormalAuth,
   OrganizationFounderAuth,
   WalletAuth,
@@ -74,6 +75,7 @@ export class SafesController {
 
   @ApiBearerAuth()
   @NormalAuth()
+  @ApiKeyAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/get/single')
   async getSafeByAddress(@Query() query: QuerySafeInput) {
@@ -86,6 +88,7 @@ export class SafesController {
   }
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/get/list')

@@ -7,12 +7,17 @@ import {
   UseGuards,
   Put,
   NotFoundException,
+  Request,
   BadRequestException,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VestingContractsService } from './vesting-contracts.service';
-import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  NormalAuth,
+  OrganizationFounderAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   CreateVestingContractInput,
@@ -124,14 +129,18 @@ export class VestingContractsController {
   }
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
-  async getVestingContracts(@Query() query: QueryVestingContractsInput) {
+  async getVestingContracts(
+    @Query() query: QueryVestingContractsInput,
+    @Request() req: { organizationId: string }
+  ) {
     const where: Partial<VestingContract> = {};
-
-    if (query.organizationId) {
-      where.organizationId = query.organizationId;
+    const organizationId = query.organizationId || req.organizationId;
+    if (organizationId) {
+      where.organizationId = organizationId;
     }
 
     if (query.tokenId) {

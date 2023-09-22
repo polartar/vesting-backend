@@ -1,12 +1,16 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Request, Inject } from '@nestjs/common';
 import { CreateProjectInput, QueryProjectInput } from './dto/project.input';
 import { Project } from '@prisma/client';
 import axios from 'axios';
+import { REQUEST } from '@nestjs/core';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(REQUEST) private readonly request: Request
+  ) {}
 
   async notifySlack(organizationId: string, name: string) {
     try {
@@ -57,8 +61,10 @@ export class ProjectsService {
   }
 
   async getAll(query: QueryProjectInput) {
+    const organizationId =
+      query.organizationId || (this.request as any).organizationId;
     const where: Partial<Project> = {
-      organizationId: query.organizationId,
+      organizationId: organizationId,
     };
 
     if (query.wallet) {
