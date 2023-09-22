@@ -35,6 +35,8 @@ import { VestingsMiddleware } from './vestings/vestings.middleware';
 // prisma middleware
 import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
+import { MembershipModule } from './membership/membership.module';
+import { ApiMiddleware } from './common/middleware/api.middleware';
 
 @Module({
   imports: [
@@ -67,6 +69,7 @@ import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
     ProjectsModule,
     RevokingsModule,
     ListenerModule,
+    MembershipModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -84,5 +87,23 @@ export class AppModule {
     consumer
       .apply(VestingsMiddleware)
       .forRoutes({ path: '/vesting', method: RequestMethod.POST });
+    consumer
+      .apply(ApiMiddleware)
+      .exclude(
+        { path: '/membership', method: RequestMethod.POST },
+        {
+          path: '/',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/hello/:name',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/health',
+          method: RequestMethod.GET,
+        }
+      )
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

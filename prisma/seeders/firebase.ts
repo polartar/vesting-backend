@@ -207,7 +207,7 @@ async function registerVesting(vesting, contractId, tokenId, organizationId) {
 async function registerRecipe(recipe, userId, vestingId, organizationId) {
   let dbRecipe = await prisma.recipe.findFirst({
     where: {
-      recipientId: userId,
+      userId: userId,
       vestingId,
       organizationId,
     },
@@ -216,7 +216,7 @@ async function registerRecipe(recipe, userId, vestingId, organizationId) {
     dbRecipe = await prisma.recipe.create({
       data: {
         firebaseId: recipe.id,
-        recipientId: userId,
+        userId: userId,
         vestingId,
         organizationId,
         allocations: recipe.allocations,

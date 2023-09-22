@@ -219,6 +219,7 @@ Table recipe {
   vesting vesting [not null]
   name String
   email String
+  userId String
   user user
   organizationId String [not null]
   organization organization [not null]
@@ -345,7 +346,7 @@ Table membership {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
-  organizationId String [unique, not null]
+  organizationId String [not null]
   organization organization [not null]
   key String [not null]
 }
