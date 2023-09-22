@@ -60,7 +60,6 @@ Table organization {
   entities entity [not null]
   projects project [not null]
   revokings revoking [not null]
-  memberships membership [not null]
 }
 
 Table user_role {
@@ -302,7 +301,6 @@ Table project {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  deletedAt DateTime
   name String [not null]
   organizationId String [not null]
   organization organization [not null]
@@ -339,16 +337,6 @@ Table revoking {
   organizationId String [not null]
   organization organization [not null]
   status TransactionStatus [not null, default: 'PENDING']
-}
-
-Table membership {
-  id String [pk]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  deletedAt DateTime
-  organizationId String [unique, not null]
-  organization organization [not null]
-  key String [not null]
 }
 
 Enum Role {
@@ -511,5 +499,3 @@ Ref: revoking.vestingId > vesting.id
 Ref: revoking.transactionId > transaction.id
 
 Ref: revoking.organizationId > organization.id
-
-Ref: membership.organizationId > organization.id

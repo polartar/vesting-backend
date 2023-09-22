@@ -29,14 +29,12 @@ import { RevokingsModule } from './revokings/revokings.module';
 import { ListenerModule } from './listener/listener.module';
 
 // Middleware
-import { ApiMiddleware } from './common/middleware/api.middleware';
 import { VestingContractsMiddleware } from './vesting-contracts/vesting-contracts.middleware';
 import { VestingsMiddleware } from './vestings/vestings.middleware';
 
 // prisma middleware
 import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
-import { MembershipsModule } from './membership/memberships.module';
 
 @Module({
   imports: [
@@ -69,33 +67,12 @@ import { MembershipsModule } from './membership/memberships.module';
     ProjectsModule,
     RevokingsModule,
     ListenerModule,
-
-    MembershipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(ApiMiddleware)
-      .exclude(
-        { path: '/membership', method: RequestMethod.POST },
-        {
-          path: '/',
-          method: RequestMethod.GET,
-        },
-        {
-          path: '/hello/:name',
-          method: RequestMethod.GET,
-        },
-        {
-          path: '/health',
-          method: RequestMethod.GET,
-        }
-      )
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
-
     consumer.apply(VestingContractsMiddleware).forRoutes(
       { path: '/vesting-contract', method: RequestMethod.POST },
       {
