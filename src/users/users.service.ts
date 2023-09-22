@@ -99,4 +99,15 @@ export class UsersService {
   getAllActiveUsers() {
     return this.prisma.user.findMany();
   }
+
+  getUserWithOrganization(userId: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        organizations: true,
+      },
+    });
+  }
 }
