@@ -51,7 +51,7 @@ export class GlobalAuthGuard implements CanActivate {
       if (this.isPublicRequest(context)) return true;
 
       // If the request is coming with api-key
-      if (this.isApiKeyRequest(context, request.organizationId)) return true;
+      if (this.isApiKeyRequest(context, request)) return true;
 
       // If request is coming from admin
       if (this.isAdminRequest(context, request.user)) return true;
@@ -115,13 +115,20 @@ export class GlobalAuthGuard implements CanActivate {
     return isAdmin && user.isAdmin;
   }
 
-  isApiKeyRequest(context: ExecutionContext, organizationId?: string): boolean {
+  isApiKeyRequest(context: ExecutionContext, request): boolean {
     const isAuthorized = this.reflector.getAllAndOverride<boolean>(
       GlobalAuthGuardKeys.API_KEY,
       [context.getHandler(), context.getClass()]
     );
 
-    return isAuthorized && Boolean(organizationId);
+    if (
+      request.method !== 'GET' &&
+      request.organizationId !== request.body.organizationId
+    ) {
+      return false;
+    }
+
+    return isAuthorized && Boolean(request.organizationId);
   }
 
   isNormalRequest(context: ExecutionContext, user?: User): boolean {
