@@ -163,6 +163,7 @@ model Organization {
   entities         Entity[]
   projects         Project[]
   revokings        Revoking[]
+  memberships      Membership[]
 
   @@map("organization")
 }
@@ -339,6 +340,7 @@ model Recipe {
   vesting        Vesting      @relation(fields: [vestingId], references: [id])
   name           String?
   email          String?
+  userId         String?      @map("user_id")
   user           User?        @relation(fields: [email], references: [email])
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
@@ -476,4 +478,15 @@ model Revoking {
   status         TransactionStatus @default(PENDING)
 
   @@map("revoking")
+}
+
+model Membership {
+  id             String       @id @default(uuid())
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  deletedAt      DateTime?    @map("deleted_at")
+  organizationId String       @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  key            String
+  @@map("membership")
 }

@@ -228,10 +228,10 @@ export class UpdateVestingInput {
 @InputType()
 export class VestingsQueryInput {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 
   @ApiProperty()
   @IsOptional()

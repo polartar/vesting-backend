@@ -1,5 +1,10 @@
 import { PrismaService } from 'nestjs-prisma';
-import { Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Request,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   CreateSafeConfirmationInput,
   CreateSafeOwnerInput,
@@ -7,10 +12,14 @@ import {
   QuerySafeInput,
 } from './dto/safe.input';
 import { ISafeQuery } from './dto/interface';
+import { REQUEST } from '@nestjs/core';
 
 @Injectable()
 export class SafesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(REQUEST) private readonly request: Request
+  ) {}
 
   /** Safe wallets */
   async createSafeWallet(data: CreateSafeWalletDetailInput) {
@@ -49,8 +58,14 @@ export class SafesService {
   }
 
   async getSafeByQuery(query: QuerySafeInput) {
+    const organizationId =
+      (this.request as any).organizationId || query.organizationId;
+
+    if (!organizationId) {
+      throw new BadRequestException("Organization Id can't be empty");
+    }
     const where: ISafeQuery = {
-      organizationId: query.organizationId,
+      organizationId: organizationId,
     };
 
     if (query.address) {
@@ -73,8 +88,15 @@ export class SafesService {
   }
 
   async getSafesByQuery(query: QuerySafeInput) {
+    const organizationId =
+      (this.request as any).organizationId || query.organizationId;
+
+    if (!organizationId) {
+      throw new BadRequestException("OrganizationId can't be empty");
+    }
+
     const where: ISafeQuery = {
-      organizationId: query.organizationId,
+      organizationId: organizationId,
     };
 
     if (query.address) {

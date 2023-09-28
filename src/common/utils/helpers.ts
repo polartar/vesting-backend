@@ -1,4 +1,6 @@
 import { DEFAULT_CODE_LENGTH } from './constants';
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
   const characters = String(
@@ -13,4 +15,9 @@ export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
 
 export const compareStrings = (str1: string, str2: string) => {
   return str1.toLowerCase() === str2.toLowerCase();
+};
+
+export const generateApiKey = () => {
+  return uuidv4();
+  // return crypto.randomBytes(64).toString('hex');
 };

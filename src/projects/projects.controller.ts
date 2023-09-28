@@ -1,6 +1,10 @@
 import { Controller, UseGuards, Body, Post, Get, Query } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { PortfolioAdminAuth, PublicAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  PortfolioAdminAuth,
+  PublicAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { ProjectsService } from './projects.service';
 import { CreateProjectInput, QueryProjectInput } from './dto/project.input';
@@ -20,6 +24,7 @@ export class ProjectsController {
 
   @ApiBearerAuth()
   @PublicAuth()
+  @ApiKeyAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
   async getProjects(@Query() query: QueryProjectInput) {

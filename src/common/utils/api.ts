@@ -51,7 +51,7 @@ export const getCors = (): CorsConfig => {
 
   return {
     enabled: true,
-    origin,
+    origin: ['*'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Length',

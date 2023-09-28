@@ -7,10 +7,15 @@ import {
   Query,
   Param,
   Put,
+  Request,
   NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { OrganizationFounderAuth, PublicAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  OrganizationFounderAuth,
+  PublicAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { RevokingsService } from './revokings.service';
 import {
@@ -72,12 +77,17 @@ export class RevokingsController {
 
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
+  @ApiKeyAuth()
   @Get('/list')
-  async getRevokings(@Query() query: QueryRevokingsInput) {
+  async getRevokings(
+    @Query() query: QueryRevokingsInput,
+    @Request() req: { organizationId: string }
+  ) {
     const where: IRevokingsQuery = {};
 
-    if (query.organizationId) {
-      where.organizationId = query.organizationId;
+    const organizationId = query.organizationId || req.organizationId;
+    if (organizationId) {
+      where.organizationId = organizationId;
     }
 
     if (query.vestingId) {

@@ -74,6 +74,9 @@ export const ERROR_MESSAGES = {
 
   /** Transaction */
   TRANSACTION_NOT_FOUND: 'Transaction not found',
+
+  MEMBERSHIP_NOT_FOUND: 'Membership not found',
+  ORGANIZATION_INVALID: 'Invalid Organization',
 };
 
 export const SUCCESS_MESSAGES = {

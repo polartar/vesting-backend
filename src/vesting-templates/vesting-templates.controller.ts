@@ -2,7 +2,11 @@ import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { VestingTemplatesService } from './vesting-templates.service';
-import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  NormalAuth,
+  OrganizationFounderAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { CreateVestingTemplateInput } from './dto/vesting-templates.input';
 
@@ -19,6 +23,7 @@ export class VestingTemplatesController {
   }
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/:vestingTemplateId')

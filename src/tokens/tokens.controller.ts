@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
-import { NormalAuth, OrganizationFounderAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  NormalAuth,
+  OrganizationFounderAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 
 import { TokensService } from './tokens.service';
@@ -93,11 +97,17 @@ export class TokensController {
   }
 
   @ApiBearerAuth()
+  @ApiKeyAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/')
-  async getTokens(@Request() req: { user: User }) {
-    const tokens = await this.token.getMyTokens(req.user.id);
+  async getTokens(@Request() req: { user: User; organizationId: string }) {
+    let tokens;
+    if (req.user.id) {
+      tokens = await this.token.getMyTokens(req.user.id);
+    } else {
+      tokens = await this.token.getMyTokensByOrgId(req.organizationId);
+    }
     return tokens.map(({ token, organizationId }) => ({
       ...token,
       organizationId,

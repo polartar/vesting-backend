@@ -1,6 +1,10 @@
 import { Controller, UseGuards, Body, Post, Get, Query } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { PortfolioAdminAuth, PublicAuth } from 'src/common/utils/auth';
+import {
+  ApiKeyAuth,
+  PortfolioAdminAuth,
+  PublicAuth,
+} from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import { EntitiesService } from './entities.service';
 import { CreateEntityInput, QueryEntityInput } from './dto/entity.input';
@@ -20,6 +24,7 @@ export class EntitiesController {
 
   @ApiBearerAuth()
   @PublicAuth()
+  @ApiKeyAuth()
   @UseGuards(GlobalAuthGuard)
   @Get('/list')
   async getEntities(@Query() query: QueryEntityInput) {

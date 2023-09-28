@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateEntityInput {
@@ -20,8 +20,8 @@ export class CreateEntityInput {
 @InputType()
 export class QueryEntityInput {
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 }

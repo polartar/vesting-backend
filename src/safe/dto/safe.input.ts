@@ -89,10 +89,10 @@ export class CreateSafeConfirmationInput {
 @InputType()
 export class QuerySafeInput {
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
+  @IsOptional()
   @Field(() => String)
-  organizationId: string;
+  organizationId?: string;
 
   @ApiProperty()
   @IsOptional()
