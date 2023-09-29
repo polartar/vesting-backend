@@ -55,4 +55,10 @@ export class MembershipService {
       },
     });
   }
+
+  async deleteMembership(membershipId: string) {
+    return this.prisma.membership.delete({
+      where: { id: membershipId },
+    });
+  }
 }
