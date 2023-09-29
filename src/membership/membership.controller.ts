@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Param } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { OrganizationFounderAuth } from 'src/common/utils/auth';
@@ -21,8 +21,8 @@ export class MembershipsController {
   @ApiBearerAuth()
   @OrganizationFounderAuth()
   @UseGuards(GlobalAuthGuard)
-  @Get('/')
-  async getMemberships(@Query('organizationId') organizationId: string) {
+  @Get('/organizationId/:organizationId')
+  async getMemberships(@Param('organizationId') organizationId: string) {
     return await this.membership.getMemberShips(organizationId);
   }
 }
