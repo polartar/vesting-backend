@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { OrganizationFounderAuth } from 'src/common/utils/auth';
@@ -24,5 +32,13 @@ export class MembershipsController {
   @Get('/organizationId/:organizationId')
   async getMemberships(@Param('organizationId') organizationId: string) {
     return await this.membership.getMemberShips(organizationId);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Delete('/:organizationId/:membershipId')
+  async deleteMembership(@Param('membershipId') membershipId: string) {
+    return await this.membership.deleteMembership(membershipId);
   }
 }
