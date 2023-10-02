@@ -14,6 +14,7 @@ import { UsersService } from 'src/users/users.service';
 import { WalletsService } from 'src/wallets/wallets.service';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { OrganizationsService } from 'src/organizations/organizations.service';
+import { EntitiesService } from 'src/entities/entities.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { OrganizationsService } from 'src/organizations/organizations.service';
     WalletsService,
     RecipesService,
     OrganizationsService,
+    EntitiesService,
   ],
   exports: [AuthService],
 })

@@ -20,6 +20,7 @@ import { OrganizationsController } from './organizations.controller';
     WalletsService,
     JwtService,
     EmailService,
+    WalletsService,
     EntitiesService,
   ],
 })
