@@ -11,12 +11,14 @@ import { getExpiredTime } from 'src/common/utils/helper';
 import { EmailService } from 'src/auth/email.service';
 import { Platforms } from 'src/common/utils/constants';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { EntitiesService } from 'src/entities/entities.service';
 
 @Injectable()
 export class OrganizationsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly email: EmailService
+    private readonly email: EmailService,
+    private readonly entityService: EntitiesService
   ) {}
 
   async create(email: string, name: string, userId: string) {
@@ -26,6 +28,11 @@ export class OrganizationsService {
         name,
         userId,
       },
+    });
+
+    await this.entityService.create({
+      organizationId: organization.id,
+      name: name,
     });
 
     await this.addRoleToVestingMember(organization.id, userId, Role.FOUNDER);
