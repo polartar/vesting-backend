@@ -509,10 +509,13 @@ model MilestoneVesting {
   vestingContractId    String               @map("vesting_contract_id")
   vestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
   transactionId        String?              @map("transaction_id")
-  recipe               Recipe?
+  recipes               Recipe[]
   status               VestingStatus        @default(INITIALIZED)
   type                 MilestoneVestingType
   milestones           Milestone[]
+  templateId           String?
+  template             MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
+
   @@map("milestone_vesting")
 }
 
@@ -523,7 +526,7 @@ model MilestoneVestingTemplate {
   deletedAt            DateTime?            @map("deleted_at")
   organizationId       String               @map("organization_id")
   name                 String
-  milestones           Milestone[]
+  milestoneVestings    MilestoneVesting[]
   @@map("milestone_vesting_template")
 }
  
@@ -533,8 +536,6 @@ model Milestone {
   description          String?
   releaseFreq ReleaseFrequencyType @default(monthly) @map("release_frequency_type")
   title                String
-  templateId           String?
-  Template             MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
   vestingId   String? @map("vesting_id")
   vesting     MilestoneVesting? @relation(fields: [vestingId], references: [id])
   duration  Json
