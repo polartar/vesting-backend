@@ -527,6 +527,7 @@ model MilestoneVestingTemplate {
   organizationId       String               @map("organization_id")
   name                 String
   milestoneVestings    MilestoneVesting[]
+  milestones           Milestone[]
   @@map("milestone_vesting_template")
 }
  
@@ -538,6 +539,8 @@ model Milestone {
   title                String
   vestingId   String? @map("vesting_id")
   vesting     MilestoneVesting? @relation(fields: [vestingId], references: [id])
+  templateId   String? @map("template_id")
+  template     MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
   duration  Json
   @@map("milestone")
 }

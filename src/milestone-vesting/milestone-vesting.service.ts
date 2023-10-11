@@ -1,10 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateMilestoneVestingInput } from './dto/milestone-vesting.input';
+import {
+  CreateMilestoneVestingInput,
+  Milestone,
+} from './dto/milestone-vesting.input';
 import { PrismaService } from 'nestjs-prisma';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { Role, VestingStatus } from '@prisma/client';
 import { VestingContractsService } from 'src/vesting-contracts/vesting-contracts.service';
-import { VestingTemplatesService } from 'src/vesting-templates/vesting-templates.service';
+import { MilestoneVestingTemplateService } from 'src/milestone-vesting-template/milestone-vesting-template.service';
 
 @Injectable()
 export class MilestoneVestingService {
@@ -12,11 +15,33 @@ export class MilestoneVestingService {
     private readonly prisma: PrismaService,
     private readonly recipeService: RecipesService,
     private readonly vestingContractService: VestingContractsService,
-    private readonly templateService: VestingTemplatesService
+    private readonly templateService: MilestoneVestingTemplateService
   ) {}
 
+  validateMilestoneDurationJson(milestones: Milestone[]) {
+    for (const milestone of milestones) {
+      try {
+        const duration = JSON.parse(milestone.duration);
+        if (typeof duration === 'object') {
+          if (
+            !isNaN(duration.value) ||
+            (duration.type !== 'month' && duration.type != 'year')
+          ) {
+            throw 'Invalid duration type or value';
+          }
+        } else {
+          throw 'Not object';
+        }
+      } catch (err) {
+        return false;
+      }
+    }
+    return true;
+  }
   async create(data: CreateMilestoneVestingInput) {
-    //validate duration
+    if (!this.validateMilestoneDurationJson(data.milestones)) {
+      throw new BadRequestException('Invalid milestone duration.');
+    }
     const vestingContract = await this.vestingContractService.get(
       data.vestingContractId
     );
@@ -26,8 +51,11 @@ export class MilestoneVestingService {
       );
     }
 
-    // template service
-    // const template = await this.templateService.create
+    const template = await this.templateService.create({
+      name: data.templateName,
+      organizationId: data.organizationId,
+      milestones: data.milestones,
+    });
 
     const milestoneVesting = await this.prisma.milestoneVesting.create({
       organizationId: data.organizationId,

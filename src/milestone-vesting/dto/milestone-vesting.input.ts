@@ -12,7 +12,6 @@ import {
   IsEnum,
   IsEthereumAddress,
   IsNotEmpty,
-  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
