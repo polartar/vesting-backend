@@ -103,7 +103,7 @@ enum MilestoneVestingType {
   SIMPLE
   VESTED
 }
-
+ 
 model User {
   id            String           @id @default(uuid())
   firebaseId    String?          @map("firebase_id")
@@ -526,18 +526,17 @@ model MilestoneVestingTemplate {
   milestones           Milestone[]
   @@map("milestone_vesting_template")
 }
-
+ 
 model Milestone {
   id                   String               @id @default(uuid())
-  createdAt            DateTime             @default(now()) @map("created_at")
-  updatedAt            DateTime             @updatedAt @map("updated_at")
-  deletedAt            DateTime?            @map("deleted_at")
-  organizationId       String               @map("organization_id")
-  name                 String
+  allocation           String
+  description          String?
+  releaseFreq ReleaseFrequencyType @default(monthly) @map("release_frequency_type")
+  title                String
   templateId           String?
   Template             MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
   vestingId   String? @map("vesting_id")
-  Vesting     MilestoneVesting? @relation(fields: [vestingId], references: [id])
-
+  vesting     MilestoneVesting? @relation(fields: [vestingId], references: [id])
+  duration  Json
   @@map("milestone")
 }
