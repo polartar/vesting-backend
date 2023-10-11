@@ -15,9 +15,15 @@ import {
 export class CreateRecipeInput {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Field(() => String)
-  vestingId: string;
+  vestingId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  @Field(() => String)
+  milestoneVestingId?: string;
 
   @ApiProperty()
   @IsString()

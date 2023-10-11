@@ -8,8 +8,10 @@ export class MilestoneVestingTemplateService {
 
   async create(data: CreateMilestoneVestingTemplateInput) {
     const template = await this.prisma.milestoneVestingTemplate.findFirst({
-      name: data.name,
-      organizationId: data.organizationId,
+      where: {
+        name: data.name,
+        organizationId: data.organizationId,
+      },
     });
     if (template) {
       return template;
@@ -17,16 +19,22 @@ export class MilestoneVestingTemplateService {
     await Promise.all(
       data.milestones.map(async (milestone) => {
         return await this.prisma.milestone.create({
-          allocation: milestone.allocation,
-          description: milestone.description,
-          releaseFreq: milestone.releaseFreq,
-          duration: JSON.parse(milestone.duration),
+          data: {
+            title: milestone.title,
+            allocation: milestone.allocation,
+            description: milestone.description,
+            releaseFreq: milestone.releaseFreq,
+            duration: JSON.parse(milestone.duration),
+          },
         });
       })
     );
+
     return await this.prisma.milestoneVestingTemplate.create({
-      name: data.name,
-      orientationId: data.organizationId,
+      data: {
+        name: data.name,
+        organizationId: data.organizationId,
+      },
     });
   }
 

@@ -169,6 +169,7 @@ model Organization {
   projects         Project[]
   revokings        Revoking[]
   memberships      Membership[]
+  milestoneVestingTemplates MilestoneVestingTemplate[]
 
   @@map("organization")
 }
@@ -343,7 +344,7 @@ model Recipe {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   deletedAt      DateTime?    @map("deleted_at")
-  vestingId      String       @map("vesting_id")
+  vestingId      String?       @map("vesting_id")
   vesting        Vesting?      @relation(fields: [vestingId], references: [id])
   name           String?
   email          String?
@@ -358,7 +359,7 @@ model Recipe {
   code           String       @unique
   role           Role         @default(EMPLOYEE)
   revokings      Revoking[]
-  milestoneVestingId      String       @map("milestone_vesting_id") @unique
+  milestoneVestingId      String?       @map("milestone_vesting_id") @unique
   milestoneVesting MilestoneVesting?      @relation(fields: [milestoneVestingId], references: [id])
 
   @@map("recipe")
@@ -525,6 +526,7 @@ model MilestoneVestingTemplate {
   updatedAt            DateTime             @updatedAt @map("updated_at")
   deletedAt            DateTime?            @map("deleted_at")
   organizationId       String               @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
   name                 String
   milestoneVestings    MilestoneVesting[]
   milestones           Milestone[]

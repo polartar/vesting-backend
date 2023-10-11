@@ -58,21 +58,26 @@ export class MilestoneVestingService {
     });
 
     const milestoneVesting = await this.prisma.milestoneVesting.create({
-      organizationId: data.organizationId,
-      vestingContract,
-      status: data.status ?? VestingStatus.INITIALIZED,
-      type: data.type,
-      template: template,
+      data: {
+        organizationId: data.organizationId,
+        vestingContractId: data.vestingContractId,
+        status: data.status ?? VestingStatus.INITIALIZED,
+        type: data.type,
+        templateId: template.id,
+      },
     });
 
     await Promise.all(
       data.milestones.map(async (milestone) => {
         return await this.prisma.milestone.create({
-          allocation: milestone.allocation,
-          description: milestone.description,
-          releaseFreq: milestone.releaseFreq,
-          vesting: milestoneVesting,
-          duration: JSON.parse(milestone.duration),
+          data: {
+            allocation: milestone.allocation,
+            description: milestone.description,
+            releaseFreq: milestone.releaseFreq,
+            title: milestone.title,
+            vestingId: milestoneVesting.id,
+            duration: JSON.parse(milestone.duration),
+          },
         });
       })
     );
@@ -95,11 +100,20 @@ export class MilestoneVestingService {
         name: data.recipientName,
         email: data.recipientEmail,
         role: Role.INVESTOR,
-        milestoneVesting: milestoneVesting,
+        milestoneVestingId: milestoneVesting.id,
         redirectUri: data.redirectUri,
         address: data.recipientWalletAddress.toLowerCase(),
       });
     }
     return milestoneVesting;
+  }
+
+  async get(vestingId: string) {
+    return this.prisma.milestoneVesting.findUnique({
+      where: { id: vestingId },
+      include: {
+        milestones: true,
+      },
+    });
   }
 }

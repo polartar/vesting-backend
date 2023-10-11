@@ -1,9 +1,7 @@
 import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  CliffDurationType,
   ReleaseFrequencyType,
-  Role,
   VestingStatus,
   MilestoneVestingType,
 } from '@prisma/client';
