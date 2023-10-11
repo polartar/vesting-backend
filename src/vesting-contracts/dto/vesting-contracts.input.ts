@@ -54,6 +54,12 @@ export class CreateVestingContractInput {
   @IsNumber()
   @Field(() => Number)
   chainId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  @Field(() => Boolean)
+  isTimeBased: boolean;
 }
 
 @InputType()

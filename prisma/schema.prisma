@@ -278,6 +278,7 @@ model VestingContract {
   status         VestingContractStatus @default(INITIALIZED)
   vestings       Vesting[]
   balance        String?
+  isTimeBased    Boolean         @default(true) @map("is_timebased")
 
   @@map("vesting_contract")
 }
