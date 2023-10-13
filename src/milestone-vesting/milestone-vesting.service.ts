@@ -54,14 +54,14 @@ export class MilestoneVestingService {
           email: data.recipientEmail,
           name: data.recipientName,
           organizationId: data.organizationId,
-          wallet: {
-            address: data.recipientAddress.toLowerCase(),
-          },
+          // wallet: {
+          //   address: data.recipientAddress.toLowerCase(),
+          // },
         },
       });
 
       if (!recipe) {
-        this.recipeService.create({
+        await this.recipeService.create({
           allocations: data.allocation,
           organizationId: data.organizationId,
           name: data.recipientName,
@@ -74,6 +74,7 @@ export class MilestoneVestingService {
       }
       return milestoneVesting;
     } catch (err) {
+      console.log(err);
       throw new BadRequestException(err.message);
     }
   }

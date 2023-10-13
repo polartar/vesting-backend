@@ -352,7 +352,7 @@ model Recipe {
   user           User?        @relation(fields: [email], references: [email])
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
-  address        String?
+  address       String?      
   wallet         Wallet?      @relation(fields: [address], references: [address])
   allocations    String
   status         RecipeStatus @default(PENDING)
