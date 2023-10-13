@@ -9,14 +9,12 @@ import { RecipesService } from 'src/recipe/recipes.service';
 import { EmailService } from 'src/auth/email.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { ListenerService } from 'src/listener/listener.service';
-import { VestingContractsService } from 'src/vesting-contracts/vesting-contracts.service';
 import { MilestoneVestingTemplateService } from 'src/milestone-vesting-template/milestone-vesting-template.service';
 
 @Module({
   controllers: [MilestoneVestingController],
   providers: [
     MilestoneVestingService,
-    VestingContractsService,
     MilestoneVestingTemplateService,
     UsersService,
     AuthService,

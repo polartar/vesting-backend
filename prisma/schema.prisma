@@ -359,7 +359,7 @@ model Recipe {
   code           String       @unique
   role           Role         @default(EMPLOYEE)
   revokings      Revoking[]
-  milestoneVestingId      String?       @map("milestone_vesting_id") @unique
+  milestoneVestingId      String?       @map("milestone_vesting_id")
   milestoneVesting MilestoneVesting?      @relation(fields: [milestoneVestingId], references: [id])
 
   @@map("recipe")

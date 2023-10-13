@@ -233,7 +233,7 @@ Table recipe {
   code String [unique, not null]
   role Role [not null, default: 'EMPLOYEE']
   revokings revoking [not null]
-  milestoneVestingId String [unique]
+  milestoneVestingId String
   milestoneVesting milestone_vesting
 }
 

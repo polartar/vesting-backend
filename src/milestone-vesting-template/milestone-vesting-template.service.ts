@@ -24,7 +24,7 @@ export class MilestoneVestingTemplateService {
             allocation: milestone.allocation,
             description: milestone.description,
             releaseFreq: milestone.releaseFreq,
-            duration: JSON.parse(milestone.duration),
+            duration: milestone.duration,
           },
         });
       })

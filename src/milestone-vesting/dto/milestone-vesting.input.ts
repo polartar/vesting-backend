@@ -9,7 +9,9 @@ import {
   IsArray,
   IsEnum,
   IsEthereumAddress,
+  IsJSON,
   IsNotEmpty,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
@@ -56,6 +58,25 @@ export class Milestone {
   releaseFreq: ReleaseFrequencyType;
 }
 
+enum EDuration {
+  year = 'year',
+  month = 'month',
+}
+@InputType()
+export class Duration {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Field(() => Number)
+  value: number;
+
+  @ApiProperty()
+  @IsJSON()
+  @IsNotEmpty()
+  @Field(() => EDuration)
+  type: EDuration;
+}
+
 @InputType()
 export class CreateMilestoneVestingInput {
   @ApiProperty()
@@ -80,7 +101,7 @@ export class CreateMilestoneVestingInput {
   @IsString()
   @IsNotEmpty()
   @Field(() => String)
-  templateName: string;
+  template: string;
 
   @ApiProperty()
   @IsEnum(MilestoneVestingType)
@@ -109,7 +130,7 @@ export class CreateMilestoneVestingInput {
   @IsString()
   @IsNotEmpty()
   @Field(() => String)
-  recipientWalletAddress: string;
+  recipientAddress: string;
 
   @ApiProperty()
   @IsString()
