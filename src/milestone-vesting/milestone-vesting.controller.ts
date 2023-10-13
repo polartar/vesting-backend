@@ -1,39 +1,13 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Put,
-  UseGuards,
-  Param,
-  Body,
-  Request,
-  Query,
-  BadRequestException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Post, Get, UseGuards, Param, Body } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { VestingContract } from '@prisma/client';
-import {
-  ApiKeyAuth,
-  NormalAuth,
-  OrganizationFounderAuth,
-  PublicAuth,
-} from 'src/common/utils/auth';
-import { ERROR_MESSAGES } from 'src/common/utils/messages';
+import { OrganizationFounderAuth, PublicAuth } from 'src/common/utils/auth';
 import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
-import { VestingContractsService } from 'src/vesting-contracts/vesting-contracts.service';
 import { MilestoneVestingService } from './milestone-vesting.service';
-import { RecipesService } from 'src/recipe/recipes.service';
-import { TokensService } from 'src/tokens/tokens.service';
 import { CreateMilestoneVestingInput } from './dto/milestone-vesting.input';
 
 @Controller('milestone-vesting')
 export class MilestoneVestingController {
-  constructor(
-    private readonly vesting: MilestoneVestingService,
-    private readonly recipe: RecipesService,
-    private readonly token: TokensService
-  ) {}
+  constructor(private readonly vesting: MilestoneVestingService) {}
 
   @ApiBearerAuth()
   @OrganizationFounderAuth()
@@ -52,5 +26,13 @@ export class MilestoneVestingController {
   @Get('/:vestingId')
   async getVesting(@Param('vestingId') vestingId: string) {
     return this.vesting.get(vestingId);
+  }
+
+  @ApiBearerAuth()
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Get('/organization/:organizationId')
+  async getVestings(@Param('organizationId') organizationId: string) {
+    return this.vesting.getVestingsByOrganization(organizationId);
   }
 }

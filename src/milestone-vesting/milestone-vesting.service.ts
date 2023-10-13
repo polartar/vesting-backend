@@ -116,4 +116,15 @@ export class MilestoneVestingService {
       },
     });
   }
+
+  async getVestingsByOrganization(organizationId: string) {
+    return this.prisma.milestoneVesting.findMany({
+      where: {
+        organizationId,
+      },
+      include: {
+        vestingContract: true,
+      },
+    });
+  }
 }
