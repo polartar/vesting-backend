@@ -1,8 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import {
-  CreateMilestoneVestingInput,
-  Milestone,
-} from './dto/milestone-vesting.input';
+import { CreateMilestoneVestingInput } from './dto/milestone-vesting.input';
 import { PrismaService } from 'nestjs-prisma';
 import { RecipesService } from 'src/recipe/recipes.service';
 import { Role, VestingStatus } from '@prisma/client';

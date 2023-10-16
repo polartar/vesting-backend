@@ -1,5 +1,5 @@
 import { PrismaService } from 'nestjs-prisma';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRecipeInput, UpdateRecipeInput } from './dto/recipe.input';
 import { EmailService } from 'src/auth/email.service';
 import { generateRandomCode } from 'src/common/utils/helpers';
