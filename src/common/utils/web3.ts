@@ -40,8 +40,8 @@ export const SUPPORTED_CHAIN_IDS: Array<
 export const AlchemyNetworks = {
   [CHAIN_IDS.ethereum]: Network.ETH_MAINNET,
   [CHAIN_IDS.goerli]: Network.ETH_GOERLI,
-  [CHAIN_IDS.polygon]: Network.POLYGONZKEVM_MAINNET,
-  [CHAIN_IDS.mumbai]: Network.POLYGONZKEVM_TESTNET,
+  [CHAIN_IDS.polygon]: Network.MATIC_MAINNET,
+  [CHAIN_IDS.mumbai]: Network.MATIC_MUMBAI,
 };
 
 // Alchemy API keys per network
