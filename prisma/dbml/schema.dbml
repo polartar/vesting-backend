@@ -119,7 +119,7 @@ Table token {
   symbol String [not null]
   decimal Int [not null]
   imported Boolean [not null]
-  burnable Boolean [not null]
+  burnable Boolean [not null, default: false]
   description String
   maxSupply String
   supplyCap String

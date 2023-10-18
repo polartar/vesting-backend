@@ -1,5 +1,6 @@
 import { Permission, PrismaClient, Role } from '@prisma/client';
 import OrganizationsJson from '../db/seed.json';
+import { UserRole } from 'src/users/models/user-role.model';
 
 const prisma = new PrismaClient();
 
@@ -193,6 +194,7 @@ async function registerVesting(vesting, contractId, tokenId, organizationId) {
         updatedAt: vesting.updated_at,
         startedAt: vesting.started_at,
         endedAt: vesting.ended_at,
+        originalEndedAt: vesting.originalEndedAt,
         releaseFrequency: vesting.release_frequency,
         releaseFrequencyType: vesting.release_frequency_type,
         cliffDuration: vesting.cliff_duration,
@@ -218,6 +220,8 @@ async function registerRecipe(recipe, userId, vestingId, organizationId) {
         firebaseId: recipe.id,
         userId: userId,
         vestingId,
+        role: 'FOUNDER',
+        code: '',
         organizationId,
         allocations: recipe.allocations,
         status: recipe.status,
