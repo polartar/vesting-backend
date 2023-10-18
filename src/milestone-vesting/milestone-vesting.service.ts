@@ -15,11 +15,14 @@ export class MilestoneVestingService {
 
   async create(data: CreateMilestoneVestingInput) {
     try {
-      const template = await this.templateService.create({
-        name: data.template,
-        organizationId: data.organizationId,
-        milestones: data.milestones,
-      });
+      let template;
+      if (data.template) {
+        template = await this.templateService.create({
+          name: data.template,
+          organizationId: data.organizationId,
+          milestones: data.milestones,
+        });
+      }
 
       const milestoneVesting = await this.prisma.milestoneVesting.create({
         data: {
@@ -27,7 +30,7 @@ export class MilestoneVestingService {
           vestingContractId: data.vestingContractId,
           status: data.status ?? VestingStatus.INITIALIZED,
           type: data.type,
-          templateId: template.id,
+          templateId: template ? template.id : null,
         },
       });
 
