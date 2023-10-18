@@ -19,5 +19,4 @@ export const compareStrings = (str1: string, str2: string) => {
 
 export const generateApiKey = () => {
   return uuidv4();
-  // return crypto.randomBytes(64).toString('hex');
 };
