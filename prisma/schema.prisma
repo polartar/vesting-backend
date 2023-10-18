@@ -99,6 +99,11 @@ enum VestingStatus {
   FAILED
 }
 
+enum MilestoneVestingType {
+  SIMPLE
+  VESTED
+}
+ 
 model User {
   id            String           @id @default(uuid())
   firebaseId    String?          @map("firebase_id")
@@ -164,6 +169,7 @@ model Organization {
   projects         Project[]
   revokings        Revoking[]
   memberships      Membership[]
+  milestoneVestingTemplates MilestoneVestingTemplate[]
 
   @@map("organization")
 }
@@ -278,6 +284,8 @@ model VestingContract {
   status         VestingContractStatus @default(INITIALIZED)
   vestings       Vesting[]
   balance        String?
+  isTimeBased    Boolean         @default(true) @map("is_timebased")
+  milestoneVestings MilestoneVesting[]
 
   @@map("vesting_contract")
 }
@@ -336,21 +344,23 @@ model Recipe {
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
   deletedAt      DateTime?    @map("deleted_at")
-  vestingId      String       @map("vesting_id")
-  vesting        Vesting      @relation(fields: [vestingId], references: [id])
+  vestingId      String?       @map("vesting_id")
+  vesting        Vesting?      @relation(fields: [vestingId], references: [id])
   name           String?
   email          String?
   userId         String?      @map("user_id")
   user           User?        @relation(fields: [email], references: [email])
   organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id])
-  address        String?
+  address       String?      
   wallet         Wallet?      @relation(fields: [address], references: [address])
   allocations    String
   status         RecipeStatus @default(PENDING)
   code           String       @unique
   role           Role         @default(EMPLOYEE)
   revokings      Revoking[]
+  milestoneVestingId      String?       @map("milestone_vesting_id")
+  milestoneVesting MilestoneVesting?      @relation(fields: [milestoneVestingId], references: [id])
 
   @@map("recipe")
 }
@@ -489,4 +499,50 @@ model Membership {
   organization   Organization @relation(fields: [organizationId], references: [id])
   key            String
   @@map("membership")
+}
+
+model MilestoneVesting {
+  id                   String               @id @default(uuid())
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  deletedAt            DateTime?            @map("deleted_at")
+  organizationId       String               @map("organization_id")
+  vestingContractId    String               @map("vesting_contract_id")
+  vestingContract      VestingContract      @relation(fields: [vestingContractId], references: [id])
+  transactionId        String?              @map("transaction_id")
+  recipes               Recipe[]
+  status               VestingStatus        @default(INITIALIZED)
+  type                 MilestoneVestingType
+  milestones           Milestone[]
+  templateId           String?
+  template             MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
+
+  @@map("milestone_vesting")
+}
+
+model MilestoneVestingTemplate {
+  id                   String               @id @default(uuid())
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+  deletedAt            DateTime?            @map("deleted_at")
+  organizationId       String               @map("organization_id")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  name                 String
+  milestoneVestings    MilestoneVesting[]
+  milestones           Milestone[]
+  @@map("milestone_vesting_template")
+}
+ 
+model Milestone {
+  id                   String               @id @default(uuid())
+  allocation           String
+  description          String?
+  releaseFreq ReleaseFrequencyType @default(monthly) @map("release_frequency_type")
+  title                String
+  vestingId   String? @map("vesting_id")
+  vesting     MilestoneVesting? @relation(fields: [vestingId], references: [id])
+  templateId   String? @map("template_id")
+  template     MilestoneVestingTemplate? @relation(fields: [templateId], references: [id])
+  duration  Json
+  @@map("milestone")
 }

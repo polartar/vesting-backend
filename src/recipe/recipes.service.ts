@@ -5,12 +5,16 @@ import { EmailService } from 'src/auth/email.service';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { Recipe, RecipeStatus } from '@prisma/client';
 import { IRecipientsQuery } from './dto/interface';
+import { WalletsService } from 'src/wallets/wallets.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class RecipesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly email: EmailService
+    private readonly email: EmailService,
+    private readonly walletService: WalletsService,
+    private readonly userService: UsersService
   ) {}
 
   async create({
@@ -20,24 +24,30 @@ export class RecipesService {
     tokenSymbol,
     ...payload
   }: CreateRecipeInput) {
-    const code = generateRandomCode();
-    const recipe = await this.prisma.recipe.create({
-      data: {
-        ...payload,
+    try {
+      const code = generateRandomCode();
+      const user = await this.userService.createUserIfNotExists(email, name);
+      await this.walletService.findOrCreate(user.id, payload.address);
+      const recipe = await this.prisma.recipe.create({
+        data: {
+          ...payload,
+          email,
+          code,
+          status: 'PENDING',
+        },
+      });
+
+      await this.email.sendRecipientInvitationEmail(
         email,
         code,
-        status: 'PENDING',
-      },
-    });
-
-    await this.email.sendRecipientInvitationEmail(
-      email,
-      code,
-      redirectUri,
-      name,
-      tokenSymbol
-    );
-    return recipe;
+        redirectUri,
+        name,
+        tokenSymbol
+      );
+      return recipe;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async get(recipeId: string) {

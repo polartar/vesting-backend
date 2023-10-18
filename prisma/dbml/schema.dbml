@@ -61,6 +61,7 @@ Table organization {
   projects project [not null]
   revokings revoking [not null]
   memberships membership [not null]
+  milestoneVestingTemplates milestone_vesting_template [not null]
 }
 
 Table user_role {
@@ -163,6 +164,8 @@ Table vesting_contract {
   status VestingContractStatus [not null, default: 'INITIALIZED']
   vestings vesting [not null]
   balance String
+  isTimeBased Boolean [not null, default: true]
+  milestoneVestings milestone_vesting [not null]
 }
 
 Table vesting {
@@ -215,8 +218,8 @@ Table recipe {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
-  vestingId String [not null]
-  vesting vesting [not null]
+  vestingId String
+  vesting vesting
   name String
   email String
   userId String
@@ -230,6 +233,8 @@ Table recipe {
   code String [unique, not null]
   role Role [not null, default: 'EMPLOYEE']
   revokings revoking [not null]
+  milestoneVestingId String
+  milestoneVesting milestone_vesting
 }
 
 Table safe_wallet {
@@ -351,6 +356,48 @@ Table membership {
   key String [not null]
 }
 
+Table milestone_vesting {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  organizationId String [not null]
+  vestingContractId String [not null]
+  vestingContract vesting_contract [not null]
+  transactionId String
+  recipes recipe [not null]
+  status VestingStatus [not null, default: 'INITIALIZED']
+  type MilestoneVestingType [not null]
+  milestones milestone [not null]
+  templateId String
+  template milestone_vesting_template
+}
+
+Table milestone_vesting_template {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  organizationId String [not null]
+  organization organization [not null]
+  name String [not null]
+  milestoneVestings milestone_vesting [not null]
+  milestones milestone [not null]
+}
+
+Table milestone {
+  id String [pk]
+  allocation String [not null]
+  description String
+  releaseFreq ReleaseFrequencyType [not null, default: 'monthly']
+  title String [not null]
+  vestingId String
+  vesting milestone_vesting
+  templateId String
+  template milestone_vesting_template
+  duration Json [not null]
+}
+
 Enum Role {
   FOUNDER
   MANAGER
@@ -438,6 +485,11 @@ Enum VestingStatus {
   FAILED
 }
 
+Enum MilestoneVestingType {
+  SIMPLE
+  VESTED
+}
+
 Ref: wallet.userId > user.id
 
 Ref: organization.userId > user.id
@@ -482,6 +534,8 @@ Ref: recipe.organizationId > organization.id
 
 Ref: recipe.address > wallet.address
 
+Ref: recipe.milestoneVestingId > milestone_vesting.id
+
 Ref: safe_wallet.transactionId > transaction.id
 
 Ref: safe_owner.safeWalletId > safe_wallet.id
@@ -513,3 +567,13 @@ Ref: revoking.transactionId > transaction.id
 Ref: revoking.organizationId > organization.id
 
 Ref: membership.organizationId > organization.id
+
+Ref: milestone_vesting.vestingContractId > vesting_contract.id
+
+Ref: milestone_vesting.templateId > milestone_vesting_template.id
+
+Ref: milestone_vesting_template.organizationId > organization.id
+
+Ref: milestone.vestingId > milestone_vesting.id
+
+Ref: milestone.templateId > milestone_vesting_template.id

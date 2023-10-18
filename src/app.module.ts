@@ -33,6 +33,8 @@ import { softDeleteMiddleware } from './common/middleware/delete.middleware';
 import { loggingMiddleware } from 'src/common/middleware/logging.middleware';
 import { MembershipModule } from './membership/membership.module';
 import { ApiMiddleware } from './common/middleware/api.middleware';
+import { MilestoneVestingModule } from './milestone-vesting/milestone-vesting.module';
+import { MilestoneVestingTemplateModule } from './milestone-vesting-template/milestone-vesting-template.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { ApiMiddleware } from './common/middleware/api.middleware';
     RevokingsModule,
     ListenerModule,
     MembershipModule,
+    MilestoneVestingModule,
+    MilestoneVestingTemplateModule,
   ],
   controllers: [AppController],
   providers: [AppService],
