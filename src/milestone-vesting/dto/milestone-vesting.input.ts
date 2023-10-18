@@ -99,7 +99,7 @@ export class CreateMilestoneVestingInput {
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @Field(() => String)
   template: string;
 
