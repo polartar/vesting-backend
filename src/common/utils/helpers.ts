@@ -1,5 +1,4 @@
 import { DEFAULT_CODE_LENGTH } from './constants';
-import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 export const generateRandomCode = (length: number = DEFAULT_CODE_LENGTH) => {
