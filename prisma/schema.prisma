@@ -235,7 +235,7 @@ model Token {
   symbol           String
   decimal          Int
   imported         Boolean
-  burnable         Boolean            @default(false)
+  burnable         Boolean
   description      String?
   maxSupply        String?             @map("max_supply")
   supplyCap        String?             @map("supply_cap")
