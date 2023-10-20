@@ -36,12 +36,10 @@ export class AuthEmailLoginInput extends AuthInput {
 export class AuthEmailSingUpInput extends AuthEmailLoginInput {
   @ApiProperty()
   @Field(() => String)
-  @IsNotEmpty()
   name: string;
 
   @ApiProperty()
   @Field(() => String)
-  @IsNotEmpty()
   company: string;
 }
 

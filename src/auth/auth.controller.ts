@@ -157,7 +157,8 @@ export class AuthController {
         name: auth.name,
       });
 
-      await this.organization.create(auth.email, auth.company, id);
+      if (auth.company)
+        await this.organization.create(auth.email, auth.company, id);
 
       return tokens;
     } catch (error) {
