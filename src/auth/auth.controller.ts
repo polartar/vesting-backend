@@ -16,6 +16,7 @@ import { EmailService } from './email.service';
 import {
   AuthAcceptInvitationInput,
   AuthEmailLoginInput,
+  AuthEmailSingUpInput,
   AuthGoogleLoginInput,
   AuthInput,
   AuthValidationInput,
@@ -71,10 +72,12 @@ export class AuthController {
         throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
       }
 
-      return this.auth.createUser({
+      const { tokens } = await this.auth.createUser({
         name: userProfile.name,
         email: userProfile.email,
       });
+
+      return tokens;
     } catch (error) {
       console.error('Error: /auth/google-login', error);
       throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
@@ -111,9 +114,13 @@ export class AuthController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Post('/signup')
-  async signup(@Body() body: AuthEmailLoginInput) {
+  async signup(@Body() body: AuthEmailSingUpInput) {
     try {
-      const code = await this.auth.createAuthCode(body.email);
+      const code = await this.auth.createAuthCode(
+        body.email,
+        body.name,
+        body.company
+      );
       if (!code) {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
       }
@@ -140,14 +147,19 @@ export class AuthController {
   @Post('/validate')
   async validate(@Body() body: AuthValidationInput) {
     try {
-      const authEmail = await this.auth.validateCode(body.code);
-      if (!authEmail) {
+      const auth = await this.auth.validateCode(body.code);
+      if (!auth) {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
-      return this.auth.createUser({
-        email: authEmail,
+      const { id, tokens } = await this.auth.createUser({
+        email: auth.email,
+        name: auth.name,
       });
+
+      await this.organization.create(auth.email, auth.company, id);
+
+      return tokens;
     } catch (error) {
       console.error('Error: /auth/validate', error);
       throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);

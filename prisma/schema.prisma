@@ -128,6 +128,8 @@ model EmailVerification {
   updatedAt DateTime @updatedAt @map("updated_at")
   email     String   @unique
   code      String   @unique
+  name      String?
+  company   String?
   expiredAt BigInt   @map("expired_at")
 
   @@map("email_verification")

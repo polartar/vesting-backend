@@ -33,6 +33,19 @@ export class AuthEmailLoginInput extends AuthInput {
 }
 
 @InputType()
+export class AuthEmailSingUpInput extends AuthEmailLoginInput {
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @Field(() => String)
+  @IsNotEmpty()
+  company: string;
+}
+
+@InputType()
 export class AuthGoogleLoginInput extends AuthInput {
   @ApiProperty()
   @Field(() => String)
