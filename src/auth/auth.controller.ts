@@ -34,6 +34,7 @@ import { RecipesService } from 'src/recipe/recipes.service';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 import { compareStrings } from 'src/common/utils/helpers';
 import { UsersService } from 'src/users/users.service';
+import { Platforms } from 'src/common/utils/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -125,6 +126,16 @@ export class AuthController {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
       }
 
+      if (body.platform === Platforms.Portfolio) {
+        const { id } = await this.auth.createUser({
+          email: body.email,
+          name: body.name,
+        });
+
+        if (body.company)
+          await this.organization.create(body.email, body.company, id);
+      }
+
       const sent = await this.email.sendLoginEmail(
         body.email,
         code,
@@ -152,13 +163,10 @@ export class AuthController {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
-      const { id, tokens } = await this.auth.createUser({
+      const { tokens } = await this.auth.createUser({
         email: auth.email,
         name: auth.name,
       });
-
-      if (auth.company)
-        await this.organization.create(auth.email, auth.company, id);
 
       return tokens;
     } catch (error) {
