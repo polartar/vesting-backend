@@ -22,7 +22,16 @@ export class OrganizationsService {
   ) {}
 
   async create(email: string, name: string, userId: string) {
-    const organization = await this.prisma.organization.create({
+    let organization = await this.prisma.organization.findFirst({
+      where: {
+        email,
+        userId,
+      },
+    });
+    if (organization) {
+      return organization;
+    }
+    organization = await this.prisma.organization.create({
       data: {
         email,
         name,

@@ -24,6 +24,8 @@ Table email_verification {
   updatedAt DateTime [not null]
   email String [unique, not null]
   code String [unique, not null]
+  name String
+  company String
   expiredAt BigInt [not null]
 }
 

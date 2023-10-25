@@ -1,5 +1,5 @@
 import { PrismaService } from 'nestjs-prisma';
-import { User, Wallet } from '@prisma/client';
+import { EmailVerification, User, Wallet } from '@prisma/client';
 import {
   Injectable,
   NotFoundException,
@@ -40,7 +40,9 @@ export class AuthService {
     });
   }
 
-  async createUser(payload: SignupInput): Promise<Token> {
+  async createUser(
+    payload: SignupInput
+  ): Promise<{ id: string; tokens: Token }> {
     try {
       const user = await this.prisma.user.upsert({
         where: {
@@ -50,9 +52,14 @@ export class AuthService {
         update: {},
       });
 
-      return this.generateTokens({
+      const tokens = await this.generateTokens({
         userId: user.id,
       });
+
+      return {
+        id: user.id,
+        tokens,
+      };
     } catch (e) {
       throw new Error(e);
     }
@@ -115,7 +122,11 @@ export class AuthService {
     return this.jwtService.decode(token) as TokenPayload;
   }
 
-  async createAuthCode(email: string): Promise<string> {
+  async createAuthCode(
+    email: string,
+    name?: string,
+    company?: string
+  ): Promise<string> {
     const auth = await this.prisma.emailVerification.findUnique({
       where: {
         email,
@@ -140,13 +151,15 @@ export class AuthService {
       data: {
         email,
         code,
+        name,
+        company,
         expiredAt: getExpiredTime(),
       },
     });
     return code;
   }
 
-  async validateCode(code: string): Promise<string | undefined> {
+  async validateCode(code: string): Promise<EmailVerification> {
     try {
       const auth = await this.prisma.emailVerification.findFirst({
         where: {
@@ -167,7 +180,7 @@ export class AuthService {
         this.prisma.userRole.updateMany(updateQuery),
         this.prisma.userPermission.updateMany(updateQuery),
       ]);
-      return auth.email;
+      return auth;
     } catch (error) {
       return;
     }

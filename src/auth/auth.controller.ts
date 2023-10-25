@@ -16,6 +16,7 @@ import { EmailService } from './email.service';
 import {
   AuthAcceptInvitationInput,
   AuthEmailLoginInput,
+  AuthEmailSingUpInput,
   AuthGoogleLoginInput,
   AuthInput,
   AuthValidationInput,
@@ -33,6 +34,7 @@ import { RecipesService } from 'src/recipe/recipes.service';
 import { OrganizationsService } from 'src/organizations/organizations.service';
 import { compareStrings } from 'src/common/utils/helpers';
 import { UsersService } from 'src/users/users.service';
+import { Platforms } from 'src/common/utils/constants';
 
 @Controller('auth')
 export class AuthController {
@@ -71,10 +73,12 @@ export class AuthController {
         throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
       }
 
-      return this.auth.createUser({
+      const { tokens } = await this.auth.createUser({
         name: userProfile.name,
         email: userProfile.email,
       });
+
+      return tokens;
     } catch (error) {
       console.error('Error: /auth/google-login', error);
       throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
@@ -111,11 +115,25 @@ export class AuthController {
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
   @Post('/signup')
-  async signup(@Body() body: AuthEmailLoginInput) {
+  async signup(@Body() body: AuthEmailSingUpInput) {
     try {
-      const code = await this.auth.createAuthCode(body.email);
+      const code = await this.auth.createAuthCode(
+        body.email,
+        body.name,
+        body.company
+      );
       if (!code) {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+      }
+
+      if (body.platform === Platforms.Portfolio) {
+        const { id } = await this.auth.createUser({
+          email: body.email,
+          name: body.name,
+        });
+
+        if (body.company)
+          await this.organization.create(body.email, body.company, id);
       }
 
       const sent = await this.email.sendLoginEmail(
@@ -140,14 +158,17 @@ export class AuthController {
   @Post('/validate')
   async validate(@Body() body: AuthValidationInput) {
     try {
-      const authEmail = await this.auth.validateCode(body.code);
-      if (!authEmail) {
+      const auth = await this.auth.validateCode(body.code);
+      if (!auth) {
         throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
       }
 
-      return this.auth.createUser({
-        email: authEmail,
+      const { tokens } = await this.auth.createUser({
+        email: auth.email,
+        name: auth.name,
       });
+
+      return tokens;
     } catch (error) {
       console.error('Error: /auth/validate', error);
       throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
