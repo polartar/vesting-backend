@@ -35,6 +35,7 @@ import { OrganizationsService } from 'src/organizations/organizations.service';
 import { compareStrings } from 'src/common/utils/helpers';
 import { UsersService } from 'src/users/users.service';
 import { Platforms } from 'src/common/utils/constants';
+import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
@@ -62,13 +63,36 @@ export class AuthController {
 
   @PublicAuth()
   @UseGuards(GlobalAuthGuard)
+  @Post('/google-auth')
+  async googleAuth(@Body() body: AuthGoogleLoginInput) {
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${body.code}`
+      );
+
+      const { tokens } = await this.auth.createUser({
+        name: response.data.name,
+        email: response.data.email,
+      });
+
+      return tokens;
+    } catch (error) {
+      console.error('Error: /auth/google-login', error);
+      throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
+    }
+  }
+
+  @PublicAuth()
+  @UseGuards(GlobalAuthGuard)
   @Post('/google-login')
   async googleAuthLogin(@Body() body: AuthGoogleLoginInput) {
+    console.log({ body });
     try {
       const userProfile = await this.google.getAuthTokens(
         body.code,
         body.redirectUri
       );
+      console.log({ userProfile });
       if (!userProfile) {
         throw new BadRequestException(ERROR_MESSAGES.GOOGLE_AUTH_FAILURE);
       }
