@@ -78,7 +78,10 @@ export class VestingContractsService {
       where: {
         id: vestingContractId,
       },
-      data,
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
     });
   }
 
