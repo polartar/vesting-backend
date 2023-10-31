@@ -74,4 +74,34 @@ export class VestingsService {
       },
     });
   }
+
+  async delete(organizationId: string, vestingId: string) {
+    await this.prisma.vesting.findFirstOrThrow({
+      where: {
+        id: vestingId,
+        organizationId: organizationId,
+      },
+    });
+    const recipes = await this.prisma.recipe.findMany({
+      where: { vestingId: vestingId },
+      include: {
+        wallet: { include: { recipes: true } },
+        user: { include: { recipes: true } },
+      },
+    });
+    await Promise.all(
+      recipes.map(async (recipe) => {
+        if (recipe.wallet.recipes.length === 1) {
+          await this.prisma.wallet.delete({ where: { id: recipe.wallet.id } });
+        }
+        if (recipe.user.recipes.length === 1) {
+          await this.prisma.user.delete({ where: { id: recipe.user.id } });
+        }
+        return await this.prisma.recipe.delete({ where: { id: recipe.id } });
+      })
+    );
+    await this.prisma.vesting.delete({
+      where: { id: vestingId },
+    });
+  }
 }

@@ -10,6 +10,7 @@ import {
   UseGuards,
   Request,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
@@ -162,5 +163,17 @@ export class VestingsController {
     }
 
     return this.vesting.getAll(where);
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Delete('/:organizationId/:vestingId')
+  async deleteVesting(
+    @Param('organizationId') organizationId: string,
+    @Param('vestingId') vestingId: string
+  ) {
+    const result = await this.vesting.delete(organizationId, vestingId);
+    return result;
   }
 }
