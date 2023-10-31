@@ -27,11 +27,13 @@ export class RecipesService {
     try {
       const code = generateRandomCode();
       const user = await this.userService.createUserIfNotExists(email, name);
-      await this.walletService.findOrCreate(user.id, payload.address);
+      if (payload.address)
+        await this.walletService.findOrCreate(user.id, payload.address);
       const recipe = await this.prisma.recipe.create({
         data: {
           ...payload,
           email,
+          name,
           code,
           status: 'PENDING',
         },
