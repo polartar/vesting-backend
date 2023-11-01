@@ -173,6 +173,12 @@ export class UpdateVestingInput {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  @Field(() => String)
+  transactionId?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   @Field(() => Date)
   startedAt?: Date;
 
