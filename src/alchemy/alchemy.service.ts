@@ -49,6 +49,7 @@ export class AlchemyService {
   }> {
     try {
       const metadata = await this.getTokenMetadata(address, networkId);
+
       return {
         metadata,
         validated: Number(metadata.decimals) > 0,

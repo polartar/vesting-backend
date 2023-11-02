@@ -10,7 +10,7 @@ import {
 import { Token } from './models/tokens.model';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { ListenerService } from 'src/listener/listener.service';
-import { getAddress } from 'ethers';
+import { getAddress, parseEther } from 'ethers';
 
 @Injectable()
 export class TokensService implements OnModuleInit {
@@ -107,6 +107,7 @@ export class TokensService implements OnModuleInit {
         data: {
           ...data,
           address,
+          totalSupply: Math.pow(10, 18).toString(),
           imported: true,
         },
       });
