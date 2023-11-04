@@ -6,6 +6,8 @@ import {
   Get,
   Query,
   BadRequestException,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -14,6 +16,7 @@ import { GlobalAuthGuard } from 'src/guards/global.auth.guard';
 import {
   CreateTransactionInput,
   QueryTransactionsInput,
+  UpdateTransactionInput,
 } from './dto/transaction.input';
 import { ITransactionsQuery } from './dto/interfaces';
 import { VestingContractsService } from 'src/vesting-contracts/vesting-contracts.service';
@@ -32,6 +35,7 @@ export class TransactionsController {
   async createTransaction(
     @Body() { vestingContractId, ...body }: CreateTransactionInput
   ) {
+    delete body.vestingIds;
     if (body.type === 'VESTING_DEPLOYMENT' && !vestingContractId) {
       throw new BadRequestException(
         `'vestingContractId' is a required field for 'VESTING_DEPLOYMENT' transaction.`
@@ -80,5 +84,16 @@ export class TransactionsController {
 
     const transactions = await this.transaction.list(where);
     return transactions;
+  }
+
+  @ApiBearerAuth()
+  @OrganizationFounderAuth()
+  @UseGuards(GlobalAuthGuard)
+  @Put('/:transactionId')
+  async updateTransaction(
+    @Body() body: UpdateTransactionInput,
+    @Param('transactionId') transactionId: string
+  ) {
+    return await this.transaction.update(transactionId, body.status);
   }
 }

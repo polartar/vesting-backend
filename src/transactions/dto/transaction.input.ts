@@ -10,6 +10,7 @@ import {
   IsOptional,
   IsString,
   IsEthereumAddress,
+  IsArray,
 } from 'class-validator';
 
 registerEnumType(TransactionStatus, {
@@ -71,6 +72,12 @@ export class CreateTransactionInput {
   @IsString()
   @Field(() => String)
   vestingContractId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @Field(() => String)
+  vestingIds?: string[];
 }
 
 @InputType()
@@ -104,4 +111,19 @@ export class QueryTransactionsInput {
   @IsEnum(TransactionType)
   @Field(() => TransactionType)
   type?: TransactionType;
+}
+
+@InputType()
+export class UpdateTransactionInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  organizationId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEnum(TransactionStatus)
+  @Field(() => TransactionStatus)
+  status: TransactionStatus;
 }
