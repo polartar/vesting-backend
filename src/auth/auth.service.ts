@@ -66,7 +66,6 @@ export class AuthService {
   }
 
   async login(email: string): Promise<string> {
-    console.log(await this.prisma.user.count());
     const user = await this.prisma.user.findFirst({
       where: { email },
     });

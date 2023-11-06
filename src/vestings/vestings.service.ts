@@ -54,10 +54,6 @@ export class VestingsService {
   }
 
   async update(vestingId: string, data: UpdateVestingInput) {
-    console.log({ data });
-    if (data.transactionId) {
-      console.log('transactionId');
-    }
     return this.prisma.vesting.updateMany({
       where: {
         id: vestingId,

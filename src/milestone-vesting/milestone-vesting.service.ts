@@ -74,7 +74,6 @@ export class MilestoneVestingService {
       }
       return milestoneVesting;
     } catch (err) {
-      console.log(err);
       throw new BadRequestException(err.message);
     }
   }

@@ -9,9 +9,24 @@ export class TransactionsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Omit<CreateTransactionInput, 'vestingContractId'>) {
-    return this.prisma.transaction.create({
+    const body = { ...data };
+    delete data.vestingIds;
+    const transaction = await this.prisma.transaction.create({
       data,
     });
+
+    await this.prisma.vesting.updateMany({
+      where: {
+        id: {
+          in: body.vestingIds,
+        },
+      },
+      data: {
+        transactionId: transaction.id,
+      },
+    });
+
+    return transaction;
   }
 
   async list(where: ITransactionsQuery) {
@@ -19,8 +34,6 @@ export class TransactionsService {
   }
 
   async update(transactionId: string, status: TransactionStatus) {
-    console.log({ transactionId });
-    console.log({ status });
     return this.prisma.transaction.update({
       where: { id: transactionId },
       data: { status },

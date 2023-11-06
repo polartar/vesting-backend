@@ -35,7 +35,6 @@ export class TransactionsController {
   async createTransaction(
     @Body() { vestingContractId, ...body }: CreateTransactionInput
   ) {
-    delete body.vestingIds;
     if (body.type === 'VESTING_DEPLOYMENT' && !vestingContractId) {
       throw new BadRequestException(
         `'vestingContractId' is a required field for 'VESTING_DEPLOYMENT' transaction.`
