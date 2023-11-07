@@ -223,6 +223,8 @@ model Transaction {
   safeWallets       SafeWallet[]
   safeConfirmations SafeConfirmation[]
   revokings         Revoking[]
+  fundingAmount     String?           @default("0") @map("funding_amount")
+  withdrawAmount    String?           @default("0") @map("withdraw_amount")
 
   @@map("transaction")
 }

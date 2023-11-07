@@ -78,6 +78,18 @@ export class CreateTransactionInput {
   @IsArray()
   @Field(() => String)
   vestingIds?: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  fundingAmount: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Field(() => String)
+  withdrawAmount: string;
 }
 
 @InputType()
