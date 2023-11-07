@@ -109,6 +109,8 @@ Table transaction {
   safeWallets safe_wallet [not null]
   safeConfirmations safe_confirmation [not null]
   revokings revoking [not null]
+  fundingAmount String [default: '0']
+  withdrawAmount String [default: '0']
 }
 
 Table token {
