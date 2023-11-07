@@ -141,7 +141,7 @@ model Wallet {
   updatedAt  DateTime    @updatedAt @map("updated_at")
   address    String      @unique
   userId     String      @map("user_id")
-  user       User        @relation(fields: [userId], references: [id])
+  user       User        @relation(fields: [userId], references: [id])  // This should be array in the future
   safeOwners SafeOwner[]
   recipes    Recipe[]
 
