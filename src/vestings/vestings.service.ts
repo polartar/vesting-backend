@@ -61,7 +61,7 @@ export class VestingsService {
       },
       data: {
         ...data,
-        transactionId: null,
+        transactionId: data.transactionId ? data.transactionId : null,
       },
     });
   }
