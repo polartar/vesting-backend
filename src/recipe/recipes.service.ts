@@ -27,8 +27,13 @@ export class RecipesService {
     try {
       const code = generateRandomCode();
       const user = await this.userService.createUserIfNotExists(email, name);
+      let err;
       if (payload.address) {
-        await this.walletService.findOrCreate(user.id, payload.address);
+        try {
+          await this.walletService.findOrCreate(user.id, payload.address);
+        } catch (err) {
+          err = { err: err.message };
+        }
       } else {
         delete payload.address;
       }
@@ -44,6 +49,9 @@ export class RecipesService {
         },
       });
 
+      if (err) {
+        return err;
+      }
       await this.email.sendRecipientInvitationEmail(
         email,
         code,
