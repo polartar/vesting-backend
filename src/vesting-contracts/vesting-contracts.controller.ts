@@ -49,7 +49,7 @@ export class VestingContractsController {
   @ApiBearerAuth()
   @NormalAuth()
   @UseGuards(GlobalAuthGuard)
-  @Get('/get/:vestingContractId')
+  @Get('/:vestingContractId')
   async getVestingContract(
     @Param('vestingContractId') vestingContractId: string
   ) {
