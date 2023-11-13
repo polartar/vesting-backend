@@ -40,7 +40,7 @@ export class WalletsService {
     if (wallet) {
       if (wallet.userId !== userId) {
         throw new BadRequestException(
-          `The recipient wallet ${address} has already been linked to another email`
+          `This wallet ${address} has already been linked to another email`
         );
       }
 
