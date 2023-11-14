@@ -107,7 +107,7 @@ export class TokensService implements OnModuleInit {
         data: {
           ...data,
           address,
-          totalSupply: parseEther('1000000000000000000000').toString(),
+          totalSupply: parseEther('1').toString(),
           imported: true,
         },
       });
