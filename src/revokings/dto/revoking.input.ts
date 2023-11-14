@@ -30,6 +30,12 @@ export class CreateRevokingInput {
   @IsNumber()
   @Field(() => Number)
   chainId: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(TransactionStatus)
+  @Field(() => TransactionStatus)
+  status?: TransactionStatus;
 }
 
 @InputType()
