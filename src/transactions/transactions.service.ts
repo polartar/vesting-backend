@@ -15,16 +15,18 @@ export class TransactionsService {
       data,
     });
 
-    await this.prisma.vesting.updateMany({
-      where: {
-        id: {
-          in: body.vestingIds,
+    if (body.vestingIds) {
+      await this.prisma.vesting.updateMany({
+        where: {
+          id: {
+            in: body.vestingIds,
+          },
         },
-      },
-      data: {
-        transactionId: transaction.id,
-      },
-    });
+        data: {
+          transactionId: transaction.id,
+        },
+      });
+    }
 
     return transaction;
   }
