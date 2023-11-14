@@ -1,18 +1,19 @@
 import { PrismaService } from 'nestjs-prisma';
 import { Injectable } from '@nestjs/common';
-import { Revoking } from '@prisma/client';
+import { Revoking, TransactionStatus } from '@prisma/client';
 
 @Injectable()
 export class RevokingsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create({ organizationId, vestingId, recipeId, chainId }) {
+  async create({ organizationId, vestingId, recipeId, chainId, status }) {
     return this.prisma.revoking.create({
       data: {
         organizationId,
         vestingId,
         recipeId,
         chainId,
+        status: status || TransactionStatus.PENDING,
       },
     });
   }
