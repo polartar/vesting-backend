@@ -139,6 +139,9 @@ export class TokensService implements OnModuleInit {
       where: {
         id: tokenId,
       },
+      include: {
+        organizations: true,
+      },
     });
   }
 
