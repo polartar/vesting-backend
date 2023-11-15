@@ -108,7 +108,7 @@ export class VestingContractsService {
   }
 
   async setDeployTransaction(vestingContractId: string, transactionId: string) {
-    return this.prisma.vesting.update({
+    return this.prisma.vestingContract.update({
       where: { id: vestingContractId },
       data: {
         transactionId,
