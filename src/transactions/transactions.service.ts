@@ -15,7 +15,7 @@ export class TransactionsService {
       data,
     });
 
-    if (body.vestingIds) {
+    if (body.vestingIds && body.vestingIds.length > 0) {
       await this.prisma.vesting.updateMany({
         where: {
           id: {

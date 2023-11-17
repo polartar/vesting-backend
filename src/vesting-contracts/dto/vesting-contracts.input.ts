@@ -104,6 +104,12 @@ export class UpdateVestingContractInput {
 @InputType()
 export class DeployVestingContractInput {
   @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  @Field(() => String)
+  organizationId: string;
+  
+  @ApiProperty()
   @IsOptional()
   @IsEthereumAddress()
   @Field(() => String)
