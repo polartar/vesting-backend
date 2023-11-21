@@ -31,16 +31,16 @@ export class TokensService implements OnModuleInit {
     }
 
     if (!TokensService.initialized) {
-      // const tokens = await this.getAllTokens();
-      // tokens.forEach((token) => {
-      //   try {
-      //     this.listenerService.createTransferListener(
-      //       token.address,
-      //       token.chainId as SupportedChainIds
-      //     );
-      //   } catch (err) {}
-      //   return;
-      // });
+      const tokens = await this.getAllTokens();
+      tokens.forEach((token) => {
+        try {
+          this.listenerService.createTransferListener(
+            token.address,
+            token.chainId as SupportedChainIds
+          );
+        } catch (err) {}
+        return;
+      });
       TokensService.initialized = true;
     }
   }
@@ -48,10 +48,10 @@ export class TokensService implements OnModuleInit {
   async create(payload: CreateTokenInput) {
     const { organizationId, ...data } = payload;
     const address = data.address?.toLowerCase() ?? '';
-    // this.listenerService.createTransferListener(
-    //   getAddress(address),
-    //   payload.chainId
-    // );
+    this.listenerService.createTransferListener(
+      getAddress(address),
+      payload.chainId
+    );
     const token = await this.prisma.token.create({
       data: {
         ...data,
@@ -138,6 +138,9 @@ export class TokensService implements OnModuleInit {
     return this.prisma.token.findUnique({
       where: {
         id: tokenId,
+      },
+      include: {
+        organizations: true,
       },
     });
   }

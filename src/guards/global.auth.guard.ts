@@ -34,7 +34,9 @@ export class GlobalAuthGuard implements CanActivate {
         if (token) {
           const decodeToken = this.auth.decodeToken(token);
 
-          const user = await this.user.getUser(decodeToken.userId);
+          const user = await this.user.getUser(decodeToken.userId, {
+            withEmail: true,
+          });
           if (!user) {
             throw new UnauthorizedException();
           }

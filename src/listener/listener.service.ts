@@ -40,7 +40,7 @@ export class ListenerService implements OnModuleInit {
       return;
     }
     if (!ListenerService.initialized) {
-      // this.createVestingListener();
+      this.createVestingListener();
       ListenerService.initialized = true;
     }
   }
@@ -231,7 +231,7 @@ export class ListenerService implements OnModuleInit {
           id: vesting.id,
         },
         data: {
-          status: VestingStatus.SUCCESS,
+          status: VestingStatus.LIVE,
         },
       }),
     ]);
