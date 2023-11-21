@@ -231,7 +231,7 @@ export class ListenerService implements OnModuleInit {
           id: vesting.id,
         },
         data: {
-          status: VestingStatus.SUCCESS,
+          status: VestingStatus.LIVE,
         },
       }),
     ]);
