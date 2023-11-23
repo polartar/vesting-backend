@@ -46,7 +46,7 @@ export class TransactionsController {
     if (vestingContractId) {
       // vesting contract deployment tx
       await this.vestingContract.setDeployTransaction(
-        vestingContractId, 
+        vestingContractId,
         transaction.id
       );
     }

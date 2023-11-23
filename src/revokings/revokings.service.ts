@@ -6,7 +6,14 @@ import { Revoking, TransactionStatus } from '@prisma/client';
 export class RevokingsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create({ organizationId, vestingId, recipeId, chainId, status }) {
+  async create({
+    organizationId,
+    vestingId,
+    recipeId,
+    chainId,
+    status,
+    transactionId,
+  }) {
     return this.prisma.revoking.create({
       data: {
         organizationId,
@@ -14,6 +21,7 @@ export class RevokingsService {
         recipeId,
         chainId,
         status: status || TransactionStatus.PENDING,
+        transactionId,
       },
     });
   }

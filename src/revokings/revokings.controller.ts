@@ -54,6 +54,7 @@ export class RevokingsController {
       vestingId: recipe.vestingId,
       chainId: body.chainId,
       status: body.status,
+      transactionId: body.transactionId,
     });
   }
 

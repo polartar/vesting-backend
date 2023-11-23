@@ -36,6 +36,12 @@ export class CreateRevokingInput {
   @IsEnum(TransactionStatus)
   @Field(() => TransactionStatus)
   status?: TransactionStatus;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Field(() => String)
+  transactionId: string;
 }
 
 @InputType()
@@ -47,10 +53,10 @@ export class UpdateRevokingInput {
   organizationId: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Field(() => String)
-  transactionId: string;
+  transactionId?: string;
 
   @ApiProperty()
   @IsNotEmpty()
