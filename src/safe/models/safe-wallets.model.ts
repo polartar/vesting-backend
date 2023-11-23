@@ -13,6 +13,10 @@ export class SafeWallet extends BaseModel {
   chainId: number;
 
   @Field(() => String)
+  @Optional()
+  name?: string;
+
+  @Field(() => String)
   @IsEthereumAddress()
   address: string;
 
