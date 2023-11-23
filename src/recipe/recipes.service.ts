@@ -108,10 +108,10 @@ export class RecipesService {
       where: {
         id: recipeId,
         organizationId: data.organizationId,
-        vesting: {
-          // TODO double check
-          status: 'INITIALIZED',
-        },
+        // vesting: {
+        //   // TODO double check
+        //   status: 'INITIALIZED',
+        // },
       },
       data,
     });
