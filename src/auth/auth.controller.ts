@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   NotFoundException,
+  InternalServerErrorException,
   Body,
   Controller,
   Get,
@@ -181,21 +182,26 @@ export class AuthController {
   @UseGuards(GlobalAuthGuard)
   @Post('/validate')
   async validate(@Body() body: AuthValidationInput) {
+    let auth;
     try {
-      const auth = await this.auth.validateCode(body.code);
-      if (!auth) {
-        throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
-      }
+      auth = await this.auth.validateCode(body.code);
+    } catch (error) {
+      console.log({ error });
+      throw new BadRequestException(error.message);
+    }
+    if (!auth) {
+      throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
+    }
 
+    try {
       const { tokens } = await this.auth.createUser({
         email: auth.email,
         name: auth.name,
       });
 
       return tokens;
-    } catch (error) {
-      console.error('Error: /auth/validate', error);
-      throw new BadRequestException(ERROR_MESSAGES.AUTH_INVALID_CODE);
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
     }
   }
 
