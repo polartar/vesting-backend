@@ -1,6 +1,7 @@
 import { PrismaService } from 'nestjs-prisma';
 import { EmailVerification, User, Wallet } from '@prisma/client';
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -14,6 +15,7 @@ import { TokenPayload } from './dto/jwt.dto';
 import { Token } from './models/token.model';
 import { generateRandomCode } from 'src/common/utils/helpers';
 import { getExpiredTime } from 'src/common/utils/helper';
+import { ERROR_MESSAGES } from 'src/common/utils/messages';
 @Injectable()
 export class AuthService {
   constructor(
@@ -131,6 +133,7 @@ export class AuthService {
         email,
       },
     });
+    const code = generateRandomCode();
 
     if (auth) {
       await this.prisma.emailVerification.update({
@@ -139,13 +142,13 @@ export class AuthService {
         },
         data: {
           expiredAt: getExpiredTime(),
+          code: auth.expiredAt > 0 ? auth.code : code,
         },
       });
 
-      return auth.code;
+      return auth.expiredAt > 0 ? auth.code : code;
     }
 
-    const code = generateRandomCode();
     await this.prisma.emailVerification.create({
       data: {
         email,
@@ -159,29 +162,45 @@ export class AuthService {
   }
 
   async validateCode(code: string): Promise<EmailVerification> {
+    let auth;
     try {
-      const auth = await this.prisma.emailVerification.findFirst({
+      auth = await this.prisma.emailVerification.findFirst({
         where: {
           code,
         },
       });
-
-      const updateQuery = {
-        where: {
-          isAccepted: false,
-          user: {
-            email: auth.email,
-          },
-        },
-        data: { isAccepted: true },
-      };
-      await Promise.all([
-        this.prisma.userRole.updateMany(updateQuery),
-        this.prisma.userPermission.updateMany(updateQuery),
-      ]);
-      return auth;
-    } catch (error) {
+    } catch (err) {
       return;
     }
+
+    if (Number(auth.expiredAt) == 0) {
+      throw new BadRequestException(ERROR_MESSAGES.CODE_ALREADY_USED);
+    } else if (new Date().getTime() > auth.expiredAt) {
+      throw new BadRequestException(ERROR_MESSAGES.CODE_EXPIRED);
+    }
+
+    await this.prisma.emailVerification.update({
+      where: {
+        id: auth.id,
+      },
+      data: {
+        expiredAt: 0,
+      },
+    });
+
+    const updateQuery = {
+      where: {
+        isAccepted: false,
+        user: {
+          email: auth.email,
+        },
+      },
+      data: { isAccepted: true },
+    };
+    await Promise.all([
+      this.prisma.userRole.updateMany(updateQuery),
+      this.prisma.userPermission.updateMany(updateQuery),
+    ]);
+    return auth;
   }
 }

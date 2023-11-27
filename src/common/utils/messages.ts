@@ -8,6 +8,8 @@ export const ERROR_MESSAGES = {
   EMAIL_SEND_FAILURE: 'Sending email is failed',
   GOOGLE_AUTH_FAILURE: 'Invalid google authorization code',
   GOOGLE_AUTH_CALLBACK_FAILURE: 'Google auth callback link is invalid',
+  CODE_EXPIRED: 'The code is expired',
+  CODE_ALREADY_USED: 'The code is already used',
 
   /** Wallet connect */
   WALLET_CONNECT_FAILTURE: 'Wallet connect has failed',
