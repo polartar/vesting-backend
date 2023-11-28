@@ -542,8 +542,6 @@ Ref: safe_wallet.transactionId > transaction.id
 
 Ref: safe_owner.safeWalletId > safe_wallet.id
 
-Ref: safe_owner.address > wallet.address
-
 Ref: safe_confirmation.safeWalletId > safe_wallet.id
 
 Ref: safe_confirmation.safeOwnerId > safe_owner.id
