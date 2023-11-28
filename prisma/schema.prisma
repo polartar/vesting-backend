@@ -395,7 +395,6 @@ model SafeOwner {
   safeWallet        SafeWallet         @relation(fields: [safeWalletId], references: [id])
   name              String?
   address           String
-  wallet            Wallet?            @relation(fields: [address], references: [address])
   safeConfirmations SafeConfirmation[]
 
   @@map("safe_owner")
