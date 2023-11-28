@@ -132,7 +132,7 @@ ALTER TABLE "recipe" ADD CONSTRAINT "recipe_address_fkey" FOREIGN KEY ("address"
 ALTER TABLE "safe_wallet" ADD CONSTRAINT "safe_wallet_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transaction"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "safe_owner" ADD CONSTRAINT "safe_owner_address_fkey" FOREIGN KEY ("address") REFERENCES "wallet"("address") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- ALTER TABLE "safe_owner" ADD CONSTRAINT "safe_owner_address_fkey" FOREIGN KEY ("address") REFERENCES "wallet"("address") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "revoking" ADD CONSTRAINT "revoking_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transaction"("id") ON DELETE SET NULL ON UPDATE CASCADE;
