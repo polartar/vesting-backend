@@ -142,7 +142,6 @@ model Wallet {
   address    String      @unique
   userId     String      @map("user_id")
   user       User        @relation(fields: [userId], references: [id])  // This should be array in the future
-  safeOwners SafeOwner[]
   recipes    Recipe[]
 
   @@map("wallet")
