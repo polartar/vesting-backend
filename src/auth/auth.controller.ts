@@ -141,8 +141,9 @@ export class AuthController {
   @UseGuards(GlobalAuthGuard)
   @Post('/signup')
   async signup(@Body() body: AuthEmailSingUpInput) {
+    let code;
     try {
-      const code = await this.auth.createAuthCode(
+      code = await this.auth.createAuthCode(
         body.email,
         body.name,
         body.company
@@ -160,7 +161,12 @@ export class AuthController {
         if (body.company)
           await this.organization.create(body.email, body.company, id);
       }
+    } catch (error) {
+      console.error('Error: /auth/signup', error);
+      throw new BadRequestException(ERROR_MESSAGES.AUTH_FAILURE);
+    }
 
+    try {
       const sent = await this.email.sendLoginEmail(
         body.email,
         code,
