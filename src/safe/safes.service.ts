@@ -137,7 +137,7 @@ export class SafesService {
       address: address.toLowerCase(),
       name,
     }));
-    return this.prisma.safeOwner.createMany({ data });
+    return this.prisma.safeOwner.createMany({ data, skipDuplicates: true });
   }
 
   /** Safe Confirmations */
