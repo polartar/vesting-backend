@@ -36,7 +36,6 @@ Table wallet {
   address String [unique, not null]
   userId String [not null]
   user user [not null]
-  safeOwners safe_owner [not null]
   recipes recipe [not null]
 }
 
@@ -265,7 +264,6 @@ Table safe_owner {
   safeWallet safe_wallet [not null]
   name String
   address String [not null]
-  wallet wallet
   safeConfirmations safe_confirmation [not null]
 }
 
