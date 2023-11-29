@@ -163,6 +163,7 @@ export class AuthService {
 
   async validateCode(code: string): Promise<EmailVerification> {
     let auth;
+
     try {
       auth = await this.prisma.emailVerification.findFirst({
         where: {
