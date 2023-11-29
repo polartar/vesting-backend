@@ -45,7 +45,7 @@ export class SafesController {
       return this.safe.getSafeWallet(safe.id);
     } catch (error) {
       console.error('Error: POST /safe/wallet', error);
-      throw new BadRequestException(ERROR_MESSAGES.SAFE_CREATE_WALLET);
+      throw new BadRequestException(error);
     }
   }
 
