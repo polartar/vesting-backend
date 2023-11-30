@@ -83,6 +83,7 @@ export class MilestoneVestingService {
       where: { id: vestingId },
       include: {
         milestones: true,
+        recipes: true,
       },
     });
   }
