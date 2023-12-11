@@ -10,7 +10,17 @@ import {
 import { Token } from './models/tokens.model';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
 import { ListenerService } from 'src/listener/listener.service';
-import { getAddress, parseEther } from 'ethers';
+import {
+  Contract,
+  InfuraProvider,
+  JsonRpcProvider,
+  Network,
+  ethers,
+  getAddress,
+  parseEther,
+} from 'ethers';
+import ERC20ABI from 'src/listener/erc20.json';
+import { RPC_URLS } from 'src/common/utils/web3';
 
 @Injectable()
 export class TokensService implements OnModuleInit {
@@ -179,5 +189,36 @@ export class TokensService implements OnModuleInit {
 
   async getAllTokens() {
     return await this.prisma.token.findMany();
+  }
+
+  async validateERC20TokenAddress(
+    tokenAddress: string,
+    chainId: number
+  ): Promise<{
+    metadata?: { name: string; symbol: string; decimals: number };
+    validated: boolean;
+  }> {
+    try {
+      console.log({ chainId });
+      const provider = new JsonRpcProvider(RPC_URLS[chainId]);
+
+      const contract = new Contract(tokenAddress, ERC20ABI, provider);
+      const name = await contract.name();
+      const decimals = await contract.decimals();
+      const symbol = await contract.symbol();
+      return {
+        validated: true,
+        metadata: {
+          name,
+          symbol,
+          decimals: Number(decimals),
+        },
+      };
+    } catch (err) {
+      console.log(err);
+      return {
+        validated: false,
+      };
+    }
   }
 }

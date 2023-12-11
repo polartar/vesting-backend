@@ -62,10 +62,7 @@ export class TokensController {
   async importToken(@Body() body: ImportTokenInput) {
     try {
       const { metadata, validated } =
-        await this.alchmey.validateERC20TokenAddress(
-          body.address,
-          body.chainId
-        );
+        await this.token.validateERC20TokenAddress(body.address, body.chainId);
       if (!validated) {
         throw new BadRequestException(ERROR_MESSAGES.INVALID_ERC20_TOKEN);
       }
