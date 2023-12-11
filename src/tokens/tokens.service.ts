@@ -199,7 +199,6 @@ export class TokensService implements OnModuleInit {
     validated: boolean;
   }> {
     try {
-      console.log({ chainId });
       const provider = new JsonRpcProvider(RPC_URLS[chainId]);
 
       const contract = new Contract(tokenAddress, ERC20ABI, provider);
