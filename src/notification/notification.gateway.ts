@@ -13,7 +13,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(5000, {
+@WebSocketGateway({
   transports: ['websocket'],
 })
 export class NotificationGateway
@@ -23,7 +23,7 @@ export class NotificationGateway
   server: Server;
 
   handleConnection(client: Socket) {
-    console.log('Client connected2' + client.id);
+    console.log('Client connected' + client.id);
     client.emit('test', { text: 'test payload' });
   }
 
