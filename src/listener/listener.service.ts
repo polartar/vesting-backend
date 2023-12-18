@@ -8,6 +8,7 @@ import { RecipeStatus, TransactionType, VestingStatus } from '@prisma/client';
 import { AlchemyNetworks, NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
 import { ConfigService } from '@nestjs/config';
 import { isProduction } from 'src/common/utils/api';
+import { NotificationGateway } from 'src/notification/notification.gateway';
 
 @Injectable()
 export class ListenerService implements OnModuleInit {
@@ -26,7 +27,8 @@ export class ListenerService implements OnModuleInit {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private notificationGateway: NotificationGateway
   ) {
     this.alchemyConfigure();
     this.transferIface = new ethers.Interface(this.erc20ABI);
@@ -206,12 +208,19 @@ export class ListenerService implements OnModuleInit {
 
   async handleCreateClaimEvent(hash: string, chainId: number) {
     const transaction = await this.getTransaction(hash, chainId);
-    return await this.updateVestingStatus(transaction.id);
+    const { vesting } = await this.updateVestingStatus(transaction.id);
+    await this.notificationGateway.notifyClient('adding_claims', {
+      vestingId: vesting.id,
+    });
   }
 
   async handleRevokeClaimEvent(hash: string, chainId: number) {
     const transaction = await this.getTransaction(hash, chainId);
-    return await this.revokeRecipient(transaction.id);
+    const { recipe } = await this.revokeRecipient(transaction.id);
+    await this.notificationGateway.notifyClient('revoking_claim', {
+      vestingId: recipe.vestingId,
+      recipient: recipe.address,
+    });
   }
 
   async updateVestingStatus(transactionId: string) {
@@ -252,7 +261,7 @@ export class ListenerService implements OnModuleInit {
       throw new BadRequestException(ERROR_MESSAGES.REVOKING_NOT_FOUND);
     }
 
-    const [newTransaction, newRecipe, newRevoking] = await Promise.all([
+    const [newTransaction, newRevoking, newRecipe] = await Promise.all([
       this.updateTransactionStatus(transactionId),
       this.prisma.revoking.update({
         where: {

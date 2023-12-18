@@ -10,6 +10,7 @@ import { RecipesService } from 'src/recipe/recipes.service';
 import { EmailService } from 'src/auth/email.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { ListenerService } from 'src/listener/listener.service';
+import { NotificationGateway } from 'src/notification/notification.gateway';
 
 @Module({
   imports: [],
@@ -25,6 +26,7 @@ import { ListenerService } from 'src/listener/listener.service';
     EmailService,
     TokensService,
     ListenerService,
+    NotificationGateway,
   ],
 })
 export class VestingsModule {}
