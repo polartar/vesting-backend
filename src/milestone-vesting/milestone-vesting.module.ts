@@ -10,6 +10,7 @@ import { EmailService } from 'src/auth/email.service';
 import { TokensService } from 'src/tokens/tokens.service';
 import { ListenerService } from 'src/listener/listener.service';
 import { MilestoneVestingTemplateService } from 'src/milestone-vesting-template/milestone-vesting-template.service';
+import { NotificationGateway } from 'src/notification/notification.gateway';
 
 @Module({
   controllers: [MilestoneVestingController],
@@ -25,6 +26,7 @@ import { MilestoneVestingTemplateService } from 'src/milestone-vesting-template/
     EmailService,
     TokensService,
     ListenerService,
+    NotificationGateway,
   ],
 })
 export class MilestoneVestingModule {}

@@ -35,7 +35,7 @@ import { MembershipModule } from './membership/membership.module';
 import { ApiMiddleware } from './common/middleware/api.middleware';
 import { MilestoneVestingModule } from './milestone-vesting/milestone-vesting.module';
 import { MilestoneVestingTemplateModule } from './milestone-vesting-template/milestone-vesting-template.module';
-import { WebsocketModule } from './websocket/websocket.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -71,7 +71,7 @@ import { WebsocketModule } from './websocket/websocket.module';
     MembershipModule,
     MilestoneVestingModule,
     MilestoneVestingTemplateModule,
-    WebsocketModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
