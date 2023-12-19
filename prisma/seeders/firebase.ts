@@ -1,4 +1,10 @@
-import { Permission, PrismaClient, Role } from '@prisma/client';
+import {
+  CliffDurationType,
+  Permission,
+  PrismaClient,
+  ReleaseFrequencyType,
+  Role,
+} from '@prisma/client';
 import OrganizationsJson from '../db/seed.json';
 import { UserRole } from 'src/users/models/user-role.model';
 
@@ -194,11 +200,12 @@ async function registerVesting(vesting, contractId, tokenId, organizationId) {
         updatedAt: vesting.updated_at,
         startedAt: vesting.started_at,
         endedAt: vesting.ended_at,
-        originalEndedAt: vesting.originalEndedAt,
+        originalEndedAt: vesting.originalEndDateTime || vesting.ended_at,
         releaseFrequency: vesting.release_frequency,
-        releaseFrequencyType: vesting.release_frequency_type,
+        releaseFrequencyType:
+          vesting.release_frequency_type as ReleaseFrequencyType,
         cliffDuration: vesting.cliff_duration,
-        cliffDurationType: vesting.cliff_duration_type,
+        cliffDurationType: vesting.cliff_duration_type as CliffDurationType,
         cliffAmount: vesting.cliff_amount,
       },
     });
