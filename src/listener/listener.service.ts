@@ -191,7 +191,7 @@ export class ListenerService implements OnModuleInit {
       },
     });
     if (!transaction) {
-      throw new BadRequestException(ERROR_MESSAGES.TRANSACTION_NOT_FOUND);
+      return null;
     }
 
     return transaction;
@@ -209,8 +209,10 @@ export class ListenerService implements OnModuleInit {
   async handleCreateClaimEvent(hash: string, chainId: number) {
     const transaction = await this.getTransaction(hash, chainId);
     const { vesting } = await this.updateVestingStatus(transaction.id);
+
     await this.notificationGateway.notifyClient('adding_claims', {
       vestingId: vesting.id,
+      chainId,
     });
   }
 
@@ -220,6 +222,7 @@ export class ListenerService implements OnModuleInit {
     await this.notificationGateway.notifyClient('revoking_claim', {
       vestingId: recipe.vestingId,
       recipient: recipe.address,
+      chainId,
     });
   }
 
@@ -320,10 +323,23 @@ export class ListenerService implements OnModuleInit {
 
   async handleSafeTransactionEvent(hash: string, chainId: number) {
     const transaction = await this.getSafeTransaction(hash, chainId);
-    if (transaction.type === TransactionType.ADDING_CLAIMS) {
-      await this.updateVestingStatus(transaction.id);
-    } else {
-      await this.revokeRecipient(transaction.id);
+    if (transaction) {
+      if (transaction.type === TransactionType.ADDING_CLAIMS) {
+        const { vesting } = await this.updateVestingStatus(transaction.id);
+
+        await this.notificationGateway.notifyClient('adding_claims', {
+          vestingId: vesting.id,
+          chainId,
+        });
+      } else {
+        const { recipe } = await this.revokeRecipient(transaction.id);
+
+        await this.notificationGateway.notifyClient('revoking_claim', {
+          vestingId: recipe.vestingId,
+          recipient: recipe.address,
+          chainId,
+        });
+      }
     }
   }
 }

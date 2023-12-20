@@ -1,16 +1,11 @@
 import { Logger } from '@nestjs/common';
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -24,7 +19,6 @@ export class NotificationGateway
 
   handleConnection(client: Socket) {
     console.log('Client connected' + client.id);
-    client.emit('test', { text: 'test payload' });
   }
 
   handleDisconnect(client: Socket) {
@@ -36,6 +30,8 @@ export class NotificationGateway
   }
 
   async notifyClient(event: string, data: any) {
-    this.server.emit(event, data);
+    if (this.server) {
+      this.server.emit(event, data);
+    }
   }
 }
