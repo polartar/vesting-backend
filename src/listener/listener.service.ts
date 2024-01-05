@@ -4,7 +4,12 @@ import { AlchemyMultichainClient } from './alchemy_multichains';
 import { ethers } from 'ethers';
 import { PrismaService } from 'nestjs-prisma';
 import { ERROR_MESSAGES } from 'src/common/utils/messages';
-import { RecipeStatus, TransactionType, VestingStatus } from '@prisma/client';
+import {
+  RecipeStatus,
+  TransactionType,
+  VestingContractStatus,
+  VestingStatus,
+} from '@prisma/client';
 import { AlchemyNetworks, NETWORK_TO_CHAIN_IDS } from 'src/common/utils/web3';
 import { ConfigService } from '@nestjs/config';
 import { isProduction } from 'src/common/utils/api';
@@ -106,6 +111,7 @@ export class ListenerService implements OnModuleInit {
     // const iface = new ethers.Interface(VestingABI);
     const safeIface = new ethers.Interface([
       'event ExecutionSuccess(bytes32,uint256)',
+      'event ApproveHash(bytes32)',
     ]);
 
     const claimFilter = {
@@ -119,6 +125,7 @@ export class ListenerService implements OnModuleInit {
             'ClaimRevoked(address,uint256,uint256,(uint40,uint40,uint40,uint40,uint256,uint256,uint112,bool,uint40),uint256)'
           ),
           ethers.id('ExecutionSuccess(bytes32,uint256)'),
+          ethers.id('ApproveHash(bytes32)'),
         ],
       ],
     };
@@ -137,6 +144,14 @@ export class ListenerService implements OnModuleInit {
               const { args } = safeIface.parseLog(log);
               const safeHash = args[0];
               await this.handleSafeTransactionEvent(
+                safeHash,
+                NETWORK_TO_CHAIN_IDS[network]
+              );
+            }
+            if (log.topics.includes(claimFilter.topics[0][4])) {
+              const { args } = safeIface.parseLog(log);
+              const safeHash = args[0];
+              await this.handleSafeApproveEvent(
                 safeHash,
                 NETWORK_TO_CHAIN_IDS[network]
               );
@@ -254,6 +269,34 @@ export class ListenerService implements OnModuleInit {
     };
   }
 
+  async updateVestingContractStatus(transactionId: string) {
+    const vestingContract = await this.prisma.vestingContract.findFirst({
+      where: {
+        transactionId: transactionId,
+      },
+    });
+    if (!vestingContract) {
+      throw new BadRequestException(ERROR_MESSAGES.CONTRACT_NOT_FOUND);
+    }
+
+    const [newTransaction, newVestingContract] = await Promise.all([
+      this.updateTransactionStatus(transactionId),
+      this.prisma.vestingContract.update({
+        where: {
+          id: vestingContract.id,
+        },
+        data: {
+          status: VestingContractStatus.SUCCESS,
+        },
+      }),
+    ]);
+
+    return {
+      transaction: newTransaction,
+      vestingContract: newVestingContract,
+    };
+  }
+
   async revokeRecipient(transactionId: string) {
     const revoking = await this.prisma.revoking.findFirst({
       where: {
@@ -331,7 +374,7 @@ export class ListenerService implements OnModuleInit {
           vestingId: vesting.id,
           chainId,
         });
-      } else {
+      } else if (transaction.type === TransactionType.REVOKE_CLAIM) {
         const { recipe } = await this.revokeRecipient(transaction.id);
 
         await this.notificationGateway.notifyClient('revoking_claim', {
@@ -339,7 +382,23 @@ export class ListenerService implements OnModuleInit {
           recipient: recipe.address,
           chainId,
         });
+      } else if (transaction.type === TransactionType.VESTING_DEPLOYMENT) {
+        const { vestingContract } = await this.updateVestingContractStatus(
+          transaction.id
+        );
+
+        await this.notificationGateway.notifyClient('contract_deployment', {
+          vestingContractId: vestingContract.id,
+          chainId,
+        });
       }
     }
+  }
+
+  async handleSafeApproveEvent(hash: string, chainId: number) {
+    await this.notificationGateway.notifyClient('safe_approve', {
+      safeHash: hash,
+      chainId,
+    });
   }
 }
